@@ -16,7 +16,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@db:5432/ecommerce
+      - DATABASE_URL=postgres://postgres:123456@db:5432/ecommerce
     depends_on:
       - db
   db:

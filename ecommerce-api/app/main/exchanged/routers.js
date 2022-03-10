@@ -1,0 +1,28 @@
+'use strict';
+
+const handler = require('./handler');
+
+const Routes = [
+  {
+    method: 'POST',
+    path: '/api/v1/exchange',
+    config: handler.getManyEx
+  },
+  {
+    method: 'POST',
+    path: '/api/v1/exchange/createExchange',
+    config: handler.createExchange
+  },
+  {
+    method: 'PUT',
+    path: '/api/v1/exchange/accept/{id}',
+    config: handler.updateAccept
+  },
+  {
+    method: 'GET',
+    path: '/api/v1/exchange/confirm/{id}',
+    config: handler.updateConfirm
+  },
+];
+
+module.exports = Routes;

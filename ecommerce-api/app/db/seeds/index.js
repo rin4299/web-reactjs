@@ -19,6 +19,11 @@ const dataRole = [
     description: "user",
     isActive: true,
   },
+  {
+    nameRole: "user1",
+    description: "user1",
+    isActive: true,
+  },
 ];
 
 const dataUser = [
@@ -34,6 +39,16 @@ const dataUser = [
   },
   {
     email: "user@gmail.com",
+    name: "user",
+    isVerifyEmail: true,
+  },
+  {
+    email: "user1@gmail.com",
+    name: "user1",
+    isVerifyEmail: true,
+  },
+  {
+    email: "user2@gmail.com",
     name: "user",
     isVerifyEmail: true,
   },
@@ -352,6 +367,33 @@ const dataProduct = [
   },
 ];
 
+const dataExchanged = [
+  {
+    reqUserId: 3,
+    recUserId: 4,
+    pId: 1,
+    quantity: 1,
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
+  {
+    reqUserId: 4,
+    recUserId: 5,
+    pId: 2,
+    quantity: 1,
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
+  {
+    reqUserId: 3,
+    recUserId: 4,
+    pId: 3,
+    quantity: 1,
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
+];
+
 exports.seed = async function (knex, prom) {
   const users = await Models.User.query();
   if(users.length === 0) {
@@ -360,11 +402,13 @@ exports.seed = async function (knex, prom) {
   await Models.Category.query().delete();
   await Models.Producer.query().delete();
   await Models.Product.query().delete();
-
+    console.log(111111111111111);
   const roles = await Models.Role.query().insert(dataRole).returning("*");
+  
   const newUsers = dataUser.map((e) => {
     e.roleId = roles.find((i) => i.nameRole === e.name).id;
     e.password = PasswordUtils.hashSync("123456");
+    console.log(e);
     return e;
   });
   await Models.User.query().insert(newUsers);
@@ -385,7 +429,8 @@ exports.seed = async function (knex, prom) {
     e.producerId = producers.find((i) => i.name === e.producerId).id;
     return e;
   });
-  await Models.Product.query().insert(newProducts);    
+  await Models.Product.query().insert(newProducts);  
+  await Models.Exchanged.query().insert(dataExchanged); 
 }
 return 1;
 };
