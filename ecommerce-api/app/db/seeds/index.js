@@ -24,6 +24,11 @@ const dataRole = [
     description: "user1",
     isActive: true,
   },
+  {
+    nameRole: "user2",
+    description: "user2",
+    isActive: true,
+  },
 ];
 
 const dataUser = [
@@ -49,7 +54,7 @@ const dataUser = [
   },
   {
     email: "user2@gmail.com",
-    name: "user",
+    name: "user2",
     isVerifyEmail: true,
   },
 ];
@@ -367,32 +372,32 @@ const dataProduct = [
   },
 ];
 
-const dataExchanged = [
-  {
-    reqUserId: 3,
-    recUserId: 4,
-    pId: 1,
-    quantity: 1,
-    createdAt: "2019-12-05T15:03:11.311Z",
-    updatedAt: "2019-12-05T15:08:15.904Z",
-  },
-  {
-    reqUserId: 4,
-    recUserId: 5,
-    pId: 2,
-    quantity: 1,
-    createdAt: "2019-12-05T15:03:11.311Z",
-    updatedAt: "2019-12-05T15:08:15.904Z",
-  },
-  {
-    reqUserId: 3,
-    recUserId: 4,
-    pId: 3,
-    quantity: 1,
-    createdAt: "2019-12-05T15:03:11.311Z",
-    updatedAt: "2019-12-05T15:08:15.904Z",
-  },
-];
+// const dataExchanged = [
+//   {
+//     reqUserName: 3,
+//     recUserName: 4,
+//     pName: 1,
+//     quantity: 1,
+//     createdAt: "2019-12-05T15:03:11.311Z",
+//     updatedAt: "2019-12-05T15:08:15.904Z",
+//   },
+//   {
+//     reqUserName: 4,
+//     recUserName: 5,
+//     pName: 2,
+//     quantity: 1,
+//     createdAt: "2019-12-05T15:03:11.311Z",
+//     updatedAt: "2019-12-05T15:08:15.904Z",
+//   },
+//   {
+//     reqUserName: 3,
+//     recUserName: 4,
+//     pName: 3,
+//     quantity: 1,
+//     createdAt: "2019-12-05T15:03:11.311Z",
+//     updatedAt: "2019-12-05T15:08:15.904Z",
+//   },
+// ];
 
 exports.seed = async function (knex, prom) {
   const users = await Models.User.query();
@@ -430,7 +435,7 @@ exports.seed = async function (knex, prom) {
     return e;
   });
   await Models.Product.query().insert(newProducts);  
-  await Models.Exchanged.query().insert(dataExchanged); 
+  // await Models.Exchanged.query().insert(dataExchanged); 
 }
 return 1;
 };

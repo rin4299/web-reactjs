@@ -3,9 +3,9 @@
 exports.up = function(knex) {
   return knex.schema.createTable('exchanged', (table) => {
     table.increments('id').primary();
-    table.integer('reqUserId');
-    table.integer('recUserId');
-    table.integer('pId');
+    table.string('reqUserName');
+    table.string('recUserName');
+    table.string('pName');
     table.integer('quantity');
     table.boolean('isAccepted').defaultTo(false);
     table.boolean('isReceived').defaultTo(false);
