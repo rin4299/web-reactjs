@@ -24,8 +24,6 @@ class ExchangeController extends BaseControllerCRUD {
       const {
         payload
       } = request;
-      console.log("#########################################");
-      console.log(payload);
       return await this.service.createExchange(payload);
     } catch (err) {
       throw err;

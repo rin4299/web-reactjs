@@ -10,10 +10,11 @@ class ExchangeService extends BaseServiceCRUD {
   constructor() {
     super(Models.Exchanged, 'exchanged');
   }
-
+// Van giu ID
   async getManyEx(query, payload) {
     const {id, type} = payload;
-    const builder = this.model.queryBuilder(query).where(type, id);
+    let U = await Models.User.query().findOne({id: id})
+    const builder = this.model.queryBuilder(query).where(type, U.name);
     if (this.getSearchQuery && query.q) {
       this.getSearchQuery(builder, query.q);
     }
@@ -22,17 +23,19 @@ class ExchangeService extends BaseServiceCRUD {
 
   async createExchange(payload) {
     try {
-        const {pId, quantity} = payload;
-        let id = pId;
-        console.log("#####################################")
-        console.log(typeof pId);
-        let product = await Models.Product.query().where('id', pId);
+        const {pName, quantity} = payload;
+        let product = await Models.Product.query().where('nameProduct', pName);
         if(quantity > product[0].numberAvailable){
           throw Boom.badRequest('The current available of the current product can not afford this quantity!');
         }
       let data = await Models.Exchanged.query()
         .insert(payload)
         .returning('*');
+      // let U = await Models.User.query().whereIn('id',[data.reqUserId, data.recUserId]);
+      // data.reqUserName = U[0].name;
+      // data.recUserName = U[1].name;
+      // let P = await Models.Product.query().findOne({id: data.pId});
+      // data.pName = P.nameProduct;
       return data;
     } catch (err) {
       throw err;
@@ -56,7 +59,7 @@ class ExchangeService extends BaseServiceCRUD {
     if(e.isAccepted === false){
       throw Boom.badRequest('The current Exchange Request has not been accepted yet!');
     }
-    let product = await Models.Product.query().where('id', e.pId);
+    let product = await Models.Product.query().where('nameProduct', e.pName);
     // let curQ = product.quantity - quantity;
     await Models.Product.query().update({numberAvailable: product[0].numberAvailable - e.quantity} ).where({id});
     await Models.Exchanged.query()
