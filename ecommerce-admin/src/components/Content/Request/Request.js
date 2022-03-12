@@ -54,6 +54,7 @@ class Request extends Component {
     })
     window.scrollTo(0, 0);
   }
+/////////////////////////
 
   handleRemove = (id) => {
     MySwal.fire({
@@ -75,29 +76,29 @@ class Request extends Component {
       }
     })
   }
-  handleChange = (event) => {
-    const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    const name = target.name;
-    this.setState({
-      [name]: value
-    });
-  }
+  // handleChange = (event) => {
+  //   const target = event.target;
+  //   const value = target.type === 'checkbox' ? target.checked : target.value;
+  //   const name = target.name;
+  //   this.setState({
+  //     [name]: value
+  //   });
+  // }
 
-  handleSubmit = (event) => {
-    event.preventDefault();
-    const { searchText } = this.state;
-    this.props.find_products(token, searchText).then(res => {
-      this.setState({
-        total: res.total
-      })
-    })
-  }
+  // handleSubmit = (event) => {
+  //   event.preventDefault();
+  //   const { searchText } = this.state;
+  //   this.props.find_products(token, searchText).then(res => {
+  //     this.setState({
+  //       total: res.total
+  //     })
+  //   })
+  // }
 
-  downloadExcel = () => {
-    const key = 'products'
-    exportExcel(key)
-  }
+  // downloadExcel = () => {
+  //   const key = 'products'
+  //   exportExcel(key)
+  // }
 
   
 
@@ -128,10 +129,10 @@ class Request extends Component {
                   <div className="card-header d-flex align-items-center">
                     <h3 className="h4">List Request</h3>
                     
-                    <button onClick={()=>this.downloadExcel()} style={{ border: 0, background: "white" }}> <i className="fa fa-file-excel-o"
-                        style={{fontSize: 18, color: '#1d7044'}}> Excel</i></button>
+                    {/* <button onClick={()=>this.downloadExcel()} style={{ border: 0, background: "white" }}> <i className="fa fa-file-excel-o"
+                        style={{fontSize: 18, color: '#1d7044'}}> Excel</i></button> */}
                   </div>
-                  <form onSubmit={(event) => this.handleSubmit(event)}
+                  {/* <form onSubmit={(event) => this.handleSubmit(event)}
                     className="form-inline md-form form-sm mt-0" style={{ justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20 }}>
                     <div>
                       <button style={{border: 0, background: 'white'}}> <i className="fa fa-search" aria-hidden="true"></i></button>                  
@@ -142,8 +143,8 @@ class Request extends Component {
                         className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
                         aria-label="Search" />
                     </div>
-                    {/* <Link to='/products/add' className="btn btn-primary" > Create</Link> */}
-                  </form>
+                    <Link to='/products/add' className="btn btn-primary" > Create</Link>
+                  </form> */}
                   <div className="card-body">
                     <div className="table-responsive">
                       <table className="table table-hover">
@@ -198,8 +199,8 @@ class Request extends Component {
                                 {/* </td> */}
                                 <td style={{ textAlign: "center" }}>
                                   <div>
-                                    {/* <span title='Edit' className="fix-action"><Link to={`/products/edit/${item.id}`}> <i className="fa fa-edit"></i></Link></span> */}
-                                    <span title='Delete' onClick={() => this.handleRemove(item.id)} className="fix-action"><Link to="#"> <i className="fa fa-trash" style={{ color: '#ff00008f' }}></i></Link></span>
+                                    {/* <span title='Edit' className="fix-action"><Link to={`/products/edit/${item.id}`}> <i className="fa fa-edit"></i></Link></span>
+                                    <span title='Delete' onClick={() => this.handleRemove(item.id)} className="fix-action"><Link to="#"> <i className="fa fa-trash" style={{ color: '#ff00008f' }}></i></Link></span> */}
                                   </div>
                                 </td>
                               </tr>

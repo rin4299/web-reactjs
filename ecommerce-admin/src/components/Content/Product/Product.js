@@ -28,8 +28,6 @@ class Product extends Component {
     }
   }
 
-
-
   componentDidMount() {
     this.fetch_reload_data();
   }
@@ -196,7 +194,7 @@ class Product extends Component {
                                   <MyVerticallyCenteredModal
                                     show={this.state.modalShow}
                                     onHide={() => this.setState({modalShow: false})}
-                                    products ={{name: "Iphone 13",description :"good", avaiable:"available" }}
+                                    products ={{name: item.nameProduct,description :"good", avaiable:"available" }}
                                   />
                                 </td>
                               </tr>
@@ -274,7 +272,7 @@ const MyVerticallyCenteredModal = (props) => {
             <label htmlFor="name">Quantity </label>
             <input className="form-control" id="name" />
           </div>
-          <div className="form-group">
+          {/* <div className="form-group">
             <label htmlFor="note">Note</label>
             <input
               type="note"
@@ -282,7 +280,7 @@ const MyVerticallyCenteredModal = (props) => {
               id="note"
               placeholder="Note"
             />
-          </div>
+          </div> */}
           <div className="form-group">
             <button className="form-control btn btn-primary" type="submit">
               Submit
