@@ -25,7 +25,8 @@ class Product extends Component {
       currentPage: 1,
       searchText: '',
       modalShow: false,
-      modalName : ''
+      modalName : '',
+      selected:''
     }
   }
 
@@ -263,26 +264,12 @@ const MyVerticallyCenteredModal = (props) => {
       </Modal.Header>
       <Modal.Body>
         <h4>Name Product </h4>
-        {/* <p>
-          Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-          dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
-          consectetur ac, vestibulum at eros.
-        </p> */}
         <input style={{width:"100%"}} disabled defaultValue={props.products.name}/>  
         <form >
           <div className="form-group">
             <label htmlFor="name">Quantity </label>
             <input className="form-control" id="name" />
           </div>
-          {/* <div className="form-group">
-            <label htmlFor="note">Note</label>
-            <input
-              type="note"
-              className="form-control"
-              id="note"
-              placeholder="Note"
-            />
-          </div> */}
           <div className="form-group">
             <button className="form-control btn btn-primary" type="submit">
               Submit

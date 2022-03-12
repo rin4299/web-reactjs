@@ -281,7 +281,7 @@ const dataProduct = [
     gallery: ["https://via.placeholder.com/300x300.png"],
     price: 982,
     description:
-      "<p>A product description is the marketing copy that explains what a product is and why it's worth purchasing. The purpose of a product description is to supply customers with important information about the features and benefits of the product so they're compelled to buy.</p>",
+      "A product description is the marketing copy that explains what a product is and why it's worth purchasing. The purpose of a product description is to supply customers with important information about the features and benefits of the product so they're compelled to buy.</p>",
     numberAvailable: 6,
     properties: {},
     isActive: true,
@@ -297,7 +297,7 @@ const dataProduct = [
     gallery: ["https://via.placeholder.com/300x300.png"],
     price: 125,
     description:
-      "<p>A product description is the marketing copy that explains what a product is and why it's worth purchasing. The purpose of a product description is to supply customers with important information about the features and benefits of the product so they're compelled to buy.</p>",
+      "A product description is the marketing copy that explains what a product is and why it's worth purchasing. The purpose of a product description is to supply customers with important information about the features and benefits of the product so they're compelled to buy.</p>",
     numberAvailable: 7,
     properties: {},
     isActive: true,
@@ -313,7 +313,7 @@ const dataProduct = [
 
     price: 35,
     description:
-      "<p>A product description is the marketing copy that explains what a product is and why it's worth purchasing. The purpose of a product description is to supply customers with important information about the features and benefits of the product so they're compelled to buy.</p>",
+      " product description is the marketing copy that explains what a product is and why it's worth purchasing. The purpose of a product description is to supply customers with important information about the features and benefits of the product so they're compelled to buy.</p>",
     numberAvailable: 7,
     properties: {},
     isActive: true,
@@ -329,7 +329,7 @@ const dataProduct = [
 
     price: 411,
     description:
-      "<p>A product description is the marketing copy that explains what a product is and why it's worth purchasing. The purpose of a product description is to supply customers with important information about the features and benefits of the product so they're compelled to buy.</p>",
+      "A product description is the marketing copy that explains what a product is and why it's worth purchasing. The purpose of a product description is to supply customers with important information about the features and benefits of the product so they're compelled to buy.</p>",
     numberAvailable: 7,
     properties: {},
     isActive: true,
@@ -345,7 +345,7 @@ const dataProduct = [
 
     price: 862,
     description:
-      "<p>A product description is the marketing copy that explains what a product is and why it's worth purchasing. The purpose of a product description is to supply customers with important information about the features and benefits of the product so they're compelled to buy.</p>",
+      "A product description is the marketing copy that explains what a product is and why it's worth purchasing. The purpose of a product description is to supply customers with important information about the features and benefits of the product so they're compelled to buy.</p>",
     numberAvailable: 5,
     properties: {},
     isActive: true,
@@ -361,7 +361,7 @@ const dataProduct = [
 
     price: 1110,
     description:
-      "<p>A product description is the marketing copy that explains what a product is and why it's worth purchasing. The purpose of a product description is to supply customers with important information about the features and benefits of the product so they're compelled to buy.</p>",
+      "A product description is the marketing copy that explains what a product is and why it's worth purchasing. The purpose of a product description is to supply customers with important information about the features and benefits of the product so they're compelled to buy.</p>",
     numberAvailable: 5,
     properties: {},
     isActive: true,
@@ -372,32 +372,32 @@ const dataProduct = [
   },
 ];
 
-const dataExchanged = [
-  {
-    reqUserName: 3,
-    recUserName: 4,
-    pName: "Iphone",
-    quantity: 1,
-    createdAt: "2019-12-05T15:03:11.311Z",
-    updatedAt: "2019-12-05T15:08:15.904Z",
-  },
-  {
-    reqUserName: 4,
-    recUserName: 5,
-    pName: "Tablet",
-    quantity: 1,
-    createdAt: "2019-12-05T15:03:11.311Z",
-    updatedAt: "2019-12-05T15:08:15.904Z",
-  },
-  {
-    reqUserName: 3,
-    recUserName: 4,
-    pName: "Macbook",
-    quantity: 1,
-    createdAt: "2019-12-05T15:03:11.311Z",
-    updatedAt: "2019-12-05T15:08:15.904Z",
-  },
-];
+// const dataExchanged = [
+//   {
+//     reqUserName: 3,
+//     recUserName: 4,
+//     pName: "Iphone",
+//     quantity: 1,
+//     createdAt: "2019-12-05T15:03:11.311Z",
+//     updatedAt: "2019-12-05T15:08:15.904Z",
+//   },
+//   {
+//     reqUserName: 4,
+//     recUserName: 5,
+//     pName: "Tablet",
+//     quantity: 1,
+//     createdAt: "2019-12-05T15:03:11.311Z",
+//     updatedAt: "2019-12-05T15:08:15.904Z",
+//   },
+//   {
+//     reqUserName: 3,
+//     recUserName: 4,
+//     pName: "Macbook",
+//     quantity: 1,
+//     createdAt: "2019-12-05T15:03:11.311Z",
+//     updatedAt: "2019-12-05T15:08:15.904Z",
+//   },
+// ];
 
 exports.seed = async function (knex, prom) {
   const users = await Models.User.query();
@@ -435,7 +435,7 @@ exports.seed = async function (knex, prom) {
     return e;
   });
   await Models.Product.query().insert(newProducts);  
-  await Models.Exchanged.query().insert(dataExchanged); 
+  // await Models.Exchanged.query().insert(dataExchanged); 
 }
 return 1;
 };

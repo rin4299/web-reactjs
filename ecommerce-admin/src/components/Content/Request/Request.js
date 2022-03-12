@@ -24,7 +24,8 @@ class Request extends Component {
       total: 0,
       currentPage: 1,
       searchText: '',
-      modalShow: false
+      modalShow: false,
+      modalName: ''
     }
   }
 
@@ -181,11 +182,11 @@ class Request extends Component {
                                 <td style={{ textAlign: "center" }}>
                                   <div className="i-checks">
                                       {/* <input type="checkbox" className="checkbox-template" /> */}
-                                    <button class="btn btn-info" onClick={() => this.setState({modalShow: true})}>Accept</button>
+                                    <button class="btn btn-info" onClick={() => this.setState({modalShow: true,modalName : item.nameProduct})}>Accept</button>
                                     <MyVerticallyCenteredModal
                                       show={this.state.modalShow}
                                       onHide={() => this.setState({modalShow: false})}
-                                      products ={{name: item.nameProduct,description :item.description,from :"Store A", to:"Store B", Quantity:item.numberAvailable }}
+                                      products ={{name: this.state.modalName ,description :item.description,from :"Store A", to:"Store B", Quantity:item.numberAvailable }}
                                     />
                                   </div>
                                 </td>
@@ -198,12 +199,12 @@ class Request extends Component {
                                     <input type="checkbox" className="checkbox-template" />
                                   </div>} */}
                                 {/* </td> */}
-                                <td style={{ textAlign: "center" }}>
+                                {/* <td style={{ textAlign: "center" }}>
                                   <div>
-                                    {/* <span title='Edit' className="fix-action"><Link to={`/products/edit/${item.id}`}> <i className="fa fa-edit"></i></Link></span>
-                                    <span title='Delete' onClick={() => this.handleRemove(item.id)} className="fix-action"><Link to="#"> <i className="fa fa-trash" style={{ color: '#ff00008f' }}></i></Link></span> */}
+                                    <span title='Edit' className="fix-action"><Link to={`/products/edit/${item.id}`}> <i className="fa fa-edit"></i></Link></span>
+                                    <span title='Delete' onClick={() => this.handleRemove(item.id)} className="fix-action"><Link to="#"> <i className="fa fa-trash" style={{ color: '#ff00008f' }}></i></Link></span>
                                   </div>
-                                </td>
+                                </td> */}
                               </tr>
                             )
                           }) : null}
@@ -273,7 +274,7 @@ const MyVerticallyCenteredModal = (props) => {
           dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
           consectetur ac, vestibulum at eros.
         </p> */}
-        <input disabled defaultValue={props.products.name}/>  
+        <input  style={{width:"100%"}} disabled defaultValue={props.products.name}/>  
         <form >
           <div className="form-group">
             <label htmlFor="from">From </label>
@@ -289,7 +290,7 @@ const MyVerticallyCenteredModal = (props) => {
             <label htmlFor="name">Quantity </label>
             <input className="form-control" disabled defaultValue={props.products.Quantity}/>
           </div>
-          <div className="form-group">
+          {/* <div className="form-group">
             <label htmlFor="note">Note</label>
             <input
               type="note"
@@ -297,7 +298,7 @@ const MyVerticallyCenteredModal = (props) => {
               id="note"
               placeholder="Note"
             />
-          </div>
+          </div> */}
           <div className="form-group">
             <button className="form-control btn btn-primary" type="submit">
               Confirm
