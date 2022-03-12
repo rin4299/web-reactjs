@@ -106,6 +106,7 @@ class Request extends Component {
   render() {
     let { products } = this.props;
     const { searchText, total } = this.state;
+    console.log(products);
     return (
       <div className="content-inner">
         {/* Page Header*/}
@@ -156,7 +157,7 @@ class Request extends Component {
                             <th>To</th>
                             <th >Quantity</th>
                             {/* <th>Properties</th> */}
-                            <th style={{ textAlign: "center" }}>Images</th>
+                            {/* <th style={{ textAlign: "center" }}>Images</th> */}
                             <th style={{ textAlign: "center" }}>Action</th>
                             {/* <th style={{ textAlign: "center" }}>Remove</th> */}
                             {/* <th style={{ textAlign: "center" }}>Request</th> */}
@@ -172,11 +173,11 @@ class Request extends Component {
                                 <td>{item.price}</td>
                                 <td><span style={{ display: "flex", justifyContent:"center" }}>{item.numberAvailable}</span></td>
                                 {/* <td>{item.properties}</td> */}
-                                <td style={{ textAlign: "center" }}>
+                                {/* <td style={{ textAlign: "center" }}>
                                   <div className="fix-cart">
                                     <img src={item && item.image ? item.image : null} className="fix-img" alt="not found" />
                                   </div>
-                                </td>
+                                </td> */}
                                 <td style={{ textAlign: "center" }}>
                                   <div className="i-checks">
                                       {/* <input type="checkbox" className="checkbox-template" /> */}

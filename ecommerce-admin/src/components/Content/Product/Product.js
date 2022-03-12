@@ -24,7 +24,8 @@ class Product extends Component {
       total: 0,
       currentPage: 1,
       searchText: '',
-      modalShow: false
+      modalShow: false,
+      modalName : ''
     }
   }
 
@@ -161,6 +162,7 @@ class Product extends Component {
                         </thead>
                         <tbody>
                           {products && products.length ? products.map((item, index) => {
+                            console.log(item);
                             return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
@@ -190,11 +192,11 @@ class Product extends Component {
                                   </div>
                                 </td>
                                 <td>
-                                  <button class="btn btn-info" onClick={() => this.setState({modalShow: true})}>Request</button>
+                                  <button class="btn btn-info" onClick={() => this.setState({modalShow: true, modalName : item.nameProduct})}>Request</button>
                                   <MyVerticallyCenteredModal
                                     show={this.state.modalShow}
                                     onHide={() => this.setState({modalShow: false})}
-                                    products ={{name: item.nameProduct,description :"good", avaiable:"available" }}
+                                    products ={{name: this.state.modalName,description :"good", avaiable:"available" }}
                                   />
                                 </td>
                               </tr>
@@ -266,7 +268,7 @@ const MyVerticallyCenteredModal = (props) => {
           dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
           consectetur ac, vestibulum at eros.
         </p> */}
-        <input disabled defaultValue={props.products.name}/>  
+        <input style={{width:"100%"}} disabled defaultValue={props.products.name}/>  
         <form >
           <div className="form-group">
             <label htmlFor="name">Quantity </label>
