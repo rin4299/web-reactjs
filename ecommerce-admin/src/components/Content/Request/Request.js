@@ -3,11 +3,12 @@ import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { actFetchProductsRequest, actDeleteProductRequest, actFindProductsRequest } from '../../../redux/actions/product';
+import { actFetchExchangeRequest} from '../../../redux/actions/exchange';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
-import {exportExcel} from 'utils/exportExcel'
 import Paginator from 'react-js-paginator';
+import callApi from '../../../utils/apiCaller';
 
 import Modal from 'react-bootstrap/Modal'
 
@@ -25,14 +26,30 @@ class Request extends Component {
       currentPage: 1,
       searchText: '',
       modalShow: false,
-      modalName: ''
+      modalName: '',
+      user: []
     }
   }
 
 
 
-  componentDidMount() {
-    this.fetch_reload_data();
+  async componentDidMount() {
+    // this.fetch_reload_data();
+    token = localStorage.getItem('_auth');
+    if (token) {
+      const res = await callApi('users/me', 'GET', null, token);
+      if (res && res.status === 200) {
+        this.setState({
+          user: res.data.results
+        })
+      }
+    } else {
+      this.setState({
+        redirect: true
+      })    
+    }
+    // console.log(this.state.user[0].id)
+    this.props.fetch_exchange_request(this.state.user[0].id).then(res => console.log(res))
   }
 
   fetch_reload_data(){
@@ -106,8 +123,7 @@ class Request extends Component {
 
   render() {
     let { products } = this.props;
-    const { searchText, total } = this.state;
-    console.log(products);
+    const total= this.state;
     return (
       <div className="content-inner">
         {/* Page Header*/}
@@ -249,6 +265,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     find_products: (token, searchText) => {
       return dispatch(actFindProductsRequest(token, searchText))
+    },
+    fetch_exchange_request : (id) => {
+      return dispatch(actFetchExchangeRequest(id))
     }
   }
 }
