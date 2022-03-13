@@ -267,6 +267,18 @@ const MyVerticallyCenteredModal = (props) => {
         <input style={{width:"100%"}} disabled defaultValue={props.products.name}/>  
         <form >
           <div className="form-group">
+            <label style={{"margin-top":"20px"}} htmlFor="name">Request To </label>
+            <br />
+            <select defaultValue= "Store A"
+            // onChange={this.handleChange} 
+            >
+              <option value="Store B">Store B</option>
+              <option value="Store C">Store C</option>
+              <option value="Store D">Store D</option>
+            </select>
+              {/* <p>{message}</p> */}
+          </div>       
+          <div className="form-group">
             <label htmlFor="name">Quantity </label>
             <input className="form-control" id="name" />
           </div>

@@ -3,7 +3,7 @@ import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { actFetchProductsRequest, actDeleteProductRequest, actFindProductsRequest } from '../../../redux/actions/product';
-import { actFetchExchangeRequest} from '../../../redux/actions/exchange';
+// import { actFetchExchangeRequest} from '../../../redux/actions/exchange';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
@@ -49,7 +49,7 @@ class Request extends Component {
       })    
     }
     // console.log(this.state.user[0].id)
-    this.props.fetch_exchange_request(this.state.user[0].id).then(res => console.log(res))
+    // this.props.fetch_exchange_request(this.state.user[0].id).then(res => console.log(res))
   }
 
   fetch_reload_data(){
@@ -103,24 +103,6 @@ class Request extends Component {
   //   });
   // }
 
-  // handleSubmit = (event) => {
-  //   event.preventDefault();
-  //   const { searchText } = this.state;
-  //   this.props.find_products(token, searchText).then(res => {
-  //     this.setState({
-  //       total: res.total
-  //     })
-  //   })
-  // }
-
-  // downloadExcel = () => {
-  //   const key = 'products'
-  //   exportExcel(key)
-  // }
-
-  
-
-
   render() {
     let { products } = this.props;
     const total= this.state;
@@ -146,23 +128,7 @@ class Request extends Component {
                 <div className="card">
                   <div className="card-header d-flex align-items-center">
                     <h3 className="h4">List Request</h3>
-                    
-                    {/* <button onClick={()=>this.downloadExcel()} style={{ border: 0, background: "white" }}> <i className="fa fa-file-excel-o"
-                        style={{fontSize: 18, color: '#1d7044'}}> Excel</i></button> */}
                   </div>
-                  {/* <form onSubmit={(event) => this.handleSubmit(event)}
-                    className="form-inline md-form form-sm mt-0" style={{ justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20 }}>
-                    <div>
-                      <button style={{border: 0, background: 'white'}}> <i className="fa fa-search" aria-hidden="true"></i></button>                  
-                      <input
-                        name="searchText"
-                        onChange={this.handleChange}
-                        value={searchText}
-                        className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
-                        aria-label="Search" />
-                    </div>
-                    <Link to='/products/add' className="btn btn-primary" > Create</Link>
-                  </form> */}
                   <div className="card-body">
                     <div className="table-responsive">
                       <table className="table table-hover">
@@ -206,15 +172,6 @@ class Request extends Component {
                                     />
                                   </div>
                                 </td>
-                                {/* <td style={{ textAlign: "center" }}>{item.isActive ?
-                                  <div className="i-checks">
-                                    <input type="checkbox" className="checkbox-template" />
-                                  </div>
-                                  :
-                                  <div className="i-checks">
-                                    <input type="checkbox" className="checkbox-template" />
-                                  </div>} */}
-                                {/* </td> */}
                                 {/* <td style={{ textAlign: "center" }}>
                                   <div>
                                     <span title='Edit' className="fix-action"><Link to={`/products/edit/${item.id}`}> <i className="fa fa-edit"></i></Link></span>
@@ -266,9 +223,9 @@ const mapDispatchToProps = (dispatch) => {
     find_products: (token, searchText) => {
       return dispatch(actFindProductsRequest(token, searchText))
     },
-    fetch_exchange_request : (id) => {
-      return dispatch(actFetchExchangeRequest(id))
-    }
+    // fetch_exchange_request : (id) => {
+    //   return dispatch(actFetchExchangeRequest(id))
+    // }
   }
 }
 
@@ -288,11 +245,6 @@ const MyVerticallyCenteredModal = (props) => {
       </Modal.Header>
       <Modal.Body>
         <h4>Name Product </h4>
-        {/* <p>
-          Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-          dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
-          consectetur ac, vestibulum at eros.
-        </p> */}
         <input  style={{width:"100%"}} disabled defaultValue={props.products.name}/>  
         <form >
           <div className="form-group">
@@ -309,15 +261,6 @@ const MyVerticallyCenteredModal = (props) => {
             <label htmlFor="name">Quantity </label>
             <input className="form-control" disabled defaultValue={props.products.Quantity}/>
           </div>
-          {/* <div className="form-group">
-            <label htmlFor="note">Note</label>
-            <input
-              type="note"
-              className="form-control"
-              id="note"
-              placeholder="Note"
-            />
-          </div> */}
           <div className="form-group">
             <button className="form-control btn btn-primary" type="submit">
               Confirm
@@ -326,7 +269,6 @@ const MyVerticallyCenteredModal = (props) => {
         </form>
       </Modal.Body>
       <Modal.Footer>
-        {/* <Button onClick={props.onHide}>Close</Button> */}
         <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
       </Modal.Footer>
     </Modal>
