@@ -25,7 +25,7 @@ class Product extends Component {
       currentPage: 1,
       searchText: '',
       modalShow: false,
-      modalName : '',
+      productName : '',
       selected:''
     }
   }
@@ -193,11 +193,11 @@ class Product extends Component {
                                   </div>
                                 </td>
                                 <td>
-                                  <button class="btn btn-info" onClick={() => this.setState({modalShow: true, modalName : item.nameProduct})}>Request</button>
+                                  <button class="btn btn-info" onClick={() => this.setState({modalShow: true, productName : item.nameProduct})}>Request</button>
                                   <MyVerticallyCenteredModal
                                     show={this.state.modalShow}
                                     onHide={() => this.setState({modalShow: false})}
-                                    products ={{name: this.state.modalName,description :"good", avaiable:"available" }}
+                                    products ={{name: this.state.productName,description :"good", avaiable:"available" }}
                                   />
                                 </td>
                               </tr>
@@ -269,12 +269,12 @@ const MyVerticallyCenteredModal = (props) => {
           <div className="form-group">
             <label style={{"margin-top":"20px"}} htmlFor="name">Request To </label>
             <br />
-            <select defaultValue= "Store A"
+            <select defaultValue= "admin"
             // onChange={this.handleChange} 
             >
-              <option value="Store B">Store B</option>
-              <option value="Store C">Store C</option>
-              <option value="Store D">Store D</option>
+              <option value="admin 2">admin 2</option>
+              <option value="admin 3">admin 3</option>
+              <option value="admin 4">admin 4</option>
             </select>
               {/* <p>{message}</p> */}
           </div>       

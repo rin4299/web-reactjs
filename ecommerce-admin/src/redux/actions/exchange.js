@@ -14,8 +14,7 @@ export const actFetchExchangeRequest = (id, token) => {
       callApi(`exchange`, 'POST', payload, token)
         .then(res => {
           if (res && res.status === 200) { 
-            //   console.log('req', res.data)
-            dispatch(actFetchExchange(res.data));
+            dispatch(actFetchExchangeReq(res.data));
             resolve(res.data);
             setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
           }
@@ -29,12 +28,43 @@ export const actFetchExchangeRequest = (id, token) => {
   };
 };
 
+export const actFetchExchangeReceive = (id, token) => {
+  //   const newOffset = offset === null || offset === undefined ? 0 : offset;
+  //   const limit = 10;
+    let payload = {"id" : id, "type": "recUserName"}
+    return dispatch => {
+      dispatch(actShowLoading());
+      return new Promise((resolve, reject) => {
+        callApi(`exchange`, 'POST', payload, token)
+          .then(res => {
+            if (res && res.status === 200) { 
+              dispatch(actFetchExchangeRec(res.data));
+              resolve(res.data);
+              setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            reject(err);
+            setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+          });
+      });
+    };
+  };
 
 
-export const actFetchExchange = (data) => {
+
+export const actFetchExchangeReq = (data) => {
     return {
         type: Types.FETCH_EXCHANGE_REQUEST,
         data
     }
+}
+
+export const actFetchExchangeRec = (data) => {
+  return {
+      type: Types.FETCH_EXCHANGE_RECEIVE,
+      data
+  }
 }
 

@@ -26,7 +26,8 @@ class Request extends Component {
       currentPage: 1,
       searchText: '',
       modalShow: false,
-      user: []
+      user: [],
+      request:''
     }
   }
 
@@ -54,7 +55,7 @@ class Request extends Component {
   fetch_reload_data(){
     token = localStorage.getItem('_auth');
     this.props.fetch_exchange_request(this.state.user[0].id, token).then(res => {
-      console.log('3', res)
+      // console.log('3', res)
       this.setState({
         total: res
       })
@@ -160,10 +161,11 @@ class Request extends Component {
                             return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
-                                <td>{item.reqUserName}</td>
-                                <td><span className="text-truncate" style={{ width: 300 }}>{item.recUserName}</span></td>
-                                <td>{item.quantity}</td>
-                                <td><span style={{ display: "flex", justifyContent:"center" }}>{item.pName}</span></td>
+                                <td>{item.pName}</td>
+                                <td><span className="text-truncate" >{item.reqUserName}</span></td>
+                                <td><span className="text-truncate" >{item.recUserName}</span></td>
+                                <td><span className="text-truncate" >{item.quantity}</span></td>
+                                {/* <td style={{}} >{item.quantity}</td> */}
                                 {/* <td>{item.properties}</td> */}
                                 {/* <td style={{ textAlign: "center" }}>
                                   <div className="fix-cart">
@@ -173,11 +175,11 @@ class Request extends Component {
                                 <td style={{ textAlign: "center" }}>
                                   <div className="i-checks">
                                       {/* <input type="checkbox" className="checkbox-template" /> */}
-                                    <button class="btn btn-info" onClick={() => this.setState({modalShow: true,modalName : item.nameProduct})}>Accept</button>
+                                    <button class="btn btn-info" onClick={() => this.setState({modalShow: true,request : item})}>Accept</button>
                                     <MyVerticallyCenteredModal
                                       show={this.state.modalShow}
                                       onHide={() => this.setState({modalShow: false})}
-                                      products ={{name: item.pName,description :item.pName,from :"Store A", to:"Store B", Quantity:item.pName }}
+                                      requests ={{name: this.state.request.pName,description :item.pName,from :this.state.request.reqUserName, to:this.state.request.recUserName, Quantity:this.state.request.quantity }}
                                     />
                                   </div>
                                 </td>
@@ -254,21 +256,21 @@ const MyVerticallyCenteredModal = (props) => {
       </Modal.Header>
       <Modal.Body>
         <h4>Name Product </h4>
-        <input  style={{width:"100%"}} disabled defaultValue={props.products.name}/>  
+        <input  style={{width:"100%"}} disabled defaultValue={props.requests.name}/>  
         <form >
           <div className="form-group">
             <label htmlFor="from">From </label>
             {/* <input className="form-control" id="from" />
              */}
-             <input className="form-control" disabled defaultValue={props.products.from}/>  
+             <input className="form-control" disabled defaultValue={props.requests.from}/>  
           </div>
           <div className="form-group">
             <label htmlFor="to">To </label>
-             <input className="form-control" disabled defaultValue={props.products.to}/>  
+             <input className="form-control" disabled defaultValue={props.requests.to}/>  
           </div>
           <div className="form-group">
             <label htmlFor="name">Quantity </label>
-            <input className="form-control" disabled defaultValue={props.products.Quantity}/>
+            <input className="form-control" disabled defaultValue={props.requests.Quantity}/>
           </div>
           <div className="form-group">
             <button className="form-control btn btn-primary" type="submit">

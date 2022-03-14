@@ -3,10 +3,12 @@ import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { actFetchProductsRequest, actDeleteProductRequest, actFindProductsRequest } from '../../../redux/actions/product';
+import { actFetchExchangeReceive} from '../../../redux/actions/exchange';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
-import Paginator from 'react-js-paginator'
+import Paginator from 'react-js-paginator';
+import callApi from '../../../utils/apiCaller';
 
 import Modal from 'react-bootstrap/Modal'
 
@@ -25,24 +27,39 @@ class YourRequest extends Component {
       currentPage: 1,
       searchText: '',
       modalShow: false,
-      modalName: ''
+      user: [],
+      receive:''
     }
   }
 
+  async componentDidMount() {
+   
+    token = localStorage.getItem('_auth');
+    if (token) {
+      const res = await callApi('users/me', 'GET', null, token);
+      if (res && res.status === 200) {
+        this.setState({
+          user: res.data.results
+        })
+      }
+    } else {
+      this.setState({
+        redirect: true
+      })    
+    }
 
-
-  componentDidMount() {
-    this.fetch_reload_data();
+    await this.fetch_reload_data(); 
   }
 
   fetch_reload_data(){
     token = localStorage.getItem('_auth');
-    this.props.fetch_products(token).then(res => {
+    this.props.fetch_exchange_receive(this.state.user[0].id, token).then(res => {
+      console.log('3', res)
       this.setState({
-        total: res.total
-      });
+        total: res
+      })
     }).catch(err => {
-      console.log(err);  
+      console.log(err)
     })
   }
 
@@ -107,9 +124,11 @@ class YourRequest extends Component {
 
 
   render() {
-    let { products } = this.props;
-    const { searchText, total } = this.state;
-    // console.log(products);
+    // let { products } = this.props;
+    // const { searchText, total } = this.state;
+    let { requests } = this.props;
+    const {total} = this.state;
+    console.log('total', total)
     return (
       <div className="content-inner">
         {/* Page Header*/}
@@ -168,15 +187,15 @@ class YourRequest extends Component {
                           </tr>
                         </thead>
                         <tbody>
-                          {products && products.length ? products.map((item, index) => {
+                          {total && total.length ? total.map((item, index) => {
                             return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
-                                <td>{item.nameProduct}</td>
-                                <td><span className="text-truncate" style={{ width: 300 }}>{item.description}</span></td>
-                                <td>{item.price}</td>
-                                <td><span style={{ display: "flex", justifyContent:"center" }}>{item.numberAvailable}</span></td>
-                                <td style={{ textAlign: "center" }}>{item.isActive ?
+                                <td>{item.pName}</td>
+                                <td><span className="text-truncate" >{item.reqUserName}</span></td>
+                                <td><span className="text-truncate" >{item.recUserName}</span></td>
+                                <td><span className="text-truncate" >{item.quantity}</span></td>
+                                <td style={{ textAlign: "center" }}>{item.isAccepted ?
                                   <div className="i-checks">
                                     <input type="checkbox" checked={true} className="checkbox-template" />
                                   </div>
@@ -194,11 +213,11 @@ class YourRequest extends Component {
                                 <td style={{ textAlign: "center" }}>
                                   <div className="i-checks">
                                       {/* <input type="checkbox" className="checkbox-template" /> */}
-                                    <button class="btn btn-info" onClick={() => this.setState({modalShow: true,modalName : item.nameProduct})}>Confirm</button>
+                                    <button class="btn btn-info" onClick={() => this.setState({modalShow: true,receive : item})}>Confirm</button>
                                     <MyVerticallyCenteredModal
                                       show={this.state.modalShow}
                                       onHide={() => this.setState({modalShow: false})}
-                                      products ={{name: this.state.modalName ,description :item.description,from :"Store A", to:"Store B", Quantity:item.numberAvailable }}
+                                      receive ={{name: this.state.receive.pName,description :item.pName,from :this.state.receive.reqUserName, to:this.state.receive.recUserName, Quantity:this.state.receive.quantity }}
                                     />
                                   </div>
                                 </td>
@@ -252,12 +271,16 @@ const mapDispatchToProps = (dispatch) => {
     },
     find_products: (token, searchText) => {
       return dispatch(actFindProductsRequest(token, searchText))
+    },
+    fetch_exchange_receive : (id, token) => {
+      return dispatch(actFetchExchangeReceive(id, token))
     }
   }
 }
 
 
 const MyVerticallyCenteredModal = (props) => {
+  console.log('props',props);
   return (
     <Modal
       {...props}
@@ -277,21 +300,21 @@ const MyVerticallyCenteredModal = (props) => {
           dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
           consectetur ac, vestibulum at eros.
         </p> */}
-        <input  style={{width:"100%"}} disabled defaultValue={props.products.name}/>  
+        <input  style={{width:"100%"}} disabled defaultValue={props.receive.name}/>  
         <form >
           <div className="form-group">
             <label htmlFor="from">From </label>
             {/* <input className="form-control" id="from" />
              */}
-             <input className="form-control" disabled defaultValue={props.products.from}/>  
+             <input className="form-control" disabled defaultValue={props.receive.from}/>  
           </div>
           <div className="form-group">
             <label htmlFor="to">To </label>
-             <input className="form-control" disabled defaultValue={props.products.to}/>  
+             <input className="form-control" disabled defaultValue={props.receive.to}/>  
           </div>
           <div className="form-group">
             <label htmlFor="name">Quantity </label>
-            <input className="form-control" disabled defaultValue={props.products.Quantity}/>
+            <input className="form-control" disabled defaultValue={props.receive.Quantity}/>
           </div>
           {/* <div className="form-group">
             <label htmlFor="note">Note</label>
