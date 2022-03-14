@@ -37,6 +37,12 @@ class UserService extends BaseServiceCRUD {
     return builder;
   }
 
+  async getAdminDiff(id) {
+    const role = await Models.Role.query().findOne({nameRole: 'admin'});
+    const users = await Models.User.query().where('roleId', '=', role.id).where('id', '!=', id);
+    return users;
+  }
+
   async getMe(query, userId) {
     const builder = this.model.queryBuilder(query).findById(userId).eager('role');
     if (this.getSearchQuery && query.q) {
