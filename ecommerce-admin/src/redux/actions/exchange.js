@@ -1,6 +1,6 @@
 import * as Types from '../../constants/ActionType';
 import callApi from '../../utils/apiCaller';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
 import { actShowLoading, actHiddenLoading } from './loading'
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -52,6 +52,31 @@ export const actFetchExchangeReceive = (id, token) => {
     };
   };
 
+export const actCreateExchange = (token, payload) => {
+    //   const newOffset = offset === null || offset === undefined ? 0 : offset;
+    //   const limit = 10;
+      return dispatch => {
+        dispatch(actShowLoading());
+        return new Promise((resolve, reject) => {
+          callApi(`exchange/createExchange`, 'POST', payload, token)
+            .then(res => {
+              if (res && res.status === 200) { 
+                console.log('2', res.data)
+                dispatch(actCreateExchangeDispatch(res.data));
+                
+                resolve(res.data);
+                setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+              }
+            })
+            .catch(err => {
+              console.log(err);
+              reject(err);
+              setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+            });
+        });
+      };
+    };
+
 
 
 export const actFetchExchangeReq = (data) => {
@@ -66,5 +91,12 @@ export const actFetchExchangeRec = (data) => {
       type: Types.FETCH_EXCHANGE_RECEIVE,
       data
   }
+}
+
+export const actCreateExchangeDispatch = (data) => {
+    return {
+        type: Types.CREATE_EXCHANGE,
+        data
+    }
 }
 

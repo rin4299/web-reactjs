@@ -3,6 +3,7 @@ import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { actFetchProductsRequest, actDeleteProductRequest, actFindProductsRequest } from '../../../redux/actions/product';
+import { actCreateExchange } from '../../../redux/actions/exchange';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
@@ -10,6 +11,7 @@ import {exportExcel} from 'utils/exportExcel'
 import Paginator from 'react-js-paginator';
 
 import Modal from 'react-bootstrap/Modal'
+// import { actCreateExchangeDispatch } from 'redux/actions/exchange';
 
 const MySwal = withReactContent(Swal)
 
@@ -26,7 +28,8 @@ class Product extends Component {
       searchText: '',
       modalShow: false,
       productName : '',
-      selected:''
+      selected:'',
+      quantity: ''
     }
   }
 
@@ -54,6 +57,8 @@ class Product extends Component {
     })
     window.scrollTo(0, 0);
   }
+
+ 
 
   handleRemove = (id) => {
     MySwal.fire({
@@ -99,8 +104,67 @@ class Product extends Component {
     exportExcel(key)
   }
 
-  
+  createExchange = (payload) => {
+    token = localStorage.getItem('_auth');
+    this.props.create_exchange(token, payload).then(res => {
+      console.log(res)
+    })
+  }
 
+  MyVerticallyCenteredModal = (props) => {
+    return (
+      <Modal
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Request Form
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h4>Name Product </h4>
+          <input style={{width:"100%"}} disabled defaultValue={props.products.name}/>  
+          <form>
+            <div className="form-group">
+              <label style={{"margin-top":"20px"}} htmlFor="name">Request To </label>
+              <br />
+              <select defaultValue= "admin"
+              // onChange={this.handleChange} 
+              >
+                <option value="admin 2">admin 2</option>
+                <option value="admin 3">admin 3</option>
+                <option value="admin 4">admin 4</option>
+              </select>
+                {/* <p>{message}</p> */}
+            </div>       
+            <div className="form-group">
+              <label htmlFor="name">Quantity </label>
+              <input  className="form-control" id="name" />
+            </div>
+            <div className="form-group">
+              <button type="button" className="form-control btn btn-primary" onClick={() => 
+                this.createExchange({
+                  reqUserName:"admin",
+                  recUserName:"admin2",
+                  pName: props.products.name,
+                  quantity: 1
+              })
+              }>
+                Submit
+              </button>
+            </div>
+          </form>
+        </Modal.Body>
+        <Modal.Footer>
+          {/* <Button onClick={props.onHide}>Close</Button> */}
+          <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
 
   render() {
     let { products } = this.props;
@@ -163,7 +227,7 @@ class Product extends Component {
                         </thead>
                         <tbody>
                           {products && products.length ? products.map((item, index) => {
-                            console.log(item);
+
                             return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
@@ -194,7 +258,7 @@ class Product extends Component {
                                 </td>
                                 <td>
                                   <button class="btn btn-info" onClick={() => this.setState({modalShow: true, productName : item.nameProduct})}>Request</button>
-                                  <MyVerticallyCenteredModal
+                                  <this.MyVerticallyCenteredModal
                                     show={this.state.modalShow}
                                     onHide={() => this.setState({modalShow: false})}
                                     products ={{name: this.state.productName,description :"good", avaiable:"available" }}
@@ -244,57 +308,16 @@ const mapDispatchToProps = (dispatch) => {
     },
     find_products: (token, searchText) => {
       return dispatch(actFindProductsRequest(token, searchText))
+    },
+    create_exchange: (token, payload) => {
+      console.log('hihi')
+      return dispatch(actCreateExchange(token, payload))
     }
   }
 }
 
 
-const MyVerticallyCenteredModal = (props) => {
-  return (
-    <Modal
-      {...props}
-      size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
-    >
-      <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
-          Request Form
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <h4>Name Product </h4>
-        <input style={{width:"100%"}} disabled defaultValue={props.products.name}/>  
-        <form >
-          <div className="form-group">
-            <label style={{"margin-top":"20px"}} htmlFor="name">Request To </label>
-            <br />
-            <select defaultValue= "admin"
-            // onChange={this.handleChange} 
-            >
-              <option value="admin 2">admin 2</option>
-              <option value="admin 3">admin 3</option>
-              <option value="admin 4">admin 4</option>
-            </select>
-              {/* <p>{message}</p> */}
-          </div>       
-          <div className="form-group">
-            <label htmlFor="name">Quantity </label>
-            <input className="form-control" id="name" />
-          </div>
-          <div className="form-group">
-            <button className="form-control btn btn-primary" type="submit">
-              Submit
-            </button>
-          </div>
-        </form>
-      </Modal.Body>
-      <Modal.Footer>
-        {/* <Button onClick={props.onHide}>Close</Button> */}
-        <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
-      </Modal.Footer>
-    </Modal>
-  );
-}
+
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(Product)
