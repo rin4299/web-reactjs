@@ -34,7 +34,7 @@ class Request extends Component {
 
 
   async componentDidMount() {
-    // this.fetch_reload_data();
+    this.fetch_reload_data();
     token = localStorage.getItem('_auth');
     if (token) {
       const res = await callApi('users/me', 'GET', null, token);
