@@ -3,7 +3,7 @@ import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { actFetchProductsRequest, actDeleteProductRequest, actFindProductsRequest } from '../../../redux/actions/product';
-// import { actFetchExchangeRequest} from '../../../redux/actions/exchange';
+import { actFetchExchangeRequest} from '../../../redux/actions/exchange';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
@@ -26,7 +26,6 @@ class Request extends Component {
       currentPage: 1,
       searchText: '',
       modalShow: false,
-      modalName: '',
       user: []
     }
   }
@@ -34,7 +33,7 @@ class Request extends Component {
 
 
   async componentDidMount() {
-    this.fetch_reload_data();
+   
     token = localStorage.getItem('_auth');
     if (token) {
       const res = await callApi('users/me', 'GET', null, token);
@@ -48,19 +47,27 @@ class Request extends Component {
         redirect: true
       })    
     }
-    // console.log(this.state.user[0].id)
-    // this.props.fetch_exchange_request(this.state.user[0].id).then(res => console.log(res))
+
+    await this.fetch_reload_data(); 
   }
 
   fetch_reload_data(){
     token = localStorage.getItem('_auth');
-    this.props.fetch_products(token).then(res => {
+    this.props.fetch_exchange_request(this.state.user[0].id, token).then(res => {
+      console.log('3', res)
       this.setState({
-        total: res.total
-      });
+        total: res
+      })
     }).catch(err => {
-      console.log(err);  
+      console.log(err)
     })
+    // this.props.fetch_products(token).then(res => {
+    //   this.setState({
+    //     total: res.total
+    //   });
+    // }).catch(err => {
+    //   console.log(err);  
+    // })
   }
 
   pageChange(content){
@@ -104,8 +111,10 @@ class Request extends Component {
   // }
 
   render() {
-    let { products } = this.props;
-    const total= this.state;
+    let { requests } = this.props;
+    const {total} = this.state;
+    // console.log('2', total)
+    // console.log('1', requests)
     return (
       <div className="content-inner">
         {/* Page Header*/}
@@ -147,14 +156,14 @@ class Request extends Component {
                           </tr>
                         </thead>
                         <tbody>
-                          {products && products.length ? products.map((item, index) => {
+                          {total && total.length ? total.map((item, index) => {
                             return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
-                                <td>{item.nameProduct}</td>
-                                <td><span className="text-truncate" style={{ width: 300 }}>{item.description}</span></td>
-                                <td>{item.price}</td>
-                                <td><span style={{ display: "flex", justifyContent:"center" }}>{item.numberAvailable}</span></td>
+                                <td>{item.reqUserName}</td>
+                                <td><span className="text-truncate" style={{ width: 300 }}>{item.recUserName}</span></td>
+                                <td>{item.quantity}</td>
+                                <td><span style={{ display: "flex", justifyContent:"center" }}>{item.pName}</span></td>
                                 {/* <td>{item.properties}</td> */}
                                 {/* <td style={{ textAlign: "center" }}>
                                   <div className="fix-cart">
@@ -168,7 +177,7 @@ class Request extends Component {
                                     <MyVerticallyCenteredModal
                                       show={this.state.modalShow}
                                       onHide={() => this.setState({modalShow: false})}
-                                      products ={{name: this.state.modalName ,description :item.description,from :"Store A", to:"Store B", Quantity:item.numberAvailable }}
+                                      products ={{name: item.pName,description :item.pName,from :"Store A", to:"Store B", Quantity:item.pName }}
                                     />
                                   </div>
                                 </td>
@@ -223,9 +232,9 @@ const mapDispatchToProps = (dispatch) => {
     find_products: (token, searchText) => {
       return dispatch(actFindProductsRequest(token, searchText))
     },
-    // fetch_exchange_request : (id) => {
-    //   return dispatch(actFetchExchangeRequest(id))
-    // }
+    fetch_exchange_request : (id, token) => {
+      return dispatch(actFetchExchangeRequest(id, token))
+    }
   }
 }
 
