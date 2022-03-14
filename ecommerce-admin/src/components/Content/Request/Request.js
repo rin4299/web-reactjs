@@ -48,7 +48,7 @@ class Request extends Component {
       })    
     }
     // console.log(this.state.user[0].id)
-    this.props.fetch_exchange_request(this.state.user[0].id).then(res => console.log(res))
+    this.props.fetch_exchange_request(this.state.user[0].id)
   }
 
   fetch_reload_data(){
