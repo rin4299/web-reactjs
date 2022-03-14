@@ -149,8 +149,8 @@ class Product extends Component {
                 this.createExchange({
                   reqUserName:"admin",
                   recUserName:"admin2",
-                  pName:"Đồng hồ thông minh Samsung Galaxy Watch Active 2",
-                  quantity: 2
+                  pName: props.products.name,
+                  quantity: 1
               })
               }>
                 Submit
