@@ -3,7 +3,7 @@ import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { actFetchProductsRequest, actDeleteProductRequest, actFindProductsRequest } from '../../../redux/actions/product';
-import { actFetchExchangeRequest} from '../../../redux/actions/exchange';
+import { actFetchExchangeRequest,actUpdateAccept} from '../../../redux/actions/exchange';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
@@ -27,7 +27,8 @@ class Request extends Component {
       searchText: '',
       modalShow: false,
       user: [],
-      request:''
+      request:'', 
+      id:0
     }
   }
 
@@ -42,6 +43,7 @@ class Request extends Component {
         this.setState({
           user: res.data.results
         })
+        // console.log("user",this.state.user[0].name)
       }
     } else {
       this.setState({
@@ -55,20 +57,12 @@ class Request extends Component {
   fetch_reload_data(){
     token = localStorage.getItem('_auth');
     this.props.fetch_exchange_request(this.state.user[0].id, token).then(res => {
-      // console.log('3', res)
       this.setState({
         total: res
       })
     }).catch(err => {
       console.log(err)
     })
-    // this.props.fetch_products(token).then(res => {
-    //   this.setState({
-    //     total: res.total
-    //   });
-    // }).catch(err => {
-    //   console.log(err);  
-    // })
   }
 
   pageChange(content){
@@ -102,20 +96,63 @@ class Request extends Component {
       }
     })
   }
-  // handleChange = (event) => {
-  //   const target = event.target;
-  //   const value = target.type === 'checkbox' ? target.checked : target.value;
-  //   const name = target.name;
-  //   this.setState({
-  //     [name]: value
-  //   });
-  // }
+
+  updateAccept = (id) => {
+    token = localStorage.getItem('_auth');
+    this.props.update_Accept(id,token).then(res => {
+      console.log(res)
+    })
+    this.setState({modalShow: false})
+  }
+
+  MyVerticallyCenteredModal = (props) => {
+    return (
+      <Modal
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Confirm Request
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h4>Name Product </h4>
+          <input  style={{width:"100%"}} disabled defaultValue={props.requests.name}/>  
+          <form >
+            <div className="form-group">
+              <label htmlFor="from">From </label>
+               <input className="form-control" disabled defaultValue={props.requests.from}/>  
+            </div>
+            <div className="form-group">
+              <label htmlFor="to">To </label>
+               <input className="form-control" disabled defaultValue={props.requests.to}/>  
+            </div>
+            <div className="form-group">
+              <label htmlFor="name">Quantity </label>
+              <input className="form-control" disabled defaultValue={props.requests.Quantity}/>
+            </div>
+            <div className="form-group">
+              <button className="form-control btn btn-primary" type="button" onClick= {() => {
+                this.updateAccept(props.requests.indexExchange)
+              }}>
+                Confirm
+              </button>
+            </div>
+          </form>
+        </Modal.Body>
+        <Modal.Footer>
+          <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
 
   render() {
     let { requests } = this.props;
     const {total} = this.state;
-    // console.log('2', total)
-    // console.log('1', requests)
     return (
       <div className="content-inner">
         {/* Page Header*/}
@@ -172,17 +209,21 @@ class Request extends Component {
                                     <img src={item && item.image ? item.image : null} className="fix-img" alt="not found" />
                                   </div>
                                 </td> */}
-                                <td style={{ textAlign: "center" }}>
+                                <td style={{ textAlign: "center" }}>{item.isAccepted ?
                                   <div className="i-checks">
-                                      {/* <input type="checkbox" className="checkbox-template" /> */}
-                                    <button class="btn btn-info" onClick={() => this.setState({modalShow: true,request : item})}>Accept</button>
-                                    <MyVerticallyCenteredModal
+                                    <input type="checkbox" checked={true} className="checkbox-template" />
+                                  </div>
+                                  :
+                                  <div className="i-checks">
+                                    <button class="btn btn-info" onClick={() => this.setState({modalShow: true,request : item, id : item.id})}>Accept</button>
+                                    <this.MyVerticallyCenteredModal
                                       show={this.state.modalShow}
                                       onHide={() => this.setState({modalShow: false})}
-                                      requests ={{name: this.state.request.pName,description :item.pName,from :this.state.request.reqUserName, to:this.state.request.recUserName, Quantity:this.state.request.quantity }}
+                                      requests ={{name: this.state.request.pName,from :this.state.request.reqUserName, to:this.state.request.recUserName, Quantity:this.state.request.quantity, indexExchange : this.state.id }}
                                     />
-                                  </div>
+                                  </div>}
                                 </td>
+                                  
                                 {/* <td style={{ textAlign: "center" }}>
                                   <div>
                                     <span title='Edit' className="fix-action"><Link to={`/products/edit/${item.id}`}> <i className="fa fa-edit"></i></Link></span>
@@ -234,56 +275,15 @@ const mapDispatchToProps = (dispatch) => {
     find_products: (token, searchText) => {
       return dispatch(actFindProductsRequest(token, searchText))
     },
-    fetch_exchange_request : (id, token) => {
+    fetch_exchange_request: (id, token) => {
       return dispatch(actFetchExchangeRequest(id, token))
+    },
+    update_Accept: (id, token) => {
+      return dispatch(actUpdateAccept(id, token))
     }
   }
 }
 
 
-const MyVerticallyCenteredModal = (props) => {
-  return (
-    <Modal
-      {...props}
-      size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
-    >
-      <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
-          Confirm Request
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <h4>Name Product </h4>
-        <input  style={{width:"100%"}} disabled defaultValue={props.requests.name}/>  
-        <form >
-          <div className="form-group">
-            <label htmlFor="from">From </label>
-            {/* <input className="form-control" id="from" />
-             */}
-             <input className="form-control" disabled defaultValue={props.requests.from}/>  
-          </div>
-          <div className="form-group">
-            <label htmlFor="to">To </label>
-             <input className="form-control" disabled defaultValue={props.requests.to}/>  
-          </div>
-          <div className="form-group">
-            <label htmlFor="name">Quantity </label>
-            <input className="form-control" disabled defaultValue={props.requests.Quantity}/>
-          </div>
-          <div className="form-group">
-            <button className="form-control btn btn-primary" type="submit">
-              Confirm
-            </button>
-          </div>
-        </form>
-      </Modal.Body>
-      <Modal.Footer>
-        <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
-      </Modal.Footer>
-    </Modal>
-  );
-}
 
 export default connect(mapStateToProps, mapDispatchToProps)(Request)

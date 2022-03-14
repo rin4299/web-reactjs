@@ -9,9 +9,9 @@ import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
 import {exportExcel} from 'utils/exportExcel'
 import Paginator from 'react-js-paginator';
-
+import callApi from '../../../utils/apiCaller';
 import Modal from 'react-bootstrap/Modal'
-// import { actCreateExchangeDispatch } from 'redux/actions/exchange';
+
 
 const MySwal = withReactContent(Swal)
 
@@ -29,12 +29,28 @@ class Product extends Component {
       modalShow: false,
       productName : '',
       selected:'',
-      quantity: ''
+      quantity: '',
+      user: [],
+      recUser: ''
     }
   }
 
-  componentDidMount() {
-    this.fetch_reload_data();
+  async componentDidMount() {
+    token = localStorage.getItem('_auth');
+    if (token) {
+      const res = await callApi('users/me', 'GET', null, token);
+      if (res && res.status === 200) {
+        this.setState({
+          user: res.data.results
+        })
+      }
+    } else {
+      this.setState({
+        redirect: true
+      })    
+    }
+    
+    await this.fetch_reload_data(); 
   }
 
   fetch_reload_data(){
@@ -109,7 +125,11 @@ class Product extends Component {
     this.props.create_exchange(token, payload).then(res => {
       console.log(res)
     })
+    this.setState({modalShow: false})
   }
+  // onhide = ()=>  {
+  //   this.setState({modalShow: false})
+  // }
 
   MyVerticallyCenteredModal = (props) => {
     return (
@@ -131,34 +151,36 @@ class Product extends Component {
             <div className="form-group">
               <label style={{"margin-top":"20px"}} htmlFor="name">Request To </label>
               <br />
-              <select defaultValue= "admin"
+              <select id="select" name="select" value= {this.state.recUser}
               // onChange={this.handleChange} 
+              // onChange={(e) => this.setState({recUser : e.target.value})}
               >
                 <option value="admin 2">admin 2</option>
                 <option value="admin 3">admin 3</option>
                 <option value="admin 4">admin 4</option>
               </select>
-                {/* <p>{message}</p> */}
             </div>       
             <div className="form-group">
               <label htmlFor="name">Quantity </label>
-              <input  className="form-control" id="name" />
+              <input style = {{width:"100%"}} id="quantity" name="quantity" type ="number" min="1" onChange={(event) => this.setState({quantity : event.target.value}) } />
             </div>
             <div className="form-group">
               <button type="button" className="form-control btn btn-primary" onClick={() => 
                 this.createExchange({
-                  reqUserName:"admin",
-                  recUserName:"admin2",
+                  reqUserName:this.state.user[0].name,
+                  recUserName:"admin",
                   pName: props.products.name,
-                  quantity: 1
-              })
+                  quantity: this.state.quantity
+                })
+                // console.log("3",this.state.recUser)
               }>
                 Submit
               </button>
             </div>
           </form>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer
+        onHide={() => this.setState({modalShow: false})}>
           {/* <Button onClick={props.onHide}>Close</Button> */}
           <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
         </Modal.Footer>
@@ -261,7 +283,7 @@ class Product extends Component {
                                   <this.MyVerticallyCenteredModal
                                     show={this.state.modalShow}
                                     onHide={() => this.setState({modalShow: false})}
-                                    products ={{name: this.state.productName,description :"good", avaiable:"available" }}
+                                    products ={{name: this.state.productName}}
                                   />
                                 </td>
                               </tr>
@@ -310,7 +332,6 @@ const mapDispatchToProps = (dispatch) => {
       return dispatch(actFindProductsRequest(token, searchText))
     },
     create_exchange: (token, payload) => {
-      console.log('hihi')
       return dispatch(actCreateExchange(token, payload))
     }
   }

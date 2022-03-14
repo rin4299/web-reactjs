@@ -61,7 +61,7 @@ export const actCreateExchange = (token, payload) => {
           callApi(`exchange/createExchange`, 'POST', payload, token)
             .then(res => {
               if (res && res.status === 200) { 
-                console.log('2', res.data)
+                // console.log('2', res.data)
                 dispatch(actCreateExchangeDispatch(res.data));
                 
                 resolve(res.data);
@@ -77,6 +77,55 @@ export const actCreateExchange = (token, payload) => {
       };
     };
 
+export const actUpdateAccept = (id, token) => {
+  //   const newOffset = offset === null || offset === undefined ? 0 : offset;
+  //   const limit = 10;
+    // let payload = {"id" : id, "type": "reqUserName"}
+    // console.log("id" , id)
+    return dispatch => {
+      dispatch(actShowLoading());
+      return new Promise((resolve, reject) => {
+        callApi(`exchange/accept/${id}`, 'PUT', null, token)
+          .then(res => {
+            if (res && res.status === 200) { 
+              dispatch(actFetchExchangeReq(res.data));
+              resolve(res.data);
+              setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            reject(err);
+            setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+          });
+      });
+    };
+  };
+
+  export const actUpdateConfirm = (id, token) => {
+    //   const newOffset = offset === null || offset === undefined ? 0 : offset;
+    //   const limit = 10;
+      // let payload = {"id" : id, "type": "reqUserName"}
+      // console.log("id" , id)
+      return dispatch => {
+        dispatch(actShowLoading());
+        return new Promise((resolve, reject) => {
+          callApi(`exchange/confirm/${id}`, 'GET', null, token)
+            .then(res => {
+              if (res && res.status === 200) { 
+                dispatch(actFetchExchangeReq(res.data));
+                resolve(res.data);
+                setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+              }
+            })
+            .catch(err => {
+              console.log(err);
+              reject(err);
+              setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+            });
+        });
+      };
+    };
 
 
 export const actFetchExchangeReq = (data) => {
@@ -100,3 +149,16 @@ export const actCreateExchangeDispatch = (data) => {
     }
 }
 
+export const actUpdateAcceptDispatch = (data) => {
+  return {
+      type: Types.UPDATE_ACCEPT,
+      data
+  }
+}
+
+export const actUpdateConfirmDispatch = (data) => {
+  return {
+      type: Types.UPDATE_CONFIRM,
+      data
+  }
+}

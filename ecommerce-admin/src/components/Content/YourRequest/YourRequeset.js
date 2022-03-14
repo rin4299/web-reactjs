@@ -3,7 +3,7 @@ import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { actFetchProductsRequest, actDeleteProductRequest, actFindProductsRequest } from '../../../redux/actions/product';
-import { actFetchExchangeReceive} from '../../../redux/actions/exchange';
+import { actFetchExchangeReceive,actUpdateConfirm} from '../../../redux/actions/exchange';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
@@ -28,7 +28,8 @@ class YourRequest extends Component {
       searchText: '',
       modalShow: false,
       user: [],
-      receive:''
+      receive:'', 
+      id:0
     }
   }
 
@@ -54,7 +55,6 @@ class YourRequest extends Component {
   fetch_reload_data(){
     token = localStorage.getItem('_auth');
     this.props.fetch_exchange_receive(this.state.user[0].id, token).then(res => {
-      console.log('3', res)
       this.setState({
         total: res
       })
@@ -94,41 +94,64 @@ class YourRequest extends Component {
       }
     })
   }
-  // handleChange = (event) => {
-  //   const target = event.target;
-  //   const value = target.type === 'checkbox' ? target.checked : target.value;
-  //   const name = target.name;
-  //   this.setState({
-  //     [name]: value
-  //   });
-  // }
-
-  // handleSubmit = (event) => {
-  //   event.preventDefault();
-  //   const { searchText } = this.state;
-  //   this.props.find_products(token, searchText).then(res => {
-  //     this.setState({
-  //       total: res.total
-  //     })
-  //   })
-  // }
-
-  // downloadExcel = () => {
-  //   const key = 'products'
-  //   exportExcel(key)
-  // }
-
-  handleChange(value) {
-    console.log(`selected ${value}`);
+  updateConfirm = (id) => {
+    token = localStorage.getItem('_auth');
+    this.props.update_Confirm(id,token).then(res => {
+      console.log(res)
+    })
+    this.setState({modalShow: false})
   }
 
 
+  MyVerticallyCenteredModal = (props) => {
+    return (
+      <Modal
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Confirm Your Request
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h4>Name Product </h4>
+          <input  style={{width:"100%"}} disabled defaultValue={props.receive.name}/>  
+          <form >
+            <div className="form-group">
+              <label htmlFor="from">From </label>
+               <input className="form-control" disabled defaultValue={props.receive.from}/>  
+            </div>
+            <div className="form-group">
+              <label htmlFor="to">To </label>
+               <input className="form-control" disabled defaultValue={props.receive.to}/>  
+            </div>
+            <div className="form-group">
+              <label htmlFor="name">Quantity </label>
+              <input className="form-control" disabled defaultValue={props.receive.Quantity}/>
+            </div>
+            <div className="form-group">
+            <button className="form-control btn btn-primary" type="button" onClick= {() => {
+                this.updateConfirm(props.receive.indexExchange)
+              }}>
+                Confirm
+              </button>
+            </div>
+          </form>
+        </Modal.Body>
+        <Modal.Footer>
+          <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
+
   render() {
-    // let { products } = this.props;
-    // const { searchText, total } = this.state;
     let { requests } = this.props;
     const {total} = this.state;
-    console.log('total', total)
+
     return (
       <div className="content-inner">
         {/* Page Header*/}
@@ -151,23 +174,7 @@ class YourRequest extends Component {
                 <div className="card">
                   <div className="card-header d-flex align-items-center">
                     <h3 className="h4">List Your Request</h3>
-                    
-                    {/* <button onClick={()=>this.downloadExcel()} style={{ border: 0, background: "white" }}> <i className="fa fa-file-excel-o"
-                        style={{fontSize: 18, color: '#1d7044'}}> Excel</i></button> */}
                   </div>
-                  {/* <form onSubmit={(event) => this.handleSubmit(event)}
-                    className="form-inline md-form form-sm mt-0" style={{ justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20 }}>
-                    <div>
-                      <button style={{border: 0, background: 'white'}}> <i className="fa fa-search" aria-hidden="true"></i></button>                  
-                      <input
-                        name="searchText"
-                        onChange={this.handleChange}
-                        value={searchText}
-                        className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
-                        aria-label="Search" />
-                    </div>
-                    <Link to='/products/add' className="btn btn-primary" > Create</Link>
-                  </form> */}
                   <div className="card-body">
                     <div className="table-responsive">
                       <table className="table table-hover">
@@ -188,8 +195,13 @@ class YourRequest extends Component {
                         </thead>
                         <tbody>
                           {total && total.length ? total.map((item, index) => {
-                            return (
+                              return (
                               <tr key={index}>
+                                {/* <td> {(item.isAccepted && item.isReceived)? 
+                                  <td></td>:
+                                  <td></td>
+                                }
+                                </td> */}
                                 <th scope="row">{index + 1}</th>
                                 <td>{item.pName}</td>
                                 <td><span className="text-truncate" >{item.reqUserName}</span></td>
@@ -204,31 +216,29 @@ class YourRequest extends Component {
                                     <input type="checkbox" checked={false} className="checkbox-template" />
                                   </div>}
                                 </td>
-                                {/* <td>{item.properties}</td> */}
-                                {/* <td style={{ textAlign: "center" }}>
-                                  <div className="fix-cart">
-                                    <img src={item && item.image ? item.image : null} className="fix-img" alt="not found" />
-                                  </div>
-                                </td> */}
-                                <td style={{ textAlign: "center" }}>
-                                  <div className="i-checks">
-                                      {/* <input type="checkbox" className="checkbox-template" /> */}
-                                    <button class="btn btn-info" onClick={() => this.setState({modalShow: true,receive : item})}>Confirm</button>
-                                    <MyVerticallyCenteredModal
+                                <td style={{ textAlign: "center" }}>{item.isAccepted ?
+                                <div className="i-checks">
+                                    <button class="btn btn-info" onClick={() => this.setState({modalShow: true,receive : item, id : item.id})}>Confirm</button>
+                                    <this.MyVerticallyCenteredModal
                                       show={this.state.modalShow}
                                       onHide={() => this.setState({modalShow: false})}
-                                      receive ={{name: this.state.receive.pName,description :item.pName,from :this.state.receive.reqUserName, to:this.state.receive.recUserName, Quantity:this.state.receive.quantity }}
+                                      receive ={{name: this.state.receive.pName,description :item.pName,from :this.state.receive.reqUserName, to:this.state.receive.recUserName, Quantity:this.state.receive.quantity, indexExchange : this.state.id  }}
                                     />
                                   </div>
+                                  :
+                                  <div className="i-checks">
+                                  <button class="btn btn-secondary" disable>Waiting</button>
+                                  </div>}
+                                  
                                 </td>
+                                
                                 <td style={{ textAlign: "center" }}>
                                   <div>
-                                    {/* <span title='Edit' className="fix-action"><Link to={`/products/edit/${item.id}`}> <i className="fa fa-edit"></i></Link></span> */}
                                     <span title='Delete' onClick={() => this.handleRemove(item.id)} className="fix-action"><Link to="#"> <i className="fa fa-trash" style={{ color: '#ff00008f' }}></i></Link></span>
                                   </div>
                                 </td>
                               </tr>
-                            )
+                              )                   
                           }) : null}
                         </tbody>
                       </table>
@@ -274,70 +284,14 @@ const mapDispatchToProps = (dispatch) => {
     },
     fetch_exchange_receive : (id, token) => {
       return dispatch(actFetchExchangeReceive(id, token))
+    },
+    update_Confirm : (id, token) => {
+      return dispatch(actUpdateConfirm(id, token))
     }
   }
 }
 
 
-const MyVerticallyCenteredModal = (props) => {
-  console.log('props',props);
-  return (
-    <Modal
-      {...props}
-      size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
-    >
-      <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
-          Confirm Your Request
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <h4>Name Product </h4>
-        {/* <p>
-          Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-          dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
-          consectetur ac, vestibulum at eros.
-        </p> */}
-        <input  style={{width:"100%"}} disabled defaultValue={props.receive.name}/>  
-        <form >
-          <div className="form-group">
-            <label htmlFor="from">From </label>
-            {/* <input className="form-control" id="from" />
-             */}
-             <input className="form-control" disabled defaultValue={props.receive.from}/>  
-          </div>
-          <div className="form-group">
-            <label htmlFor="to">To </label>
-             <input className="form-control" disabled defaultValue={props.receive.to}/>  
-          </div>
-          <div className="form-group">
-            <label htmlFor="name">Quantity </label>
-            <input className="form-control" disabled defaultValue={props.receive.Quantity}/>
-          </div>
-          {/* <div className="form-group">
-            <label htmlFor="note">Note</label>
-            <input
-              type="note"
-              className="form-control"
-              id="note"
-              placeholder="Note"
-            />
-          </div> */}
-          <div className="form-group">
-            <button className="form-control btn btn-primary" type="submit">
-              Confirm
-            </button>
-          </div>
-        </form>
-      </Modal.Body>
-      <Modal.Footer>
-        {/* <Button onClick={props.onHide}>Close</Button> */}
-        <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
-      </Modal.Footer>
-    </Modal>
-  );
-}
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(YourRequest)
