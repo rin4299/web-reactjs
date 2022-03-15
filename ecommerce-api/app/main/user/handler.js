@@ -20,6 +20,19 @@ exports.getManyUser = {
   }
 };
 
+exports.getAdminDiff = {
+  description: 'Get Users list',
+  notes: 'Return Users items',
+  tags: ['api', 'v1'],
+  handler: controller.getAdminDiff.bind(controller),
+  auth: {
+    strategy: 'jwt',
+  },
+  validate: {
+ 
+  }
+};
+
 exports.getMe = {
   description: 'Get Users list',
   notes: 'Return Users items',
