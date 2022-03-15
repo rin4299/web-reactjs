@@ -51,7 +51,11 @@ class Product extends Component {
           this.setState({
             userdiff: res2.data
           })
-          console.log("test" , this.state.userdiff)
+          // console.log("test" , this.state.userdiff)
+          this.setState({
+            recUser: this.state.userdiff[0].name
+          })
+          // console.log("recuser" , this.state.recUser)
         }
     } else {
       this.setState({
