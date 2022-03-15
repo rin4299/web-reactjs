@@ -69,3 +69,17 @@ const controller = new ExchangeController();
    
     }
   };
+
+
+  exports.deleteRequest = {
+    description: 'Update Order',
+    notes: 'Return updated Order by id',
+    tags: ['api', 'v1'],
+    handler: controller.deleteRequest.bind(controller),
+    auth: {
+      strategy: 'jwt',
+    },
+    validate: {
+
+    }
+  };

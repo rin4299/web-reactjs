@@ -71,6 +71,18 @@ class ExchangeService extends BaseServiceCRUD {
   }
 
 
+  async deleteRequest(id) {
+
+    let exchange = await Models.Exchanged.query().where('id', id);
+    let e = exchange[0];
+    if(e.isAccepted === true){
+      throw Boom.badRequest('Cannot delete the current accepted Exchange Request!');
+    }
+    await Models.Exchanged.query().where('id', id).delete();
+ 
+    return { message: 'Delete Request is successfully done' };
+  }
+
   async getAdminDiff(id) {
     const role = await Models.Role.query().findOne({nameRole: 'admin'});
     const users = await Models.User.query().where('roleId', '=', role.id).where('id', '!=', id);
