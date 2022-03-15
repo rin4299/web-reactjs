@@ -19,14 +19,6 @@ class UserController extends BaseControllerCRUD {
     }
   };
 
-  async getAdminDiff(request) {
-    try {
-      const {id} = request.params;
-      return await this.service.getAdminDiff(id);
-    } catch (err) {
-      throw err;
-    }
-  };
 
   async getManyUser(request) {
     try {

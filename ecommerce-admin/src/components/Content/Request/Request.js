@@ -3,11 +3,12 @@ import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { actFetchProductsRequest, actDeleteProductRequest, actFindProductsRequest } from '../../../redux/actions/product';
+import { actFetchExchangeRequest,actUpdateAccept} from '../../../redux/actions/exchange';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
-import {exportExcel} from 'utils/exportExcel'
 import Paginator from 'react-js-paginator';
+import callApi from '../../../utils/apiCaller';
 
 import Modal from 'react-bootstrap/Modal'
 
@@ -24,24 +25,44 @@ class Request extends Component {
       total: 0,
       currentPage: 1,
       searchText: '',
-      modalShow: false
+      modalShow: false,
+      user: [],
+      request:'', 
+      id:0
     }
   }
 
 
 
-  componentDidMount() {
-    this.fetch_reload_data();
+  async componentDidMount() {
+   
+    token = localStorage.getItem('_auth');
+    if (token) {
+      const res = await callApi('users/me', 'GET', null, token);
+      if (res && res.status === 200) {
+        this.setState({
+          user: res.data.results
+        })
+        // console.log("user",this.state.user[0].name)
+      }
+    } else {
+      this.setState({
+        redirect: true
+      })    
+    }
+
+    await this.fetch_reload_data(); 
   }
 
   fetch_reload_data(){
     token = localStorage.getItem('_auth');
-    this.props.fetch_products(token).then(res => {
+    // console.log("id", this.state.user[0].id);
+    this.props.fetch_exchange_request(this.state.user[0].id, token).then(res => {
       this.setState({
-        total: res.total
-      });
+        total: res
+      })
     }).catch(err => {
-      console.log(err);  
+      console.log(err)
     })
   }
 
@@ -54,6 +75,7 @@ class Request extends Component {
     })
     window.scrollTo(0, 0);
   }
+/////////////////////////
 
   handleRemove = (id) => {
     MySwal.fire({
@@ -75,36 +97,64 @@ class Request extends Component {
       }
     })
   }
-  handleChange = (event) => {
-    const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    const name = target.name;
-    this.setState({
-      [name]: value
-    });
-  }
 
-  handleSubmit = (event) => {
-    event.preventDefault();
-    const { searchText } = this.state;
-    this.props.find_products(token, searchText).then(res => {
-      this.setState({
-        total: res.total
-      })
+  updateAccept = (id) => {
+    token = localStorage.getItem('_auth');
+    this.props.update_Accept(id,token).then(res => {
+      console.log(res)
     })
+    this.setState({modalShow: false})
   }
 
-  downloadExcel = () => {
-    const key = 'products'
-    exportExcel(key)
+  MyVerticallyCenteredModal = (props) => {
+    return (
+      <Modal
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Confirm Request
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h4>Name Product </h4>
+          <input  style={{width:"100%"}} disabled defaultValue={props.requests.name}/>  
+          <form >
+            <div className="form-group">
+              <label htmlFor="from">From </label>
+               <input className="form-control" disabled defaultValue={props.requests.from}/>  
+            </div>
+            <div className="form-group">
+              <label htmlFor="to">To </label>
+               <input className="form-control" disabled defaultValue={props.requests.to}/>  
+            </div>
+            <div className="form-group">
+              <label htmlFor="name">Quantity </label>
+              <input className="form-control" disabled defaultValue={props.requests.Quantity}/>
+            </div>
+            <div className="form-group">
+              <button className="form-control btn btn-primary" type="button" onClick= {() => {
+                this.updateAccept(props.requests.indexExchange)
+                this.fetch_reload_data()
+              }}>
+                Confirm
+              </button>
+            </div>
+          </form>
+        </Modal.Body>
+        <Modal.Footer>
+          <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
+        </Modal.Footer>
+      </Modal>
+    );
   }
-
-  
-
 
   render() {
-    let { products } = this.props;
-    const { searchText, total } = this.state;
+    let { requests } = this.props;
+    const {total} = this.state;
     return (
       <div className="content-inner">
         {/* Page Header*/}
@@ -127,23 +177,7 @@ class Request extends Component {
                 <div className="card">
                   <div className="card-header d-flex align-items-center">
                     <h3 className="h4">List Request</h3>
-                    
-                    <button onClick={()=>this.downloadExcel()} style={{ border: 0, background: "white" }}> <i className="fa fa-file-excel-o"
-                        style={{fontSize: 18, color: '#1d7044'}}> Excel</i></button>
                   </div>
-                  <form onSubmit={(event) => this.handleSubmit(event)}
-                    className="form-inline md-form form-sm mt-0" style={{ justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20 }}>
-                    <div>
-                      <button style={{border: 0, background: 'white'}}> <i className="fa fa-search" aria-hidden="true"></i></button>                  
-                      <input
-                        name="searchText"
-                        onChange={this.handleChange}
-                        value={searchText}
-                        className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
-                        aria-label="Search" />
-                    </div>
-                    {/* <Link to='/products/add' className="btn btn-primary" > Create</Link> */}
-                  </form>
                   <div className="card-body">
                     <div className="table-responsive">
                       <table className="table table-hover">
@@ -155,55 +189,42 @@ class Request extends Component {
                             <th>To</th>
                             <th >Quantity</th>
                             {/* <th>Properties</th> */}
-                            <th style={{ textAlign: "center" }}>Images</th>
+                            {/* <th style={{ textAlign: "center" }}>Images</th> */}
                             <th style={{ textAlign: "center" }}>Action</th>
                             {/* <th style={{ textAlign: "center" }}>Remove</th> */}
                             {/* <th style={{ textAlign: "center" }}>Request</th> */}
                           </tr>
                         </thead>
                         <tbody>
-                          {products && products.length ? products.map((item, index) => {
-                            return (
+                          {total && total.length ? total.map((item, index) => {
+                            if(item.isAccepted){
+                              return null;
+                            }
+                            else{
+                              return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
-                                <td>{item.nameProduct}</td>
-                                <td><span className="text-truncate" style={{ width: 300 }}>{item.description}</span></td>
-                                <td>{item.price}</td>
-                                <td><span style={{ display: "flex", justifyContent:"center" }}>{item.numberAvailable}</span></td>
-                                {/* <td>{item.properties}</td> */}
-                                <td style={{ textAlign: "center" }}>
-                                  <div className="fix-cart">
-                                    <img src={item && item.image ? item.image : null} className="fix-img" alt="not found" />
-                                  </div>
-                                </td>
-                                <td style={{ textAlign: "center" }}>
+                                <td>{item.pName}</td>
+                                <td><span className="text-truncate" >{item.reqUserName}</span></td>
+                                <td><span className="text-truncate" >{item.recUserName}</span></td>
+                                <td><span className="text-truncate" >{item.quantity}</span></td>
+                                <td style={{ textAlign: "center" }}>{item.isAccepted ?
                                   <div className="i-checks">
-                                      {/* <input type="checkbox" className="checkbox-template" /> */}
-                                    <button class="btn btn-info" onClick={() => this.setState({modalShow: true})}>Accept</button>
-                                    <MyVerticallyCenteredModal
-                                      show={this.state.modalShow}
-                                      onHide={() => this.setState({modalShow: false})}
-                                      products ={{name: item.nameProduct,description :item.description,from :"Store A", to:"Store B", Quantity:item.numberAvailable }}
-                                    />
-                                  </div>
-                                </td>
-                                {/* <td style={{ textAlign: "center" }}>{item.isActive ?
-                                  <div className="i-checks">
-                                    <input type="checkbox" className="checkbox-template" />
+                                    <input type="checkbox" checked={true} className="checkbox-template" />
                                   </div>
                                   :
                                   <div className="i-checks">
-                                    <input type="checkbox" className="checkbox-template" />
-                                  </div>} */}
-                                {/* </td> */}
-                                <td style={{ textAlign: "center" }}>
-                                  <div>
-                                    {/* <span title='Edit' className="fix-action"><Link to={`/products/edit/${item.id}`}> <i className="fa fa-edit"></i></Link></span> */}
-                                    <span title='Delete' onClick={() => this.handleRemove(item.id)} className="fix-action"><Link to="#"> <i className="fa fa-trash" style={{ color: '#ff00008f' }}></i></Link></span>
-                                  </div>
+                                    <button class="btn btn-info" onClick={() => this.setState({modalShow: true,request : item, id : item.id})}>Accept</button>
+                                    <this.MyVerticallyCenteredModal
+                                      show={this.state.modalShow}
+                                      onHide={() => this.setState({modalShow: false})}
+                                      requests ={{name: this.state.request.pName,from :this.state.request.reqUserName, to:this.state.request.recUserName, Quantity:this.state.request.quantity, indexExchange : this.state.id }}
+                                    />
+                                  </div>}
                                 </td>
                               </tr>
-                            )
+                              )
+                            }                           
                           }) : null}
                         </tbody>
                       </table>
@@ -246,69 +267,16 @@ const mapDispatchToProps = (dispatch) => {
     },
     find_products: (token, searchText) => {
       return dispatch(actFindProductsRequest(token, searchText))
+    },
+    fetch_exchange_request: (id, token) => {
+      return dispatch(actFetchExchangeRequest(id, token))
+    },
+    update_Accept: (id, token) => {
+      return dispatch(actUpdateAccept(id, token))
     }
   }
 }
 
 
-const MyVerticallyCenteredModal = (props) => {
-  return (
-    <Modal
-      {...props}
-      size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
-    >
-      <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
-          Confirm Request
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <h4>Name Product </h4>
-        {/* <p>
-          Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-          dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
-          consectetur ac, vestibulum at eros.
-        </p> */}
-        <input disabled defaultValue={props.products.name}/>  
-        <form >
-          <div className="form-group">
-            <label htmlFor="from">From </label>
-            {/* <input className="form-control" id="from" />
-             */}
-             <input className="form-control" disabled defaultValue={props.products.from}/>  
-          </div>
-          <div className="form-group">
-            <label htmlFor="to">To </label>
-             <input className="form-control" disabled defaultValue={props.products.to}/>  
-          </div>
-          <div className="form-group">
-            <label htmlFor="name">Quantity </label>
-            <input className="form-control" disabled defaultValue={props.products.Quantity}/>
-          </div>
-          <div className="form-group">
-            <label htmlFor="note">Note</label>
-            <input
-              type="note"
-              className="form-control"
-              id="note"
-              placeholder="Note"
-            />
-          </div>
-          <div className="form-group">
-            <button className="form-control btn btn-primary" type="submit">
-              Confirm
-            </button>
-          </div>
-        </form>
-      </Modal.Body>
-      <Modal.Footer>
-        {/* <Button onClick={props.onHide}>Close</Button> */}
-        <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
-      </Modal.Footer>
-    </Modal>
-  );
-}
 
 export default connect(mapStateToProps, mapDispatchToProps)(Request)

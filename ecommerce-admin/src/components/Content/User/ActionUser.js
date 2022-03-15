@@ -32,7 +32,7 @@ class ActionUser extends Component {
       phone: '',
       isActive: true,
       isVerifyEmail: false,
-      roleId: null,
+      roleId: 1,
       redirectToUser: false,
       dataRole: [],
       img: null,
@@ -125,7 +125,7 @@ class ActionUser extends Component {
         phone: '',
         isActive: true,
         isVerifyEmail: false,
-        roleId: null,
+        roleId: 1,
         loading: false,
         redirectToUser: true
       })
