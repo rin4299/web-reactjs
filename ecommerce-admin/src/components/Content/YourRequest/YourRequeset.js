@@ -135,6 +135,7 @@ class YourRequest extends Component {
             <div className="form-group">
             <button className="form-control btn btn-primary" type="button" onClick= {() => {
                 this.updateConfirm(props.receive.indexExchange)
+                this.fetch_reload_data()
               }}>
                 Confirm
               </button>
@@ -185,23 +186,18 @@ class YourRequest extends Component {
                             <th>From</th>
                             <th>To</th>
                             <th >Quantity</th>
-                            {/* <th>Properties</th> */}
-                            {/* <th style={{ textAlign: "center" }}>Images</th> */}
                             <th style={{ textAlign: "center" }}>Active</th>
                             <th style={{ textAlign: "center" }}>Action</th>
-                            {/* <th style={{ textAlign: "center" }}>Remove</th> */}
-                            {/* <th style={{ textAlign: "center" }}>Request</th> */}
                           </tr>
                         </thead>
                         <tbody>
                           {total && total.length ? total.map((item, index) => {
+                            if(item.isReceived){
+                              return null;
+                            }
+                            else{
                               return (
                               <tr key={index}>
-                                {/* <td> {(item.isAccepted && item.isReceived)? 
-                                  <td></td>:
-                                  <td></td>
-                                }
-                                </td> */}
                                 <th scope="row">{index + 1}</th>
                                 <td>{item.pName}</td>
                                 <td><span className="text-truncate" >{item.reqUserName}</span></td>
@@ -218,7 +214,7 @@ class YourRequest extends Component {
                                 </td>
                                 <td style={{ textAlign: "center" }}>{item.isAccepted ?
                                 <div className="i-checks">
-                                    <button class="btn btn-info" onClick={() => this.setState({modalShow: true,receive : item, id : item.id})}>Confirm</button>
+                                    <button class="btn btn-info" onClick={() => {this.setState({modalShow: true,receive : item, id : item.id} )}}>Confirm</button>
                                     <this.MyVerticallyCenteredModal
                                       show={this.state.modalShow}
                                       onHide={() => this.setState({modalShow: false})}
@@ -238,7 +234,9 @@ class YourRequest extends Component {
                                   </div>
                                 </td>
                               </tr>
-                              )                   
+                              )
+                            }
+                                                 
                           }) : null}
                         </tbody>
                       </table>

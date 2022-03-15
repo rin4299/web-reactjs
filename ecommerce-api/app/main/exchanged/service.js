@@ -69,6 +69,13 @@ class ExchangeService extends BaseServiceCRUD {
     // return { message: 'Update isReceived is successfully' };
     return data[0];
   }
+
+
+  async getAdminDiff(id) {
+    const role = await Models.Role.query().findOne({nameRole: 'admin'});
+    const users = await Models.User.query().where('roleId', '=', role.id).where('id', '!=', id);
+    return users;
+  }
   
 }
 

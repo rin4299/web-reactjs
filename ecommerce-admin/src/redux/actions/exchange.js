@@ -78,10 +78,6 @@ export const actCreateExchange = (token, payload) => {
     };
 
 export const actUpdateAccept = (id, token) => {
-  //   const newOffset = offset === null || offset === undefined ? 0 : offset;
-  //   const limit = 10;
-    // let payload = {"id" : id, "type": "reqUserName"}
-    // console.log("id" , id)
     return dispatch => {
       dispatch(actShowLoading());
       return new Promise((resolve, reject) => {
@@ -103,10 +99,6 @@ export const actUpdateAccept = (id, token) => {
   };
 
   export const actUpdateConfirm = (id, token) => {
-    //   const newOffset = offset === null || offset === undefined ? 0 : offset;
-    //   const limit = 10;
-      // let payload = {"id" : id, "type": "reqUserName"}
-      // console.log("id" , id)
       return dispatch => {
         dispatch(actShowLoading());
         return new Promise((resolve, reject) => {
@@ -126,6 +118,28 @@ export const actUpdateAccept = (id, token) => {
         });
       };
     };
+
+    export const actGetManyDiff = (id, token) => {
+      return dispatch => {
+        dispatch(actShowLoading());
+        return new Promise((resolve, reject) => {
+          callApi(`admindiff/${id}`, 'GET', null, token)
+            .then(res => {
+              if (res && res.status === 200) { 
+                dispatch(actFetchExchangeReq(res.data));
+                resolve(res.data);
+                setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+              }
+            })
+            .catch(err => {
+              console.log(err);
+              reject(err);
+              setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+            });
+        });
+      };
+    };
+
 
 
 export const actFetchExchangeReq = (data) => {
@@ -160,5 +174,12 @@ export const actUpdateConfirmDispatch = (data) => {
   return {
       type: Types.UPDATE_CONFIRM,
       data
+  }
+}
+
+export const actGetManyDiffDispatch = (data) => {
+  return {
+    type : Types.GET_MANY_DIFF,
+    data
   }
 }

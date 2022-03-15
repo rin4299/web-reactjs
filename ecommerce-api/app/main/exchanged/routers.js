@@ -23,6 +23,11 @@ const Routes = [
     path: '/api/v1/exchange/confirm/{id}',
     config: handler.updateConfirm
   },
+  {
+    method: 'GET',
+    path: '/api/v1/admindiff/{id}',
+    config: handler.getAdminDiff
+  },
 ];
 
 module.exports = Routes;

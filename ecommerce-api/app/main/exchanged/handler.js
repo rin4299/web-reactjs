@@ -5,20 +5,20 @@ const ExchangeController = require('./controller');
 
 const controller = new ExchangeController();
 
-exports.getManyEx = {
-  description: 'Get Users list',
-  notes: 'Return Users items',
-  tags: ['api', 'v1'],
-  handler: controller.getManyEx.bind(controller),
-  auth: {
-    strategy: 'jwt',
-  },
-  validate: {
-  
-  }
-};
+  exports.getManyEx = {
+    description: 'Get Users list',
+    notes: 'Return Users items',
+    tags: ['api', 'v1'],
+    handler: controller.getManyEx.bind(controller),
+    auth: {
+      strategy: 'jwt',
+    },
+    validate: {
+    
+    }
+  };
 
-exports.createExchange = {
+  exports.createExchange = {
   description: 'Create a new Users',
   notes: 'Return created Users',
   tags: ['api', 'v1'],
@@ -31,7 +31,7 @@ exports.createExchange = {
   }
 };
 
-exports.updateAccept = {
+  exports.updateAccept = {
     description: 'Update Order',
     notes: 'Return updated Order by id',
     tags: ['api', 'v1'],
@@ -54,5 +54,18 @@ exports.updateAccept = {
     },
     validate: {
 
+    }
+  };
+
+  exports.getAdminDiff = {
+    description: 'Get Users list',
+    notes: 'Return Users items',
+    tags: ['api', 'v1'],
+    handler: controller.getAdminDiff.bind(controller),
+    auth: {
+      strategy: 'jwt',
+    },
+    validate: {
+   
     }
   };

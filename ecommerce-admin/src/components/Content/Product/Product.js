@@ -3,7 +3,7 @@ import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { actFetchProductsRequest, actDeleteProductRequest, actFindProductsRequest } from '../../../redux/actions/product';
-import { actCreateExchange } from '../../../redux/actions/exchange';
+import { actCreateExchange, actGetManyDiff } from '../../../redux/actions/exchange';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
@@ -31,7 +31,8 @@ class Product extends Component {
       selected:'',
       quantity: '',
       user: [],
-      recUser: ''
+      recUser: '',
+      userdiff: []
     }
   }
 
@@ -44,6 +45,14 @@ class Product extends Component {
           user: res.data.results
         })
       }
+
+      const res2 = await callApi(`admindiff/${this.state.user[0].id}`, 'GET', null, token);  
+        if (res2 && res2.status === 200) {
+          this.setState({
+            userdiff: res2.data
+          })
+          console.log("test" , this.state.userdiff)
+        }
     } else {
       this.setState({
         redirect: true
@@ -62,7 +71,10 @@ class Product extends Component {
     }).catch(err => {
       console.log(err);  
     })
+
+  
   }
+
 
   pageChange(content){
     const limit = 10;
@@ -127,11 +139,18 @@ class Product extends Component {
     })
     this.setState({modalShow: false})
   }
-  // onhide = ()=>  {
-  //   this.setState({modalShow: false})
+
+  // createDefaultOption = () => {
+    // this.setState({
+    //   recUser: this.state.userdiff[0].name
+    // })
+  //   console.log("recU",this.state.recUser)
   // }
 
+
   MyVerticallyCenteredModal = (props) => {
+    // let optionTo = this.state.usediff;
+    // console.log("test2", this.state.userdiff)
     return (
       <Modal
         {...props}
@@ -151,14 +170,20 @@ class Product extends Component {
             <div className="form-group">
               <label style={{"margin-top":"20px"}} htmlFor="name">Request To </label>
               <br />
-              <select id="select" name="select" value={"admin2"} 
+              <select id="select" name="select"
               // onChange={this.handleChange} 
-              onChange={(e) => this.setState({recUser : e.target.value})}
+              onChange={(e) => {
+                this.setState({recUser : e.target.value})
+              }}
               >
-                {}
-                <option value="admin2">admin 2</option>
-                <option value="admin3">admin 3</option>
-                <option value="admin">admin</option>
+                {this.state.userdiff && this.state.userdiff.length ?
+                  this.state.userdiff.map((item, index) => {
+                    return(
+                      <option key={index} value={item.name} >{item.name}</option>
+                    )
+                  })
+                  : null
+                }
               </select>
             </div>       
             <div className="form-group">
@@ -167,6 +192,7 @@ class Product extends Component {
             </div>
             <div className="form-group">
               <button type="button" className="form-control btn btn-primary" onClick={() => 
+                
                 this.createExchange({
                   reqUserName:this.state.user[0].name,
                   recUserName:this.state.recUser,
@@ -334,6 +360,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     create_exchange: (token, payload) => {
       return dispatch(actCreateExchange(token, payload))
+    }, 
+    getmany_diff: (id, token) => {
+      return dispatch(actGetManyDiff(id, token))
     }
   }
 }

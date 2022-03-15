@@ -56,7 +56,7 @@ class Request extends Component {
 
   fetch_reload_data(){
     token = localStorage.getItem('_auth');
-    console.log("id", this.state.user[0].id);
+    // console.log("id", this.state.user[0].id);
     this.props.fetch_exchange_request(this.state.user[0].id, token).then(res => {
       this.setState({
         total: res
@@ -138,6 +138,7 @@ class Request extends Component {
             <div className="form-group">
               <button className="form-control btn btn-primary" type="button" onClick= {() => {
                 this.updateAccept(props.requests.indexExchange)
+                this.fetch_reload_data()
               }}>
                 Confirm
               </button>
@@ -196,7 +197,11 @@ class Request extends Component {
                         </thead>
                         <tbody>
                           {total && total.length ? total.map((item, index) => {
-                            return (
+                            if(item.isAccepted){
+                              return null;
+                            }
+                            else{
+                              return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
                                 <td>{item.pName}</td>
@@ -217,15 +222,9 @@ class Request extends Component {
                                     />
                                   </div>}
                                 </td>
-                                  
-                                {/* <td style={{ textAlign: "center" }}>
-                                  <div>
-                                    <span title='Edit' className="fix-action"><Link to={`/products/edit/${item.id}`}> <i className="fa fa-edit"></i></Link></span>
-                                    <span title='Delete' onClick={() => this.handleRemove(item.id)} className="fix-action"><Link to="#"> <i className="fa fa-trash" style={{ color: '#ff00008f' }}></i></Link></span>
-                                  </div>
-                                </td> */}
                               </tr>
-                            )
+                              )
+                            }                           
                           }) : null}
                         </tbody>
                       </table>
