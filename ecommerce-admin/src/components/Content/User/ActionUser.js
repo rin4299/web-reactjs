@@ -46,9 +46,6 @@ class ActionUser extends Component {
     this.setState({
       dataRole: resRole.data.results
     })
-    if(this.state.roleId === null) {
-      this.setState({["roleId"]: this.state.dataRole[0].id });
-    }
     if (id) {
       const res = await callApi(`users/${id}`, 'GET', null, token);
       this.setState({
@@ -78,12 +75,9 @@ class ActionUser extends Component {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
-    console.log(name)
-    console.log(value)
     this.setState({
       [name]: value
     });
-    console.log(this.state.roleId)
   }
 
   handleSubmit = async (event) => {
@@ -93,7 +87,6 @@ class ActionUser extends Component {
     this.setState({
       loading: true
     })
-    console.log(this.state.roleId)
     //upload image to firebase
     if (img !== null && img !== avatar) {
       avatar = await uploadImage(img);
@@ -263,7 +256,6 @@ class ActionUser extends Component {
                           <select className="form-control mb-3" name="roleId" value={roleId} onChange={this.handleChange}>
                             {dataRole && dataRole.length ?
                               dataRole.map((item, index) => {
-                                
                                 return (
                                   <option key={index} value={item.id} >{item.nameRole}</option>
                                 )
@@ -297,13 +289,7 @@ class ActionUser extends Component {
 const mapDispatchToProps = (dispatch) => {
   return {
     add_user: (token, newUser) => {
-      console.log(newUser);
-      if(newUser.roleId === 1){
         dispatch(actAddUserRequest(token, newUser))
-      } else {
-        console.log(newUser.roleId)
-      }
-      
     },
     get_user: (token, id) => {
       dispatch(actGetUserRequest(token, id))
