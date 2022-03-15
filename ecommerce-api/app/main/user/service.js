@@ -5,6 +5,7 @@ const Models = require('../../db/models');
 const BaseServiceCRUD = require('../../base/BaseServiceCRUD');
 const _ = require('lodash');
 const PasswordUtils = require('../../services/password');
+const { build } = require('@hapi/joi');
 
 class UserService extends BaseServiceCRUD {
   constructor() {

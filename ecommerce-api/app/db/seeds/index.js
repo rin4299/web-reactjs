@@ -19,16 +19,16 @@ const dataRole = [
     description: "user",
     isActive: true,
   },
-  {
-    nameRole: "user1",
-    description: "user1",
-    isActive: true,
-  },
-  {
-    nameRole: "user2",
-    description: "user2",
-    isActive: true,
-  },
+  // {
+  //   nameRole: "user1",
+  //   description: "user1",
+  //   isActive: true,
+  // },
+  // {
+  //   nameRole: "user2",
+  //   description: "user2",
+  //   isActive: true,
+  // },
 ];
 
 const dataUser = [
@@ -47,16 +47,16 @@ const dataUser = [
     name: "user",
     isVerifyEmail: true,
   },
-  {
-    email: "user1@gmail.com",
-    name: "user1",
-    isVerifyEmail: true,
-  },
-  {
-    email: "user2@gmail.com",
-    name: "user2",
-    isVerifyEmail: true,
-  },
+  // {
+  //   email: "user1@gmail.com",
+  //   name: "user1",
+  //   isVerifyEmail: true,
+  // },
+  // {
+  //   email: "user2@gmail.com",
+  //   name: "user2",
+  //   isVerifyEmail: true,
+  // },
 ];
 
 const dataCategory = [
