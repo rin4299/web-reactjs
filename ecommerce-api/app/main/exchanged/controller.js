@@ -59,6 +59,15 @@ class ExchangeController extends BaseControllerCRUD {
       throw err;
     }
   };
+
+  async deleteRequest(request) {
+    try {
+      const {id} = request.params;
+      return await this.service.deleteRequest(id);
+    } catch (err) {
+      throw err;
+    }
+  };
 }
 
 module.exports = ExchangeController;

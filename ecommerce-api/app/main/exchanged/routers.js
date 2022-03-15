@@ -28,6 +28,11 @@ const Routes = [
     path: '/api/v1/admindiff/{id}',
     config: handler.getAdminDiff
   },
+  {
+    method: 'GET',
+    path: '/api/v1/exchange/delete/{id}',
+    config: handler.deleteRequest
+  },
 ];
 
 module.exports = Routes;
