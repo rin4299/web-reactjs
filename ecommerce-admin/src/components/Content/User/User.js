@@ -155,9 +155,10 @@ class User extends Component {
                                 <td>{item.email}</td>
                                 <td>{item.name}</td>
                                 <td style={{textAlign: "center"}}>
+                                {/* <td>{console.log("2",item.role)}</td> */}
                                   <div class="i-checks">
                                     {
-                                      item.role.nameRole === 'superadmin' ? 
+                                      item.role && item.role.nameRole === 'superadmin' ? 
                                       <input type="radio" checked={true} onChange={() => this.handleChangeRadio} class="radio-template" />
                                       :
                                       <input type="radio" checked={false} onChange={() => this.handleChangeRadio} class="radio-template" />
@@ -167,7 +168,7 @@ class User extends Component {
                                 <td style={{textAlign: "center"}}>
                                   <div class="i-checks">
                                     {
-                                      item.role.nameRole === 'admin' ? 
+                                      item.role && item.role.nameRole === 'admin' ? 
                                       <input type="radio" checked={true} onChange={() => this.handleChangeRadio} class="radio-template" />
                                       :
                                       <input type="radio" checked={false} onChange={() => this.handleChangeRadio} class="radio-template" />
@@ -177,7 +178,7 @@ class User extends Component {
                                 <td style={{textAlign: "center"}}>
                                   <div class="i-checks">
                                     {
-                                      item.role.nameRole === 'staff' ? 
+                                      item.role && item.role.nameRole === 'staff' ? 
                                       <input type="radio" checked={true} onChange={() => this.handleChangeRadio} class="radio-template" />
                                       :
                                       <input type="radio" checked={false} onChange={() => this.handleChangeRadio} class="radio-template" />
@@ -187,7 +188,7 @@ class User extends Component {
                                 <td style={{textAlign: "center"}}>
                                   <div class="i-checks">
                                     {
-                                      item.role.nameRole === 'user' ? 
+                                      item.role && item.role.nameRole === 'user' ? 
                                       <input type="radio" checked={true} onChange={() => this.handleChangeRadio} class="radio-template" />
                                       :
                                       <input type="radio" checked={false} onChange={() => this.handleChangeRadio} class="radio-template" />

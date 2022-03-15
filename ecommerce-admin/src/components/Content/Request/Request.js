@@ -56,6 +56,7 @@ class Request extends Component {
 
   fetch_reload_data(){
     token = localStorage.getItem('_auth');
+    console.log("id", this.state.user[0].id);
     this.props.fetch_exchange_request(this.state.user[0].id, token).then(res => {
       this.setState({
         total: res
@@ -202,13 +203,6 @@ class Request extends Component {
                                 <td><span className="text-truncate" >{item.reqUserName}</span></td>
                                 <td><span className="text-truncate" >{item.recUserName}</span></td>
                                 <td><span className="text-truncate" >{item.quantity}</span></td>
-                                {/* <td style={{}} >{item.quantity}</td> */}
-                                {/* <td>{item.properties}</td> */}
-                                {/* <td style={{ textAlign: "center" }}>
-                                  <div className="fix-cart">
-                                    <img src={item && item.image ? item.image : null} className="fix-img" alt="not found" />
-                                  </div>
-                                </td> */}
                                 <td style={{ textAlign: "center" }}>{item.isAccepted ?
                                   <div className="i-checks">
                                     <input type="checkbox" checked={true} className="checkbox-template" />

@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 export const actFetchExchangeRequest = (id, token) => {
 //   const newOffset = offset === null || offset === undefined ? 0 : offset;
 //   const limit = 10;
-  let payload = {"id" : id, "type": "reqUserName"}
+  let payload = {"id" : id, "type": "recUserName"}
   return dispatch => {
     dispatch(actShowLoading());
     return new Promise((resolve, reject) => {
@@ -31,7 +31,7 @@ export const actFetchExchangeRequest = (id, token) => {
 export const actFetchExchangeReceive = (id, token) => {
   //   const newOffset = offset === null || offset === undefined ? 0 : offset;
   //   const limit = 10;
-    let payload = {"id" : id, "type": "recUserName"}
+    let payload = {"id" : id, "type": "reqUserName"}
     return dispatch => {
       dispatch(actShowLoading());
       return new Promise((resolve, reject) => {

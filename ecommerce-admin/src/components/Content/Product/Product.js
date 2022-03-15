@@ -151,13 +151,14 @@ class Product extends Component {
             <div className="form-group">
               <label style={{"margin-top":"20px"}} htmlFor="name">Request To </label>
               <br />
-              <select id="select" name="select" value= {this.state.recUser}
+              <select id="select" name="select" value={"admin2"} 
               // onChange={this.handleChange} 
-              // onChange={(e) => this.setState({recUser : e.target.value})}
+              onChange={(e) => this.setState({recUser : e.target.value})}
               >
-                <option value="admin 2">admin 2</option>
-                <option value="admin 3">admin 3</option>
-                <option value="admin 4">admin 4</option>
+                {}
+                <option value="admin2">admin 2</option>
+                <option value="admin3">admin 3</option>
+                <option value="admin">admin</option>
               </select>
             </div>       
             <div className="form-group">
@@ -168,7 +169,7 @@ class Product extends Component {
               <button type="button" className="form-control btn btn-primary" onClick={() => 
                 this.createExchange({
                   reqUserName:this.state.user[0].name,
-                  recUserName:"admin",
+                  recUserName:this.state.recUser,
                   pName: props.products.name,
                   quantity: this.state.quantity
                 })
