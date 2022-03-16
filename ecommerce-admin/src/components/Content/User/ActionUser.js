@@ -289,7 +289,7 @@ class ActionUser extends Component {
 const mapDispatchToProps = (dispatch) => {
   return {
     add_user: (token, newUser) => {
-      dispatch(actAddUserRequest(token, newUser))
+        dispatch(actAddUserRequest(token, newUser))
     },
     get_user: (token, id) => {
       dispatch(actGetUserRequest(token, id))
