@@ -56,12 +56,15 @@ class ExchangeService extends BaseServiceCRUD {
 
     let exchange = await Models.Exchanged.query().where('id', id);
     let e = exchange[0];
+    console.log(e.pName + "AAA")
     if(e.isAccepted === false){
       throw Boom.badRequest('The current Exchange Request has not been accepted yet!');
     }
     let product = await Models.Product.query().where('nameProduct', e.pName);
     // let curQ = product.quantity - quantity;
-    await Models.Product.query().update({numberAvailable: product[0].numberAvailable - e.quantity} ).where({id});
+    console.log(product[0].numberAvailable)
+    console.log(e.quantity)
+    await Models.Product.query().update({numberAvailable: product[0].numberAvailable - e.quantity} ).where('id', product[0].id);
     await Models.Exchanged.query()
       .update({ isReceived: true })
       .where('id', id);
