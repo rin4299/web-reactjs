@@ -53,8 +53,10 @@ class Product extends Component {
           })
           // console.log("test" , this.state.userdiff)
           this.setState({
-            recUser: this.state.userdiff[0].name
+            recUser: this.state.userdiff[0] ? this.state.userdiff[0].name : null
           })
+          
+          
           // console.log("recuser" , this.state.recUser)
         }
     } else {
