@@ -55,7 +55,7 @@ class Login extends Component {
                 <div className="info d-flex align-items-center">
                   <div className="content">
                     <div className="logo">
-                      <h1>limupa shop admin</h1>
+                      <h1>BKStore shop admin</h1>
                     </div>
                   </div>
                 </div>
@@ -82,7 +82,7 @@ class Login extends Component {
           </div>
         </div>
         <div className="copyrights text-center">
-          <p>Design by <a href="https://bootstrapious.com/p/admin-template" className="external">Hoang Tran</a>
+          <p>Design by <a href="https://bootstrapious.com/p/admin-template" className="external">Tran Nhu Anh Vu - Nguyen Phuc Minh</a>
           </p>
         </div>
       </div>

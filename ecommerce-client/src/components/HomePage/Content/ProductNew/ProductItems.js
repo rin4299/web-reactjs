@@ -27,8 +27,8 @@ class ProductItems extends Component {
   }
   
   upItem = (quantity) => {
-    if (quantity >= 5) {
-      toast.error('You can only purchase up to 5 products')
+    if (quantity >= 20) {
+      toast.error('You can only purchase up to 20 products')
       return
     }
     this.setState({

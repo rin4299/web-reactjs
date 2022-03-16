@@ -11,7 +11,7 @@ export default class BannerMiddle extends Component {
             <div className="col-lg-4 col-md-4 text-center">
               <div className="single-banner">
                 <Link to="#">
-                  <img src="https://i.ibb.co/Fs4BNMn/1-3.jpg" alt="Li's Static Banner" />
+                  <img  src="https://i.ibb.co/fFXgZN5/sale-2.jpg" alt="Li's Static Banner" />
                 </Link>
               </div>
             </div>
@@ -20,7 +20,7 @@ export default class BannerMiddle extends Component {
             <div className="col-lg-4 col-md-4 text-center pt-xs-30">
               <div className="single-banner">
                 <Link to="#">
-                  <img src="https://i.ibb.co/6RLptfX/1-4.jpg" alt="Li's Static Banner" />
+                  <img src="https://i.ibb.co/mvNfCry/for-sale.jpg" alt="Li's Static Banner" />
                 </Link>
               </div>
             </div>
@@ -29,7 +29,7 @@ export default class BannerMiddle extends Component {
             <div className="col-lg-4 col-md-4 text-center pt-xs-30">
               <div className="single-banner">
                 <Link to="#">
-                  <img src="https://i.ibb.co/0YQVK7Y/1-5.jpg" alt="Li's Static Banner" />
+                  <img src="https://i.ibb.co/VNCHYTT/sale.jpg" alt="Li's Static Banner" />
                 </Link>
               </div>
             </div>
