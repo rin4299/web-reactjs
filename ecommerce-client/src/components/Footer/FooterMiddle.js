@@ -10,23 +10,23 @@ export default class FooterMiddle extends Component {
               {/* Begin Footer Logo Area */}
               <div className="col-lg-4 col-md-6">
                 <div className="footer-logo">
-                  <img src="https://i.ibb.co/0nfNbwg/1.png" alt="Footer Logo" />
+                  {/* <img src="https://i.ibb.co/0nfNbwg/1.png" alt="Footer Logo" /> */}
                   <p className="info">
-                    We are a team of designers and developers that create high quality HTML Template &amp; Woocommerce, Shopify Theme.
+                    We are Tran Nhu Anh Vu and Nguyen Phuc Minh.
             </p>
                 </div>
                 <ul className="des">
                   <li>
                     <span>Address: </span>
-                    6688Princess Road, London, Greater London BAS 23JK, UK
+                    268 Lý thường kiệt, HCM
             </li>
                   <li>
                     <span>Phone: </span>
-                    <a href="/">(+123) 123 321 345</a>
+                    <a href="/">(+123) 123 456 789</a>
                   </li>
                   <li>
                     <span>Email: </span>
-                    <a href="mailto://info@yourdomain.com">info@yourdomain.com</a>
+                    <a href="mailto://info@yourdomain.com">info@hcmut.edu.vn</a>
                   </li>
                 </ul>
               </div>

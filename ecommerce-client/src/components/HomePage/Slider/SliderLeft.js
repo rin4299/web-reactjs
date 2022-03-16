@@ -8,13 +8,13 @@ export default class SliderLeft extends Component {
           <div id="carouselExampleControls" className="carousel slide" data-ride="carousel">
             <div className="carousel-inner">
               <div className="carousel-item active">
-                <img className="d-block w-100" src="https://i.ibb.co/vjvcthr/1.jpg" alt="First slide" />
+                <img className="d-block w-100" src="https://i.ibb.co/1KW07L8/Screen-Shot-2022-03-16-at-20-12-37.png" alt="First slide" />
               </div>
               <div className="carousel-item">
-                <img className="d-block w-100" src="https://i.ibb.co/Br7wKsF/2.jpg" alt="Second slide" />
+                <img className="d-block w-100" src="https://i.ibb.co/R6cL1pY/Screen-Shot-2022-03-16-at-20-13-38.png" alt="Second slide" />
               </div>
               <div className="carousel-item">
-                <img className="d-block w-100" src="https://i.ibb.co/1zw9LVh/3.jpg" alt="Third slide" />
+                <img className="d-block w-100" src="https://i.ibb.co/1mn4pG4/Screen-Shot-2022-03-16-at-20-14-23.png" alt="Third slide" />
               </div>
             </div>
             <a className="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
