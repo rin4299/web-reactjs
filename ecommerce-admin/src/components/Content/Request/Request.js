@@ -153,7 +153,7 @@ class Request extends Component {
   }
 
   render() {
-    let { requests } = this.props;
+    // let { requests } = this.props;
     const {total} = this.state;
     return (
       <div className="content-inner">

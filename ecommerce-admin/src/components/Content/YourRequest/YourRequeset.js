@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { actFetchProductsRequest, actDeleteProductRequest, actFindProductsRequest } from '../../../redux/actions/product';
-import { actFetchExchangeReceive,actUpdateConfirm} from '../../../redux/actions/exchange';
+import { actFetchProductsRequest, actDeleteProductRequest } from '../../../redux/actions/product';
+import { actFetchExchangeReceive, actUpdateConfirm, actDeleteRequest} from '../../../redux/actions/exchange';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
@@ -85,10 +85,10 @@ class YourRequest extends Component {
       confirmButtonText: 'Yes'
     }).then(async (result) => {
       if (result.value) {
-        await this.props.delete_product(id, token);
+        await this.props.delete_request(id, token);
         Swal.fire(
           'Deleted!',
-          'Your file has been deleted.',
+          'Your request has been deleted.',
           'success'
         )
       }
@@ -150,7 +150,7 @@ class YourRequest extends Component {
   }
 
   render() {
-    let { requests } = this.props;
+    // let { requests } = this.props;
     const {total} = this.state;
 
     return (
@@ -228,10 +228,12 @@ class YourRequest extends Component {
                                   
                                 </td>
                                 
-                                <td style={{ textAlign: "center" }}>
+                                <td style={{ textAlign: "center" }}>{item.isAccepted ?
+                                  null :
                                   <div>
                                     <span title='Delete' onClick={() => this.handleRemove(item.id)} className="fix-action"><Link to="#"> <i className="fa fa-trash" style={{ color: '#ff00008f' }}></i></Link></span>
                                   </div>
+                                  }
                                 </td>
                               </tr>
                               )
@@ -277,14 +279,14 @@ const mapDispatchToProps = (dispatch) => {
     delete_product: (id, token) => {
       dispatch(actDeleteProductRequest(id, token))
     },
-    find_products: (token, searchText) => {
-      return dispatch(actFindProductsRequest(token, searchText))
-    },
     fetch_exchange_receive : (id, token) => {
       return dispatch(actFetchExchangeReceive(id, token))
     },
     update_Confirm : (id, token) => {
       return dispatch(actUpdateConfirm(id, token))
+    },
+    delete_request : (id, token) => {
+      return dispatch(actDeleteRequest(id,token))
     }
   }
 }

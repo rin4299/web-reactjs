@@ -28,6 +28,13 @@ export const actFetchExchangeRequest = (id, token) => {
   };
 };
 
+export const actFetchExchangeReq = (data) => {
+  return {
+      type: Types.FETCH_EXCHANGE_REQUEST,
+      data
+  }
+}
+
 export const actFetchExchangeReceive = (id, token) => {
   //   const newOffset = offset === null || offset === undefined ? 0 : offset;
   //   const limit = 10;
@@ -51,6 +58,13 @@ export const actFetchExchangeReceive = (id, token) => {
       });
     };
   };
+
+  export const actFetchExchangeRec = (data) => {
+    return {
+        type: Types.FETCH_EXCHANGE_RECEIVE,
+        data
+    }
+  }
 
 export const actCreateExchange = (token, payload) => {
     //   const newOffset = offset === null || offset === undefined ? 0 : offset;
@@ -77,6 +91,13 @@ export const actCreateExchange = (token, payload) => {
       };
     };
 
+  export const actCreateExchangeDispatch = (data) => {
+    return {
+        type: Types.CREATE_EXCHANGE,
+        data
+    }
+  }
+
 export const actUpdateAccept = (id, token) => {
     return dispatch => {
       dispatch(actShowLoading());
@@ -97,6 +118,13 @@ export const actUpdateAccept = (id, token) => {
       });
     };
   };
+
+  export const actUpdateAcceptDispatch = (data) => {
+    return {
+        type: Types.UPDATE_ACCEPT,
+        data
+    }
+  }
 
   export const actUpdateConfirm = (id, token) => {
       return dispatch => {
@@ -119,6 +147,13 @@ export const actUpdateAccept = (id, token) => {
       };
     };
 
+    export const actUpdateConfirmDispatch = (data) => {
+      return {
+          type: Types.UPDATE_CONFIRM,
+          data
+      }
+    }
+
     export const actGetManyDiff = (id, token) => {
       return dispatch => {
         dispatch(actShowLoading());
@@ -140,46 +175,24 @@ export const actUpdateAccept = (id, token) => {
       };
     };
 
-
-
-export const actFetchExchangeReq = (data) => {
-    return {
-        type: Types.FETCH_EXCHANGE_REQUEST,
+    export const actGetManyDiffDispatch = (data) => {
+      return {
+        type : Types.GET_MANY_DIFF,
         data
+      }
     }
-}
 
-export const actFetchExchangeRec = (data) => {
-  return {
-      type: Types.FETCH_EXCHANGE_RECEIVE,
-      data
-  }
-}
 
-export const actCreateExchangeDispatch = (data) => {
+  export const actDeleteRequest = (id, token) => {
+    return async dispatch => {
+      await callApi(`exchange/delete/${id}`, "GET", null, token);
+      dispatch(actDeleteRequestDispatch(id));
+    };
+  };
+
+  export const actDeleteRequestDispatch = id => {
     return {
-        type: Types.CREATE_EXCHANGE,
-        data
-    }
-}
-
-export const actUpdateAcceptDispatch = (data) => {
-  return {
-      type: Types.UPDATE_ACCEPT,
-      data
-  }
-}
-
-export const actUpdateConfirmDispatch = (data) => {
-  return {
-      type: Types.UPDATE_CONFIRM,
-      data
-  }
-}
-
-export const actGetManyDiffDispatch = (data) => {
-  return {
-    type : Types.GET_MANY_DIFF,
-    data
-  }
-}
+      type: Types.REMOVE_REQUEST,
+      id
+    };
+  };
