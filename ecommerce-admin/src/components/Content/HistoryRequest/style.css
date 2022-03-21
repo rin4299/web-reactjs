@@ -1,0 +1,40 @@
+.fix-create-action {
+    position: absolute;
+    top: 8px;
+    right: 15px;
+  }
+  
+  .fix-cart {
+    height: 60px;
+    width: 150px;
+    overflow: hidden;
+  }
+  .fix-img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+  }
+  
+  .btn-group .button {
+    /* background-color: #4CAF50; Green */
+    /* border: 1px solid black; */
+    border-radius: 12px;
+    color: blue;
+    padding: 10px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    float: right;
+    position: relative;
+    left: 790px;
+  }
+  
+  .btn-group .button:not(:last-child) {
+    border-right: none; /* Prevent double borders */
+  }
+  
+  .btn-group .button:hover {
+    background-color: rgb(179, 179, 226);
+  }

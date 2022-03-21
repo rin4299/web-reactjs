@@ -20,6 +20,7 @@ import ContactPage from './pages/ContactPage';
 import AboutPage from './pages/AboutPage';
 import RequestPage from 'pages/RequestPage'
 import YourRequestPage from 'pages/YourRequestPage';
+import HistoryRequestPage from 'pages/HistoryRequestPage';
 
 const routes = [
   {
@@ -56,6 +57,11 @@ const routes = [
     path: '/yourrequests',
     exact: true,
     main: ({ match }) => <YourRequestPage  match={match}/>
+  },
+  {
+    path: '/historyrequest',
+    exact: true,
+    main: ({ match }) => <HistoryRequestPage  match={match}/>
   },
   {
     path: '/discounts',
