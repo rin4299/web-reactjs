@@ -33,6 +33,11 @@ const Routes = [
     path: '/api/v1/exchange/delete/{id}',
     config: handler.deleteRequest
   },
+  {
+    method: 'GET',
+    path: '/api/v1/tracking/{id}',
+    config: handler.tracking
+  },
 ];
 
 module.exports = Routes;

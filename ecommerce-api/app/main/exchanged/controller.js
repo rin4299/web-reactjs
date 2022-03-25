@@ -68,6 +68,18 @@ class ExchangeController extends BaseControllerCRUD {
       throw err;
     }
   };
+
+  async tracking(request) {
+    try {
+      const {
+        id
+      } = request.params;
+      return await this.service.tracking(id);
+    } catch (err) {
+      throw err;
+    }
+  };
+
 }
 
 module.exports = ExchangeController;

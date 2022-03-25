@@ -70,6 +70,18 @@ const controller = new ExchangeController();
     }
   };
 
+  exports.tracking = {
+    description: 'Tracking product',
+    notes: 'Return list of history',
+    tags: ['api', 'v1'],
+    handler: controller.tracking.bind(controller),
+    auth: {
+      strategy: 'jwt',
+    },
+    validate: {
+
+    }
+  };
 
   exports.deleteRequest = {
     description: 'Update Order',

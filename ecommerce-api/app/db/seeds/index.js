@@ -1,5 +1,5 @@
 "use strict";
- 
+ a
 const Models = require("../models");
 const PasswordUtils = require("../../services/password");
  
@@ -20,7 +20,7 @@ const dataRole = [
    isActive: true,
  },
 ];
- 
+
 const dataUser = [
  {
    email: "admin@gmail.com",
