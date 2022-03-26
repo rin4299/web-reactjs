@@ -161,6 +161,11 @@ class Request extends Component {
         <header className="page-header">
           <div className="container-fluid">
             <h2 className="no-margin-bottom">Requests</h2>
+            <div class="btn-group">
+              <button class="button"><Link to="/requests"> <i style ={{}}/>Requests</Link></button>
+              <button class="button"><Link to="/yourrequests"> <i style ={{}}/>Your Requests</Link></button>
+              <button class="button"><Link to="/historyrequest"> <i style ={{}}/>History</Link></button>
+            </div>
           </div>
         </header>
         {/* Breadcrumb*/}
@@ -178,6 +183,7 @@ class Request extends Component {
                   <div className="card-header d-flex align-items-center">
                     <h3 className="h4">List Request</h3>
                   </div>
+                  
                   <div className="card-body">
                     <div className="table-responsive">
                       <table className="table table-hover">
