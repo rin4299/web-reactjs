@@ -131,6 +131,7 @@ class Producer extends Component {
                         aria-label="Search" />
                     </div>
                     <Link to="/producers/add" className="btn btn-primary" > Create</Link>
+                    {/* <Link to="/requests"> <i className="btn btn-primary" />Request</Link> */}
                   </form>
                   <div className="card-body">
                     <div className="table-responsive">
