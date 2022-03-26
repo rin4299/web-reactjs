@@ -24,6 +24,7 @@ type ProductDetail struct {
 	Id string `json:"id"`
 	Pid string `json:"pid"`
 	OwnerName string `json:"ownerName"`
+	LatestUpdate string `json:"latestUpdate"`
 } 
 
 type Exchange struct {
@@ -34,6 +35,7 @@ type Exchange struct {
 	IsAccepted bool `json:"isAccepted"`
 	IsConfirm bool `json:"isConfirm"`
 	IsActive bool `json:"isActive"`
+	LatestUpdate string `json:"latestUpdate"`
 }
 
 
@@ -91,17 +93,17 @@ func (s *SmartContract) queryProductDetail(APIstub shim.ChaincodeStubInterface, 
 
 func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Response {
 
-	// t, _ := APIstub.GetTxTimestamp()
+	t, _ := APIstub.GetTxTimestamp()
 	ProductDetails := []ProductDetail{
-		ProductDetail{Id: "1", Pid: "1", ProductName: "2m-pipe", OwnerName: "StoreA"},
-		ProductDetail{Id: "2", Pid: "2", ProductName: "water pipe glue", OwnerName: "StoreB"},
-		ProductDetail{Id: "3", Pid: "3", ProductName: "electrical line", OwnerName: "StoreB"},
-		ProductDetail{Id: "4", Pid: "4", ProductName: "water handler", OwnerName: "StoreB"},
-		ProductDetail{Id: "5", Pid: "5", ProductName: "water pump", OwnerName: "StoreB"},
-		ProductDetail{Id: "6", Pid: "5", ProductName: "water pump", OwnerName: "StoreA"},
-		ProductDetail{Id: "7", Pid: "5", ProductName: "water pump", OwnerName: "StoreA"},
-		ProductDetail{Id: "8", Pid: "5", ProductName: "water pump", OwnerName: "StoreB"},
-		ProductDetail{Id: "9", Pid: "5", ProductName: "water pump", OwnerName: "StoreB"},
+		ProductDetail{Id: "1", Pid: "1", ProductName: "2m-pipe", OwnerName: "StoreA", LatestUpdate: t.String()},
+		ProductDetail{Id: "2", Pid: "2", ProductName: "water pipe glue", OwnerName: "StoreB", LatestUpdate: t.String()},
+		ProductDetail{Id: "3", Pid: "3", ProductName: "electrical line", OwnerName: "StoreB", LatestUpdate: t.String()},
+		ProductDetail{Id: "4", Pid: "4", ProductName: "water handler", OwnerName: "StoreB", LatestUpdate: t.String()},
+		ProductDetail{Id: "5", Pid: "5", ProductName: "water pump", OwnerName: "StoreB", LatestUpdate: t.String()},
+		ProductDetail{Id: "6", Pid: "5", ProductName: "water pump", OwnerName: "StoreA", LatestUpdate: t.String()},
+		ProductDetail{Id: "7", Pid: "5", ProductName: "water pump", OwnerName: "StoreA", LatestUpdate: t.String()},
+		ProductDetail{Id: "8", Pid: "5", ProductName: "water pump", OwnerName: "StoreB", LatestUpdate: t.String()},
+		ProductDetail{Id: "9", Pid: "5", ProductName: "water pump", OwnerName: "StoreB", LatestUpdate: t.String()},
 	}
 
 	i := 0
@@ -112,8 +114,8 @@ func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Respo
 	}
 	
 	exchanges := []Exchange{
-		Exchange{Id: "1", ReqUserName: "StoreA", RecUserName: "StoreB", ListofProduct:"1-2,3-3",IsAccepted: false,IsConfirm: false , IsActive: true},
-		Exchange{Id: "2", ReqUserName: "StoreA", RecUserName: "StoreB", ListofProduct:"1-2,3-2",IsAccepted: false,IsConfirm: false , IsActive: true},
+		Exchange{Id: "1", ReqUserName: "StoreA", RecUserName: "StoreB", ListofProduct:"1-2,3-3",IsAccepted: false,IsConfirm: false , IsActive: true, LatestUpdate: t.String()},
+		Exchange{Id: "2", ReqUserName: "StoreA", RecUserName: "StoreB", ListofProduct:"1-2,3-2",IsAccepted: false,IsConfirm: false , IsActive: true, LatestUpdate: t.String()},
 	}
 
 	j := 0
@@ -130,8 +132,8 @@ func (s *SmartContract) createProductDetail(APIstub shim.ChaincodeStubInterface,
 
 	
 	id := strconv.Itoa(getLast(APIstub, "PDetail-") + 1)
-	// t, _ := APIstub.GetTxTimestamp()
-	var productDetail = ProductDetail{Id: id,Pid: args[0], ProductName: args[1], OwnerName: args[2]}
+	t, _ := APIstub.GetTxTimestamp()
+	var productDetail = ProductDetail{Id: id,Pid: args[0], ProductName: args[1], OwnerName: args[2], LatestUpdate: t.String()}
 
 	productDetailAsBytes, _ := json.Marshal(productDetail)
 	APIstub.PutState("PDetail-" + productDetail.Id, productDetailAsBytes)
@@ -258,7 +260,7 @@ func (s *SmartContract) changeProductDetail(APIstub shim.ChaincodeStubInterface,
 	json.Unmarshal(exchangeAsBytes, &exchange)
 
 	var lst string
-	// t, _ := APIstub.GetTxTimestamp()
+	t, _ := APIstub.GetTxTimestamp()
 	// if strings.Contains(exchange.ListofProduct, ","){
 	los := []string {exchange.ListofProduct, exchange.RecUserName}
 	lst = queryListOfProductDetail(APIstub, los)
@@ -272,7 +274,7 @@ func (s *SmartContract) changeProductDetail(APIstub shim.ChaincodeStubInterface,
 	
 		json.Unmarshal(productDetailAsBytes, &productDetail)
 		productDetail.OwnerName = exchange.ReqUserName
-		// productDetail.LastUpdate = t.String()
+		productDetail.LatestUpdate = t.String()
 	
 		productDetailAsBytes, _ = json.Marshal(productDetail)
 		APIstub.PutState("PDetail-" + productDetail.Id, productDetailAsBytes)
@@ -360,8 +362,8 @@ func (s *SmartContract) createExchange(APIstub shim.ChaincodeStubInterface, args
 
 
 	id := strconv.Itoa(getLast(APIstub, "Exchange-") + 1)
-	// t, _ := APIstub.GetTxTimestamp()
-	var exchange = Exchange{Id: id, ReqUserName: args[0], RecUserName: args[1], ListofProduct: args[2], IsAccepted: false, IsConfirm: false}
+	t, _ := APIstub.GetTxTimestamp()
+	var exchange = Exchange{Id: id, ReqUserName: args[0], RecUserName: args[1], ListofProduct: args[2], IsAccepted: false, IsConfirm: false, LatestUpdate: t.String()}
 
 	exchangeAsBytes, _ := json.Marshal(exchange)
 	APIstub.PutState("Exchange-" + exchange.Id, exchangeAsBytes)
@@ -423,7 +425,7 @@ func (s *SmartContract) changeExchangeInfor(APIstub shim.ChaincodeStubInterface,
 	// if len(args) != 3 {
 	// 	return shim.Error("Incorrect number of arguments. Expecting 2")
 	// }
-	// t, _ := APIstub.GetTxTimestamp()
+	t, _ := APIstub.GetTxTimestamp()
 	exchangeAsBytes, _ := APIstub.GetState("Exchange-" + args[0])
 	exchange := Exchange{}
 
@@ -437,7 +439,7 @@ func (s *SmartContract) changeExchangeInfor(APIstub shim.ChaincodeStubInterface,
 	} else {
 		return shim.Error("Incorrect argument name. Expecting isAccepted | isConfirm")
 	}
-	// exchange.LastUpdate = t.String()
+	exchange.LatestUpdate = t.String()
 	exchangeAsBytes, _ = json.Marshal(exchange)
 	APIstub.PutState("Exchange-" + exchange.Id, exchangeAsBytes)
 	
