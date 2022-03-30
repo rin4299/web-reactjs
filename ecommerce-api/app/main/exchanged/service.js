@@ -88,15 +88,55 @@ class ExchangeService extends BaseServiceCRUD {
     return returning
   }
 
+  // async createExchange(payload) {
+  //   try {
+  //       const {reqUserName, recUserName, pName, quantity} = payload;
+  //       let product = await Models.Product.query().where('nameProduct', pName);
+  //       if(quantity > product[0].numberAvailable){
+  //         throw Boom.badRequest('The current available of the current product can not afford this quantity!');
+  //       }
+  //       let lop = String(product[0].id) + "-" + String(quantity)
+  //       console.log(lop)
+  //       // let data = this.bcCallerInvoke(["peer0.org1.example.com", "peer0.org2.example.com"], "productdetail", "mychannel", "createExchange", [reqUserName, recUserName, lop]);
+  //       let object = {
+  //         fcn: "createExchange",
+  //         peers:["peer0.org1.example.com","peer0.org2.example.com"],
+  //         chaincodeName:"productdetail",
+  //         channelName:"mychannel",
+  //         args:[reqUserName, recUserName, lop]
+  //       }
+  //       let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+  //       console.log(res.data);
+  //       if(res.data){
+  //         return "Successful"
+  //       } else {
+  //         throw Boom.badRequest('Unsuccessful Creating!');
+  //       }
+  //     // let data = await Models.Exchanged.query()
+  //     //   .insert(payload)
+  //     //   .returning('*');
+  //     // let U = await Models.User.query().whereIn('id',[data.reqUserId, data.recUserId]);
+  //     // data.reqUserName = U[0].name;
+  //     // data.recUserName = U[1].name;
+  //     // let P = await Models.Product.query().findOne({id: data.pId});
+  //     // data.pName = P.nameProduct;
+  //     // return data;
+  //   } catch (err) {
+  //     throw err;
+  //   }
+  // }
+
   async createExchange(payload) {
     try {
-        const {reqUserName, recUserName, pName, quantity} = payload;
-        let product = await Models.Product.query().where('nameProduct', pName);
-        if(quantity > product[0].numberAvailable){
-          throw Boom.badRequest('The current available of the current product can not afford this quantity!');
+        const {reqUserName, recUserName, multiRequest} = payload;
+        var lop = ""
+        for(var i = 0; i < multiRequest.length; i++){
+            var product = await Models.Product.query().findOne('nameProduct', multiRequest[i]['pName']);
+            lop = lop + String(product.id) + "-" + String(multiRequest[i]['quantity']) + ","
         }
-        let lop = String(product[0].id) + "-" + String(quantity)
+        lop = lop.slice(0,-1)
         console.log(lop)
+    
         // let data = this.bcCallerInvoke(["peer0.org1.example.com", "peer0.org2.example.com"], "productdetail", "mychannel", "createExchange", [reqUserName, recUserName, lop]);
         let object = {
           fcn: "createExchange",
@@ -105,6 +145,7 @@ class ExchangeService extends BaseServiceCRUD {
           channelName:"mychannel",
           args:[reqUserName, recUserName, lop]
         }
+        console.log(object)
         let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
         console.log(res.data);
         if(res.data){
@@ -238,6 +279,36 @@ class ExchangeService extends BaseServiceCRUD {
     const role = await Models.Role.query().findOne({nameRole: 'admin'});
     const users = await Models.User.query().where('roleId', '=', role.id).where('id', '!=', id);
     return users;
+  }
+
+  async getHistory(id) {
+    // let recM = await this.bcCaller("peer0.org1.example.com","productdetail", "mychannel", "queryAllExchanges", "1");
+    // let recM = await this.bcCaller("peer0.org1.example.com","productdetail", "mychannel", "queryAllExchanges", "1");
+    let res = await Axios.get("http://localhost:4000/channels/mychannel/chaincodes/productdetail?args=['1']&peer=peer0.org1.example.com&fcn=queryAllExchanges");
+    var recM = res.data
+    console.log(recM)
+    let reValue = []
+    let returning = []
+    let U = await Models.User.query().findOne({id: id})
+    console.log(U.name)
+    console.log(recM[1])
+    for(var i = 0; i < recM.length; i++){
+      if((recM[i]['reqUserName'] === U.name || recM[i]['recUserName'] === U.name) && recM[i]["isActive"] === true && (recM[i]["isAccepted"] === true && recM[i]["isConfirm"] === true )){
+        var temp = recM[i]["listofProduct"].split(",")
+        // console.log("HAHA",temp.length)
+        for(var j = 0; j < temp.length; j++){
+          console.log(temp[j][0])
+          var product = await Models.Product.query().findOne({id: parseInt(temp[j][0])})
+          product.quantity = parseInt(temp[j][2]);
+          reValue.push(product);
+        }
+        recM[i]["products"] = reValue;
+        returning.push(recM[i])
+        reValue = []
+      }
+    }
+    console.log(returning);
+    return returning
   }
   
 }

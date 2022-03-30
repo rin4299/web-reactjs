@@ -21,7 +21,8 @@ import AboutPage from './pages/AboutPage';
 import RequestPage from 'pages/RequestPage'
 import YourRequestPage from 'pages/YourRequestPage';
 import HistoryRequestPage from 'pages/HistoryRequestPage';
-
+import TrackingPage from 'pages/TrackingPage';
+import RequestCartPage from 'pages/RequestCartPage';
 const routes = [
   {
     path: '/',
@@ -49,6 +50,11 @@ const routes = [
     main: ({ match }) => <ProductPage  match={match}/>
   },
   {
+    path: '/requestcart',
+    exact: true,
+    main: ({ match }) => <RequestCartPage  match={match}/>
+  },
+  {
     path: '/requests',
     exact: true,
     main: ({ match }) => <RequestPage  match={match}/>
@@ -62,6 +68,11 @@ const routes = [
     path: '/historyrequest',
     exact: true,
     main: ({ match }) => <HistoryRequestPage  match={match}/>
+  },
+  {
+    path: '/tracking',
+    exact: true,
+    main: ({ match }) => <TrackingPage  match={match}/>
   },
   {
     path: '/discounts',

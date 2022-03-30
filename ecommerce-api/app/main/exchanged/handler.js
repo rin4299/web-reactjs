@@ -95,3 +95,17 @@ const controller = new ExchangeController();
 
     }
   };
+
+
+  exports.getHistory = {
+    description: 'Tracking product',
+    notes: 'Return list of history',
+    tags: ['api', 'v1'],
+    handler: controller.getHistory.bind(controller),
+    auth: {
+      strategy: 'jwt',
+    },
+    validate: {
+
+    }
+  };

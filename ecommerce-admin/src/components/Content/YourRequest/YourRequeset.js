@@ -29,7 +29,9 @@ class YourRequest extends Component {
       modalShow: false,
       user: [],
       receive:'', 
-      id:0
+      id:0,
+      nameProduct:'',
+      quantityRequest:0,
     }
   }
 
@@ -117,8 +119,8 @@ class YourRequest extends Component {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h4>Name Product </h4>
-          <input  style={{width:"100%"}} disabled defaultValue={props.receive.name}/>  
+          {/* <h4>Name Product </h4>
+          <input  style={{width:"100%"}} disabled defaultValue={props.receive.name}/>   */}
           <form >
             <div className="form-group">
               <label htmlFor="from">From </label>
@@ -128,17 +130,53 @@ class YourRequest extends Component {
               <label htmlFor="to">To </label>
                <input className="form-control" disabled defaultValue={props.receive.to}/>  
             </div>
-            <div className="form-group">
+            {/* <div className="form-group">
               <label htmlFor="name">Quantity </label>
               <input className="form-control" disabled defaultValue={props.receive.Quantity}/>
+            </div> */}
+            <div className="table-responsive">
+                <table className="table table-hover" style={{ textAlign: "center" }}>
+                  <thead>
+                    <tr>
+                      <th style={{width:'30%'}}>Number</th>
+                      <th>Id-product</th>
+                      <th>Name Product</th>
+                      <th>Image</th>
+                      <th>Quantity</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.state.receive.products && this.state.receive.products.length ? this.state.receive.products.map((item, index) => {
+                        return (
+                          <tr key = {index}>
+                            <td scope="row">{index + 1}</td>
+                            <td><span className="text-truncate" >{item.id}</span></td>
+                            <td><span className="text-truncate" style={{width:'100%'}} >{item.nameProduct}</span></td>
+                            <td>
+                              <div className="fix-cart">
+                                <img src={item && item.image ? item.image : null} className="fix-img" alt="not found" />
+                              </div>
+                            </td>
+                            <td>{item.quantity}</td>
+                          </tr>
+                        )
+
+                    }) : null}
+                  </tbody>
+                </table>
             </div>
             <div className="form-group">
-            <button className="form-control btn btn-primary" type="button" onClick= {() => {
+            {this.state.receive.isAccepted ?
+              <button className="form-control btn btn-primary" type="button" onClick= {() => {
                 this.updateConfirm(props.receive.indexExchange)
                 this.fetch_reload_data()
               }}>
                 Confirm
               </button>
+              :
+              null
+             }
+            
             </div>
           </form>
         </Modal.Body>
@@ -231,25 +269,25 @@ class YourRequest extends Component {
                                     <this.CreateRequestModal
                                       show={this.state.modalShow}
                                       onHide={() => this.setState({modalShow: false})}
-                                      // receive ={{name: this.state.receive.pName,description :item.pName,from :this.state.receive.reqUserName, to:this.state.receive.recUserName, Quantity:this.state.receive.quantity, indexExchange : this.state.id  }}
                                     />
                   </div>
                   <div className="card-body">
                     <div className="table-responsive">
-                      <table className="table table-hover">
+                      <table className="table table-hover" style={{ textAlign: "center" }}>
                         <thead>
                           <tr>
                             <th>Number</th>
                             <th>Name</th>
                             <th>From</th>
                             <th>To</th>
-                            <th >Quantity</th>
-                            <th style={{ textAlign: "center" }}>Active</th>
-                            <th style={{ textAlign: "center" }}>Action</th>
+                            <th>Quantity</th>
+                            <th>Active</th>
+                            <th>Action</th>
                           </tr>
                         </thead>
                         <tbody>
                           {total && total.length ? total.map((item, index) => {
+                            console.log('item',item)
                             if(item.isReceived){
                               return null;
                             }
@@ -257,11 +295,11 @@ class YourRequest extends Component {
                               return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
-                                <td>{item.pName}</td>
+                                <td>{item.products[0].nameProduct}</td>
                                 <td><span className="text-truncate" >{item.reqUserName}</span></td>
                                 <td><span className="text-truncate" >{item.recUserName}</span></td>
-                                <td><span className="text-truncate" >{item.quantity}</span></td>
-                                <td style={{ textAlign: "center" }}>{item.isAccepted ?
+                                <td><span className="text-truncate" >{item.products[0].quantity}</span></td>
+                                <td>{item.isAccepted ?
                                   <div className="i-checks">
                                     <input type="checkbox" checked={true} className="checkbox-template" />
                                   </div>
@@ -270,23 +308,30 @@ class YourRequest extends Component {
                                     <input type="checkbox" checked={false} className="checkbox-template" />
                                   </div>}
                                 </td>
-                                <td style={{ textAlign: "center" }}>{item.isAccepted ?
+                                <td>{item.isAccepted ?
                                 <div className="i-checks">
-                                    <button class="btn btn-info" onClick={() => {this.setState({modalShow: true,receive : item, id : item.id} )}}>Confirm</button>
+                                    <button class="btn btn-info" onClick={() => {this.setState({modalShow: true,receive : item, id : item.id, nameProduct: item.products[0].nameProduct, quantityRequest: item.products[0].quantity} )}}>Confirm</button>
                                     <this.MyVerticallyCenteredModal
                                       show={this.state.modalShow}
                                       onHide={() => this.setState({modalShow: false})}
-                                      receive ={{name: this.state.receive.pName,description :item.pName,from :this.state.receive.reqUserName, to:this.state.receive.recUserName, Quantity:this.state.receive.quantity, indexExchange : this.state.id  }}
+                                      receive ={{name: this.state.nameProduct,from :this.state.receive.reqUserName, to:this.state.receive.recUserName, Quantity:this.state.quantityRequest, indexExchange : this.state.id  }}
                                     />
                                   </div>
                                   :
                                   <div className="i-checks">
-                                  <button class="btn btn-secondary" disable>Waiting</button>
-                                  </div>}
+                                    <button class="btn btn-secondary" onClick={() => {this.setState({modalShow: true,receive : item, id : item.id, nameProduct: item.products[0].nameProduct, quantityRequest: item.products[0].quantity} )}}>Waiting</button>
+                                    <this.MyVerticallyCenteredModal
+                                      show={this.state.modalShow}
+                                      onHide={() => this.setState({modalShow: false})}
+                                      receive ={{name: this.state.nameProduct,from :this.state.receive.reqUserName, to:this.state.receive.recUserName, Quantity:this.state.quantityRequest, indexExchange : this.state.id  }}
+                                    />
+                                  </div>
+                                  }
+                                  
                                   
                                 </td>
                                 
-                                <td style={{ textAlign: "center" }}>{item.isAccepted ?
+                                <td>{item.isAccepted ?
                                   null :
                                   <div>
                                     <span title='Delete' onClick={() => this.handleRemove(item.id)} className="fix-action"><Link to="#"> <i className="fa fa-trash" style={{ color: '#ff00008f' }}></i></Link></span>

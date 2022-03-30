@@ -80,6 +80,17 @@ class ExchangeController extends BaseControllerCRUD {
     }
   };
 
+  async getHistory(request) {
+    try {
+      const {
+        id
+      } = request.params;
+      return await this.service.getHistory(id);
+    } catch (err) {
+      throw err;
+    }
+  };
+
 }
 
 module.exports = ExchangeController;

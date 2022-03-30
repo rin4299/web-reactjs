@@ -147,41 +147,69 @@ export const actUpdateAccept = (id, token) => {
       };
     };
 
-    export const actUpdateConfirmDispatch = (data) => {
-      return {
-          type: Types.UPDATE_CONFIRM,
-          data
-      }
+  export const actUpdateConfirmDispatch = (data) => {
+    return {
+        type: Types.UPDATE_CONFIRM,
+        data
     }
+  }
 
-    export const actGetManyDiff = (id, token) => {
-      return dispatch => {
-        dispatch(actShowLoading());
-        return new Promise((resolve, reject) => {
-          callApi(`admindiff/${id}`, 'GET', null, token)
-            .then(res => {
-              if (res && res.status === 200) { 
-                dispatch(actFetchExchangeReq(res.data));
-                resolve(res.data);
-                setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
-              }
-            })
-            .catch(err => {
-              console.log(err);
-              reject(err);
+  export const actGetManyDiff = (id, token) => {
+    return dispatch => {
+      dispatch(actShowLoading());
+      return new Promise((resolve, reject) => {
+        callApi(`admindiff/${id}`, 'GET', null, token)
+          .then(res => {
+            if (res && res.status === 200) { 
+              dispatch(actFetchExchangeReq(res.data));
+              resolve(res.data);
               setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
-            });
-        });
-      };
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            reject(err);
+            setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+          });
+      });
+    };
+  };
+
+  export const actGetManyDiffDispatch = (data) => {
+    return {
+      type : Types.GET_MANY_DIFF,
+      data
+    }
+  }
+
+  export const actHistoryRequest = (id, token) => {
+    return dispatch => {
+      dispatch(actShowLoading());
+      return new Promise((resolve, reject) => {
+        callApi(`history/${id}`, 'GET', null, token)
+          .then(res => {
+            if (res && res.status === 200) { 
+              // dispatch(actHistoryRequest(res.data));
+              resolve(res.data);
+              setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            reject(err);
+            setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+          });
+      });
     };
 
-    export const actGetManyDiffDispatch = (data) => {
-      return {
-        type : Types.GET_MANY_DIFF,
-        data
-      }
-    }
+  };
 
+  export const actHistoryRequestDispatch = (data) => {
+    return {
+      type : Types.HISTORY_REQUEST,
+      data
+    }
+  }
 
   export const actDeleteRequest = (id, token) => {
     return async dispatch => {

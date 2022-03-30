@@ -58,6 +58,7 @@ export const actFindProductsRequest = (token, searchText) => {
         if (res && res.status === 200) { 
           dispatch(actFindProducts(res.data.results));
           resolve(res.data);
+          // console.log(res.data)
           setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
         }
       })

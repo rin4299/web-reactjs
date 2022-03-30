@@ -1,0 +1,26 @@
+.fix-create-action {
+  position: absolute;
+  top: 8px;
+  right: 15px;
+}
+.fix-cart-product {
+  height: 200px !important;
+  width: 300px !important;
+  margin: auto;
+  overflow: hidden;
+}
+.fix-img-product {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+p{
+  width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  resize: horizontal;
+  
+  padding: 10px;
+  margin: 0;
+}

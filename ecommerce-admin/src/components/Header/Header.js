@@ -3,8 +3,20 @@ import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { actToken, actGetNameRole  } from '../../redux/actions/auth'
 import { startLoading, doneLoading } from '../../utils/loading'
+import { actAddCartRequest, actFetchCartRequest } from '../../redux/actions/cart';
 
+
+let token;
+let cart;
 class Header extends Component {
+
+  constructor(props) {
+    super(props);
+  }
+
+  componentDidMount() {
+    token = localStorage.getItem('_auth');
+  }
 
   logOut = async () => {
     localStorage.removeItem('_auth');
@@ -16,6 +28,18 @@ class Header extends Component {
     doneLoading();
   }
   render() {
+    let count;
+    // const { cart } = fetch_items();
+    // console.log('header', cart)
+    
+    // console.log('localStorage',JSON.parse(localStorage.getItem('_cart')))
+    cart = JSON.parse(localStorage.getItem('_cart'))
+    console.log('cart header',cart)
+    // if (cart.length > 0) {
+    //   count = countCart.reduce((sum, item) => {
+    //     return sum += item.quantity
+    //   }, 0)
+    // }
     return (
       <header className="header">
         <nav className="navbar">
@@ -55,6 +79,18 @@ class Header extends Component {
                     <li><Link rel="nofollow" to="#" className="dropdown-item"> <img src="https://i.ibb.co/SnpwbfX/VN.png" alt="English" className="mr-2" />Viet Nam</Link></li>
                   </ul>
                 </li>
+                {/* Begin Header Mini Cart Area */}
+                <li className="nav-item">
+                    <Link to="/requestcart">
+                      <div className="nav-link logout">
+                        <span className="item-icon" />
+                        <span className="item-text">
+                          <span className="cart-item-count">{cart.length ? cart.length : 0}<i className="fas fa-shopping-cart" /></span> 
+                        </span>
+                      </div>
+                    </Link>
+                    <span />
+                  </li>
                 {/* Logout    */}
                 <li className="nav-item"><Link onClick={this.logOut} to="/login" className="nav-link logout"> <span className="d-none d-sm-inline">Logout</span><i className="fa fa-sign-out" /></Link></li>
               </ul>
@@ -74,7 +110,10 @@ const mapDispatchToProps = (dispatch) => {
     },
     setTokenRoleRedux: (token) => {
       dispatch(actGetNameRole(token))
-    }
+    },
+    fetch_items: () => {
+      dispatch(actFetchCartRequest())
+    },
   }
 }
 
