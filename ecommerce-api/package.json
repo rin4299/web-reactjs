@@ -32,7 +32,7 @@
     "glob": "^7.1.5",
     "hapi-auth-jwt2": "^8.8.0",
     "hapi-swagger": "^10.2.0",
-    "knex": "^0.21.1",
+    "knex": "^0.21.21",
     "knex-postgis": "^0.8.1",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",

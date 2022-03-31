@@ -3,7 +3,7 @@ import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { actFetchProductsRequest, actDeleteProductRequest, actFindProductsRequest } from '../../../redux/actions/product';
-import { actFetchExchangeRequest,actUpdateAccept} from '../../../redux/actions/exchange';
+import { actHistoryRequest,actUpdateAccept} from '../../../redux/actions/exchange';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
@@ -27,8 +27,8 @@ class HistoryRequest extends Component {
       searchText: '',
       modalShow: false,
       user: [],
-      request:'', 
-      id:0
+      id:0,
+      history:'',
     }
   }
 
@@ -43,7 +43,7 @@ class HistoryRequest extends Component {
         this.setState({
           user: res.data.results
         })
-        // console.log("user",this.state.user[0].name)
+        // console.log("user",this.state.user)
       }
     } else {
       this.setState({
@@ -57,7 +57,7 @@ class HistoryRequest extends Component {
   fetch_reload_data(){
     token = localStorage.getItem('_auth');
     // console.log("id", this.state.user[0].id);
-    this.props.fetch_exchange_request(this.state.user[0].id, token).then(res => {
+    this.props.fetch_history_request(this.state.user[0].id, token).then(res => {
       this.setState({
         total: res
       })
@@ -116,34 +116,81 @@ class HistoryRequest extends Component {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            Confirm Request
+            History Detail
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          <h4>Name Product </h4>
-          <input  style={{width:"100%"}} disabled defaultValue={props.requests.name}/>  
-          <form >
-            <div className="form-group">
-              <label htmlFor="from">From </label>
-               <input className="form-control" disabled defaultValue={props.requests.from}/>  
-            </div>
-            <div className="form-group">
-              <label htmlFor="to">To </label>
-               <input className="form-control" disabled defaultValue={props.requests.to}/>  
-            </div>
-            <div className="form-group">
-              <label htmlFor="name">Quantity </label>
-              <input className="form-control" disabled defaultValue={props.requests.Quantity}/>
-            </div>
-            <div className="form-group">
-              <button className="form-control btn btn-primary" type="button" onClick= {() => {
-                this.updateAccept(props.requests.indexExchange)
-                this.fetch_reload_data()
-              }}>
-                Confirm
-              </button>
-            </div>
-          </form>
+        <Modal.Body style={{overflow: 'auto'}}>
+          {/* {console.log('history',this.state.history)} */}
+          {/* <h4>Name Product </h4>
+          <input  style={{width:"100%"}} disabled defaultValue={props.requests.name}/>   */}
+          <div>
+            {this.state.history.id ? 
+            <form >
+              <div className="form-group">
+                <label htmlFor="from">Id-request </label>
+                <input className="form-control" disabled defaultValue={this.state.history.id}/>  
+              </div>
+              <div className="form-group">
+                <label htmlFor="from">From </label>
+                <input className="form-control" disabled defaultValue={this.state.history.reqUserName}/>  
+              </div>
+              <div className="form-group">
+                <label htmlFor="to">To </label>
+                <input className="form-control" disabled defaultValue={this.state.history.recUserName}/>  
+              </div>
+              <div className="form-group">
+                <label htmlFor="name">Type </label>
+                <input className="form-control" disabled defaultValue={this.state.history.reqUserName == this.state.user[0].name ? 'REQUEST' : 'RECEIVE' }/>
+              </div>
+              <div className="form-group">
+                <label htmlFor="from">Time </label>
+                <input className="form-control" disabled defaultValue={this.state.history.id}/>  
+              </div>
+              <div className="table-responsive">
+                <table className="table table-hover" style={{ textAlign: "center" }}>
+                  <thead>
+                    <tr>
+                      <th style={{width:'30%'}}>Number</th>
+                      <th>Id-product</th>
+                      <th>Name Product</th>
+                      <th>Image</th>
+                      <th>Quantity</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.state.history.products && this.state.history.products.length ? this.state.history.products.map((item, index) => {
+                        return (
+                          <tr key = {index}>
+                            <td scope="row">{index + 1}</td>
+                            <td><span className="text-truncate" >{item.id}</span></td>
+                            <td><span className="text-truncate" style={{width:'100%'}} >{item.nameProduct}</span></td>
+                            <td>
+                              <div className="fix-cart">
+                                <img src={item && item.image ? item.image : null} className="fix-img" alt="not found" />
+                              </div>
+                            </td>
+                            <td>{item.quantity}</td>
+                          </tr>
+                        )
+
+                    }) : null}
+                  </tbody>
+                </table>
+              </div>
+              
+              {/* <div className="form-group">
+                <button className="form-control btn btn-primary" type="button" onClick= {() => {
+                  this.updateAccept(props.requests.indexExchange)
+                  this.fetch_reload_data()
+                }}>
+                  Confirm
+                </button>
+              </div> */}
+            </form>
+            : null
+            }
+          </div>
+          
         </Modal.Body>
         <Modal.Footer>
           <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
@@ -155,6 +202,7 @@ class HistoryRequest extends Component {
   render() {
     // let { requests } = this.props;
     const {total} = this.state;
+    console.log('total',total)
     return (
       <div className="content-inner">
         {/* Page Header*/}
@@ -186,58 +234,54 @@ class HistoryRequest extends Component {
                   
                   <div className="card-body">
                     <div className="table-responsive">
-                      <table className="table table-hover">
+                      <table className="table table-hover" style={{ textAlign: "center" }}>
                         <thead>
                           <tr>
                             <th>Number</th>
                             <th>Id-request</th>
                             <th>From</th>
                             <th>To</th>
-                            {/* <th >Quantity</th> */}
-                            {/* <th>Properties</th> */}
-                            {/* <th style={{ textAlign: "center" }}>Images</th> */}
-                            <th style={{ textAlign: "center" }}>Type</th>
-                            <th style={{ textAlign: "center" }}>Producer</th>
-                            <th style={{ textAlign: "center" }}>Time</th>
+                            <th>Type</th>
+                            <th>Time</th>
                             <th></th>
                           </tr>
                         </thead>
                         <tbody>
                           {total && total.length ? total.map((item, index) => {
-                            if(item.isAccepted){
-                              return null;
-                            }
-                            else{
+                            {/* console.log('item.latestUpdate', item.latestUpdate) */}
+                            {/* console.log('item', item) */}
+                            var date = new Date(item.latestUpdate.slice(8,18) * 1000);
                               return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
-                                <td>{item.pName}</td>
+                                <td><span className="text-truncate" >{item.id}</span></td>
                                 <td><span className="text-truncate" >{item.reqUserName}</span></td>
                                 <td><span className="text-truncate" >{item.recUserName}</span></td>
-                                <td><span className="text-truncate" >{item.quantity}</span></td>
-                                <td style={{ textAlign: "center" }}>{item.isAccepted ?
-                                  <div className="i-checks">
-                                    <input type="checkbox" checked={true} className="checkbox-template" />
-                                  </div>
-                                  :
-                                  <div className="i-checks">
-                                    <button class="btn btn-info" onClick={() => this.setState({modalShow: true,request : item, id : item.id})}>Accept</button>
-                                    <this.MyVerticallyCenteredModal
+                                <td style={{ textAlign: "center" }}> {item.reqUserName == this.state.user[0].name ?
+                                <span>REQUEST</span> 
+                                :
+                                <span>RECEIVE</span> 
+                                }
+                                </td>
+                                <td>{date.toString()}</td>
+                                <td>
+                                  <div>
+                                  <button class="btn btn-info" onClick={() => this.setState({modalShow: true, history : item })}>View More</button>
+                                  <this.MyVerticallyCenteredModal
                                       show={this.state.modalShow}
                                       onHide={() => this.setState({modalShow: false})}
-                                      requests ={{name: this.state.request.pName,from :this.state.request.reqUserName, to:this.state.request.recUserName, Quantity:this.state.request.quantity, indexExchange : this.state.id }}
+                                      requests ={{}}
                                     />
-                                  </div>}
+                                  </div>
                                 </td>
-                                <td><span className="text-truncate" >{item.quantity}</span></td>
-                                <td><button class="btn btn-info">View More</button></td>
+                                <div>{console.log(date.toString())}</div>
                               </tr>
                               )
-                            }                           
+                            {/* }                            */}
                           }) : null}
                         </tbody>
                       </table>
-                    </div>
+                    </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
                   </div>
                 </div>
                 <nav aria-label="Page navigation example" style={{ float: "right" }}>
@@ -277,8 +321,8 @@ const mapDispatchToProps = (dispatch) => {
     find_products: (token, searchText) => {
       return dispatch(actFindProductsRequest(token, searchText))
     },
-    fetch_exchange_request: (id, token) => {
-      return dispatch(actFetchExchangeRequest(id, token))
+    fetch_history_request: (id, token) => {
+      return dispatch(actHistoryRequest(id, token))
     },
     update_Accept: (id, token) => {
       return dispatch(actUpdateAccept(id, token))

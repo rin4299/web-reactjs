@@ -10,6 +10,7 @@ import { css } from "@emotion/core";
 import ClipLoader from "react-spinners/ClipLoader";
 import { actShowLoading } from "./redux/actions/loading";
 import callApi from './utils/apiCaller'
+import { actFetchCartRequest } from "./redux/actions/cart";
 import "./style.css";
 const override = css`
   display: block;
@@ -31,6 +32,19 @@ class App extends Component {
       if (res && res.status === 200) {
       this.props.add_token_redux_role(res.data.results[0].role.nameRole);
     }
+    }
+    let isCart = false;
+    this.props.fetch_cart();
+    if (localStorage.length === 0) {
+      localStorage.setItem("_cart", JSON.stringify([]));
+    }
+    for (let i = 0; i < localStorage.length; i++) {
+      if (localStorage.key(i) === "_cart") {
+        isCart = true;
+      }
+    }
+    if (!isCart) {
+      localStorage.setItem("_cart", JSON.stringify([]));
     }
   }
 
@@ -112,7 +126,10 @@ const mapDispatchToProps = dispatch => {
     },
     statusLoading: () => {
       dispatch(actShowLoading());
-    }
+    },
+    fetch_cart: () => {
+      dispatch(actFetchCartRequest());
+    },
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(App);

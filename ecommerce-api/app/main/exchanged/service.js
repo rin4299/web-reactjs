@@ -89,6 +89,44 @@ class ExchangeService extends BaseServiceCRUD {
     return returning
   }
 
+  // async createExchange(payload) {
+  //   try {
+  //       const {reqUserName, recUserName, pName, quantity} = payload;
+  //       let product = await Models.Product.query().where('nameProduct', pName);
+  //       if(quantity > product[0].numberAvailable){
+  //         throw Boom.badRequest('The current available of the current product can not afford this quantity!');
+  //       }
+  //       let lop = String(product[0].id) + "-" + String(quantity)
+  //       console.log(lop)
+  //       // let data = this.bcCallerInvoke(["peer0.org1.example.com", "peer0.org2.example.com"], "productdetail", "mychannel", "createExchange", [reqUserName, recUserName, lop]);
+  //       let object = {
+  //         fcn: "createExchange",
+  //         peers:["peer0.org1.example.com","peer0.org2.example.com"],
+  //         chaincodeName:"productdetail",
+  //         channelName:"mychannel",
+  //         args:[reqUserName, recUserName, lop]
+  //       }
+  //       let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+  //       console.log(res.data);
+  //       if(res.data){
+  //         return "Successful"
+  //       } else {
+  //         throw Boom.badRequest('Unsuccessful Creating!');
+  //       }
+  //     // let data = await Models.Exchanged.query()
+  //     //   .insert(payload)
+  //     //   .returning('*');
+  //     // let U = await Models.User.query().whereIn('id',[data.reqUserId, data.recUserId]);
+  //     // data.reqUserName = U[0].name;
+  //     // data.recUserName = U[1].name;
+  //     // let P = await Models.Product.query().findOne({id: data.pId});
+  //     // data.pName = P.nameProduct;
+  //     // return data;
+  //   } catch (err) {
+  //     throw err;
+  //   }
+  // }
+
   async createExchange(payload) {
     try {
         const {reqUserName, recUserName, multiRequest} = payload;
@@ -108,6 +146,7 @@ class ExchangeService extends BaseServiceCRUD {
           channelName:"mychannel",
           args:[reqUserName, recUserName, lop]
         }
+        console.log(object)
         let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
         console.log(res.data);
         if(res.data){

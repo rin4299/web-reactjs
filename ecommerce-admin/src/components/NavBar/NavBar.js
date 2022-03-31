@@ -54,7 +54,7 @@ class NavBar extends Component {
             <li><Link to="/producers"> <i className="icon icon-list-1" />Producer</Link></li>
             {/* <li><Link to="/discounts"> <i className="icon icon-check" />Discount</Link></li> */}
             <li><Link to="/requests"> <i className="icon icon-list" />Request</Link></li>
-            {/* <li><Link to="/yourrequests"> <i className="icon icon-list-1" />Your Request</Link></li> */}
+            <li><Link to="/tracking"> <i className="icon icon-list-1" />Tracking</Link></li>
             <li><Link to="/ratings">  <i className="icon icon-check" />Rating</Link></li>
             <li><Link to="/users"> <i className="icon icon-user" />Users</Link></li>
             <li><Link to="/roles"> <i className="icon icon-bars" />Roles</Link></li>

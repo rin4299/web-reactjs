@@ -11,7 +11,8 @@ import {exportExcel} from 'utils/exportExcel'
 import Paginator from 'react-js-paginator';
 import callApi from '../../../utils/apiCaller';
 import Modal from 'react-bootstrap/Modal'
-
+import { startLoading, doneLoading } from '../../../utils/loading'
+import { actAddCartRequest, actFetchCartRequest } from '../../../redux/actions/cart';
 
 const MySwal = withReactContent(Swal)
 
@@ -66,6 +67,7 @@ class Product extends Component {
     }
     
     await this.fetch_reload_data(); 
+    this.props.fetch_items();
   }
 
   fetch_reload_data(){
@@ -146,12 +148,12 @@ class Product extends Component {
     this.setState({modalShow: false})
   }
 
-  // createDefaultOption = () => {
-    // this.setState({
-    //   recUser: this.state.userdiff[0].name
-    // })
-  //   console.log("recU",this.state.recUser)
-  // }
+  addItemToCart = (product) => {
+    startLoading()
+    this.props.addCart(product);
+    doneLoading();
+  }
+
 
 
   MyVerticallyCenteredModal = (props) => {
@@ -198,14 +200,11 @@ class Product extends Component {
             </div>
             <div className="form-group">
               <button type="button" className="form-control btn btn-primary" onClick={() => 
-                
                 this.createExchange({
                   reqUserName:this.state.user[0].name,
                   recUserName:this.state.recUser,
-                  pName: props.products.name,
-                  quantity: this.state.quantity
+                  multiRequest: [{pName:props.products.name, quantity:this.state.quantity}]
                 })
-                // console.log("3",this.state.recUser)
               }>
                 Submit
               </button>
@@ -265,7 +264,7 @@ class Product extends Component {
                   </form>
                   <div className="card-body">
                     <div className="table-responsive">
-                      <table className="table table-hover">
+                      <table className="table table-hover" style={{ textAlign: "center" }}>
                         <thead>
                           <tr>
                             <th>Number</th>
@@ -274,9 +273,9 @@ class Product extends Component {
                             <th>Price</th>
                             <th>Available</th>
                             {/* <th>Properties</th> */}
-                            <th style={{ textAlign: "center" }}>Images</th>
-                            <th style={{ textAlign: "center" }}>Active</th>
-                            <th style={{ textAlign: "center" }}>Action</th>
+                            <th>Images</th>
+                            <th>Active</th>
+                            <th>Action</th>
                             {/* <th style={{ textAlign: "center" }}>Request</th> */}
                           </tr>
                         </thead>
@@ -318,6 +317,11 @@ class Product extends Component {
                                     onHide={() => this.setState({modalShow: false})}
                                     products ={{name: this.state.productName}}
                                   />
+                                </td>
+                                <td>
+                                  <button className="add-cart active"><Link to="#" onClick={() => this.addItemToCart(item)} >Add</Link></button>
+
+                                  {/* <button>Add</button> */}
                                 </td>
                               </tr>
                             )
@@ -369,7 +373,13 @@ const mapDispatchToProps = (dispatch) => {
     }, 
     getmany_diff: (id, token) => {
       return dispatch(actGetManyDiff(id, token))
-    }
+    },
+    addCart: (item, quantity) => {
+      dispatch(actAddCartRequest(item, quantity))
+    },
+    fetch_items: () => {
+      dispatch(actFetchCartRequest())
+    },
   }
 }
 

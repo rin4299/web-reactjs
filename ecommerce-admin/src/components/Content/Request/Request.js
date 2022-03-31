@@ -27,8 +27,10 @@ class Request extends Component {
       searchText: '',
       modalShow: false,
       user: [],
-      request:'', 
-      id:0
+      request:{}, 
+      id:0,
+      nameProduct:'',
+      quantityRequest:0,
     }
   }
 
@@ -77,27 +79,6 @@ class Request extends Component {
   }
 /////////////////////////
 
-  handleRemove = (id) => {
-    MySwal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes'
-    }).then(async (result) => {
-      if (result.value) {
-        await this.props.delete_product(id, token);
-        Swal.fire(
-          'Deleted!',
-          'Your file has been deleted.',
-          'success'
-        )
-      }
-    })
-  }
-
   updateAccept = (id) => {
     token = localStorage.getItem('_auth');
     this.props.update_Accept(id,token).then(res => {
@@ -120,8 +101,9 @@ class Request extends Component {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h4>Name Product </h4>
-          <input  style={{width:"100%"}} disabled defaultValue={props.requests.name}/>  
+          {/* {console.log('request',this.state.request)} */}
+          {/* <h4>Name Product </h4>
+          <input  style={{width:"100%"}} disabled defaultValue={props.requests.name}/>   */}
           <form >
             <div className="form-group">
               <label htmlFor="from">From </label>
@@ -131,9 +113,36 @@ class Request extends Component {
               <label htmlFor="to">To </label>
                <input className="form-control" disabled defaultValue={props.requests.to}/>  
             </div>
-            <div className="form-group">
-              <label htmlFor="name">Quantity </label>
-              <input className="form-control" disabled defaultValue={props.requests.Quantity}/>
+            <div className="table-responsive">
+                <table className="table table-hover" style={{ textAlign: "center" }}>
+                  <thead>
+                    <tr>
+                      <th style={{width:'30%'}}>Number</th>
+                      <th>Id-product</th>
+                      <th>Name Product</th>
+                      <th>Image</th>
+                      <th>Quantity</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.state.request.products && this.state.request.products.length ? this.state.request.products.map((item, index) => {
+                        return (
+                          <tr key = {index}>
+                            <td scope="row">{index + 1}</td>
+                            <td><span className="text-truncate" >{item.id}</span></td>
+                            <td><span className="text-truncate" style={{width:'100%'}} >{item.nameProduct}</span></td>
+                            <td>
+                              <div className="fix-cart">
+                                <img src={item && item.image ? item.image : null} className="fix-img" alt="not found" />
+                              </div>
+                            </td>
+                            <td>{item.quantity}</td>
+                          </tr>
+                        )
+
+                    }) : null}
+                  </tbody>
+                </table>
             </div>
             <div className="form-group">
               <button className="form-control btn btn-primary" type="button" onClick= {() => {
@@ -155,6 +164,7 @@ class Request extends Component {
   render() {
     // let { requests } = this.props;
     const {total} = this.state;
+    // console.log('total request', total)
     return (
       <div className="content-inner">
         {/* Page Header*/}
@@ -186,7 +196,7 @@ class Request extends Component {
                   
                   <div className="card-body">
                     <div className="table-responsive">
-                      <table className="table table-hover">
+                      <table className="table table-hover" style={{ textAlign: "center" }}>
                         <thead>
                           <tr>
                             <th>Number</th>
@@ -194,11 +204,7 @@ class Request extends Component {
                             <th>From</th>
                             <th>To</th>
                             <th >Quantity</th>
-                            {/* <th>Properties</th> */}
-                            {/* <th style={{ textAlign: "center" }}>Images</th> */}
-                            <th style={{ textAlign: "center" }}>Action</th>
-                            {/* <th style={{ textAlign: "center" }}>Remove</th> */}
-                            {/* <th style={{ textAlign: "center" }}>Request</th> */}
+                            <th>Action</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -210,21 +216,21 @@ class Request extends Component {
                               return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
-                                <td>{item.pName}</td>
+                                <td>{item.products[0].nameProduct}</td>
                                 <td><span className="text-truncate" >{item.reqUserName}</span></td>
                                 <td><span className="text-truncate" >{item.recUserName}</span></td>
-                                <td><span className="text-truncate" >{item.quantity}</span></td>
-                                <td style={{ textAlign: "center" }}>{item.isAccepted ?
+                                <td><span>{item.products[0].quantity}</span></td>
+                                <td>{item.isAccepted ?
                                   <div className="i-checks">
                                     <input type="checkbox" checked={true} className="checkbox-template" />
                                   </div>
                                   :
                                   <div className="i-checks">
-                                    <button class="btn btn-info" onClick={() => this.setState({modalShow: true,request : item, id : item.id})}>Accept</button>
+                                    <button class="btn btn-info" onClick={() => this.setState({modalShow: true,request : item, id : item.id, nameProduct: item.products[0].nameProduct, quantityRequest: item.products[0].quantity})}>Accept</button>
                                     <this.MyVerticallyCenteredModal
                                       show={this.state.modalShow}
                                       onHide={() => this.setState({modalShow: false})}
-                                      requests ={{name: this.state.request.pName,from :this.state.request.reqUserName, to:this.state.request.recUserName, Quantity:this.state.request.quantity, indexExchange : this.state.id }}
+                                      requests ={{name: this.state.nameProduct,from :this.state.request.reqUserName, to:this.state.request.recUserName, Quantity:this.state.quantityRequest, indexExchange : this.state.id }}
                                     />
                                   </div>}
                                 </td>

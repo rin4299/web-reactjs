@@ -1,5 +1,4 @@
 "use strict";
-
 const Models = require("../models");
 const PasswordUtils = require("../../services/password");
  
