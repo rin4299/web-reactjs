@@ -14,6 +14,7 @@ class AuthService {
   async login(payload) {
     try {
       const { email } = payload;
+      console.log(email)
       const user = await Models.User.query()
         .findOne({
           email
@@ -50,6 +51,7 @@ class AuthService {
   async loginAdmin(payload) {
     try {
       const { email } = payload;
+      console.log(email)
       const user = await Models.User.query()
         .findOne({
           email

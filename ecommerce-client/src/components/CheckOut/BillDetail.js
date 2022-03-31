@@ -80,7 +80,7 @@ export default class BillDetail extends Component {
                        )
                      }
                      ) : null
-                   }}
+                   })
                  </select>
                </div>
              </div>
@@ -95,7 +95,7 @@ export default class BillDetail extends Component {
                        )
                      }
                      ) : null
-                   }}
+                   })
                  </select>
                </div>
              </div>

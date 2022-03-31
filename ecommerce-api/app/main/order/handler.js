@@ -16,6 +16,18 @@ exports.getMany = {
   }
 };
 
+exports.getManyS = {
+  description: 'Get Order list',
+  notes: 'Return Order items',
+  tags: ['api', 'v1'],
+  handler: controller.getManyS.bind(controller),
+  auth: 'jwt',
+  validate: {
+    query: validator.searchParams
+  }
+};
+
+
 exports.count = {
   description: 'Count Order list',
   notes: 'Return a count result of Order items',

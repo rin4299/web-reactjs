@@ -1,5 +1,5 @@
 "use strict";
- a
+
 const Models = require("../models");
 const PasswordUtils = require("../../services/password");
  
@@ -25,18 +25,33 @@ const dataUser = [
  {
    email: "admin@gmail.com",
    name: "admin",
+   roleId: 1,
    isVerifyEmail: true,
  },
  {
    email: "staff@gmail.com",
    name: "staff",
+   roleId: 2,
    isVerifyEmail: true,
  },
  {
    email: "user@gmail.com",
    name: "user",
+   roleId: 3,
    isVerifyEmail: true,
  },
+ {
+  email: "storea@gmail.com",
+  name: "StoreA",
+  roleId: 1,
+  isVerifyEmail: true,
+},
+{
+  email: "storeb@gmail.com",
+  name: "StoreB",
+  roleId: 1,
+  isVerifyEmail: true,
+},
  ];
  
 const dataCategory = [
@@ -384,6 +399,113 @@ const dataProduct = [
 //   },
 // ];
  
+const StoreData = [
+  {
+    storeName: "StoreA",
+    lat: 10.7679886,
+    lng: 106.667047,
+    address: "",
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
+  {
+    storeName: "StoreB",
+    lat: 10.82302,
+    lng: 106.62965,
+    address: "",
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
+]
+
+const OwnershipData = [
+  {
+    storeName: "StoreA",
+    pId: 1,
+    quantity: 7,
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
+  {
+    storeName: "StoreB",
+    pId: 1,
+    quantity: 6,
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
+  {
+    storeName: "StoreA",
+    pId: 2,
+    quantity: 10,
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
+  {
+    storeName: "StoreB",
+    pId: 2,
+    quantity: 7,
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
+  {
+    storeName: "StoreA",
+    pId: 3,
+    quantity: 12,
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
+  {
+    storeName: "StoreB",
+    pId: 3,
+    quantity: 15,
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
+  {
+    storeName: "StoreA",
+    pId: 4,
+    quantity: 11,
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
+  {
+    storeName: "StoreB",
+    pId: 4,
+    quantity: 8,
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
+  {
+    storeName: "StoreA",
+    pId: 5,
+    quantity: 24,
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
+  {
+    storeName: "StoreB",
+    pId: 5,
+    quantity: 11,
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
+  {
+    storeName: "StoreA",
+    pId: 6,
+    quantity: 18,
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
+  {
+    storeName: "StoreB",
+    pId: 6,
+    quantity: 4,
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
+];
+
+
 exports.seed = async function (knex, prom) {
  const users = await Models.User.query();
  if(users.length === 0) {
@@ -395,9 +517,8 @@ exports.seed = async function (knex, prom) {
    console.log(111111111111111);
  const roles = await Models.Role.query().insert(dataRole).returning("*");
   const newUsers = dataUser.map((e) => {
-   e.roleId = roles.find((i) => i.nameRole === e.name).id;
+  //  e.roleId = roles.find((i) => i.nameRole === e.name).id;
    e.password = PasswordUtils.hashSync("123456");
-   console.log(e);
    return e;
  });
  await Models.User.query().insert(newUsers);
@@ -420,6 +541,8 @@ exports.seed = async function (knex, prom) {
  });
  await Models.Product.query().insert(newProducts); 
  // await Models.Exchanged.query().insert(dataExchanged);
+ await Models.Store.query().insert(StoreData).returning("*");
+ await Models.Ownership.query().insert(OwnershipData).returning("*");
 }
 return 1;
 };

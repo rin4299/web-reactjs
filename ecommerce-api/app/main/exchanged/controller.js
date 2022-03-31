@@ -80,6 +80,40 @@ class ExchangeController extends BaseControllerCRUD {
     }
   };
 
+  async getHistory(request) {
+    try {
+      const {
+        id
+      } = request.params;
+      return await this.service.getHistory(id);
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  async getStore(request) {
+    try {
+      const {
+        payload
+      } = request;
+      return await this.service.getStore(payload);
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  async getProductbyOwner(request) {
+    try {
+      const {
+        user
+      } = request.params;
+      return await this.service.getProductbyOwner(request.query, user);
+    } catch (err) {
+      throw err;
+    }
+  };
+
+
 }
 
 module.exports = ExchangeController;

@@ -19,7 +19,17 @@ class OrderController extends BaseControllerCRUD {
 
   async getMany(request) {
     try {
+      
       return await this.service.getMany(request.query);
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  async getManyS(request) {
+    try {
+      const {user} = request.params
+      return await this.service.getManyS(request.query, user);
     } catch (err) {
       throw err;
     }

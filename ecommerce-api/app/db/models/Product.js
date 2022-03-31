@@ -45,6 +45,14 @@ class Product extends CustomModel {
           from: 'product.id',
           to: 'rating.productId'
         }
+      },
+      ownership: {
+        relation: CustomModel.HasManyRelation,
+        modelClass: path.join(__dirname, '/Ownership'),
+        join: {
+          from: 'product.id',
+          to: 'ownership.pId'
+        }
       }
     };
   }

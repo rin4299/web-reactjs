@@ -14,6 +14,8 @@ const Rating = require('./Rating');
 const Producer = require('./Producer');
 const Contact = require('./Contact');
 const Exchanged = require('./Exchanged');
+const Ownership = require('./Ownership');
+const Store = require('./Store');
 module.exports = {
   knex,
   User,
@@ -28,5 +30,7 @@ module.exports = {
   Rating,
   Producer,
   Contact,
-  Exchanged
+  Exchanged,
+  Ownership,
+  Store
 };

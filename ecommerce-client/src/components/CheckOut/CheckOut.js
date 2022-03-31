@@ -106,6 +106,7 @@ class CheckOut extends Component {
         const orderDb = await callApi("orders", "POST", resultOrder, token); //method post nen truyen them token tren headers
         //END GET DATA FOR TABLE ORDER
 
+        var lop = ""
         //GET DATA ORDER_DETAIL
         cart.map(async (item) => {
           const resultOrderDetail = {
@@ -115,6 +116,7 @@ class CheckOut extends Component {
             productId: item.id,
             nameProduct: item.nameProduct,
           };
+          lop = lop + item.id + "-" + item.quantity + ",";
           const payloadNumberAvailable = { numberAvailable: item.quantity };
           const changeNumberAvailableProduct = callApi(
             `products/${item.id}/updateNumberAvailable`,
@@ -134,7 +136,7 @@ class CheckOut extends Component {
             icon: "success",
             title: "Success!",
             showConfirmButton: true,
-            timer: 15000,
+            timer: 1500000,
           });
           this.setState({
             checkout: true,
@@ -143,7 +145,18 @@ class CheckOut extends Component {
           doneLoading();
         });
         //ENDGET DATA ORDER_DETAIL
-
+        lop = lop.slice(0, -1);
+        console.log(lop);
+        var addr = addressResult.house + ", " + addressResult.state + ", " + addressResult.province;
+        console.log(addr);
+          const getStore = {
+            address: addr,
+            orderId: orderDb.data.id,
+            lop: lop
+          }
+        console.log(getStore);
+        const feedback = await callApi("getstore", "POST", getStore, token);
+        console.log(feedback);
         //CLEAR CART AFTER CHECKOUT
         this.props.reset_cart();
       }

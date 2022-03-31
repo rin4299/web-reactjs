@@ -11,7 +11,7 @@ toast.configure()
 class ShoppingCartItems extends Component {
 
   upItem = (item) => {
-    if (item.quantity >= 5) {
+    if (item.quantity >= 20) {
       toast.error('You can only purchase up to 5 products')
       return
     }

@@ -10,6 +10,11 @@ const Routes = [
   },
   {
     method: 'GET',
+    path: '/api/v1/orders/new/{user}',
+    config: handler.getManyS
+  },
+  {
+    method: 'GET',
     path: '/api/v1/orders/{id}',
     config: handler.getOne
   },

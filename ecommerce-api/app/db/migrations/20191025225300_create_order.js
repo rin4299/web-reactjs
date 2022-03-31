@@ -8,6 +8,7 @@ exports.up = function(knex) {
     table.text('note');
     table.string('phone');
     table.string('status').defaultTo('Unconfirm');
+    table.string('atStore').defaultTo('');
     table.string('paypalCode');
     table.boolean('isPaymentOnline').defaultTo(false);
     table.boolean('isPaid').defaultTo(false);

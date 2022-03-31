@@ -82,6 +82,8 @@ export default class PaypalCheckoutButton extends Component {
             totalAmount: ship + order.orderBill.total - promoTotal
           };
           const orderDb = await callApi("orders", "POST", newOrder, token);
+          console.log(orderDb);
+          var lop = "";
           order.orderBill.itemsDetails.map(async item => {
             const resultOrderDetail = {
               quantity: item.quantity,
@@ -90,8 +92,20 @@ export default class PaypalCheckoutButton extends Component {
               productId: item.id,
               nameProduct: item.nameProduct
             };
+            lop = lop + item.id + "-" + item.quantity + ",";
             await callApi("orderDetails", "POST", resultOrderDetail, token);
           });
+          lop = lop.slice(0, -1);
+          console.log(lop);
+          var addr = order.address.house + ", " + order.address.state + ", " + order.address.province;
+          console.log(addr);
+          const getStore = {
+            address: addr,
+            orderId: orderDb.data.id,
+            lop: lop
+          }
+          const feedback = await callApi("getstore", "POST", getStore, token);
+          console.log(feedback);
           this.props.changeToggle(true);
           MySwal.fire({
             position: 'top-end',

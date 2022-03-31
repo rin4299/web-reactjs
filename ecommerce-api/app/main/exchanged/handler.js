@@ -83,6 +83,21 @@ const controller = new ExchangeController();
     }
   };
 
+
+  exports.getHistory = {
+    description: 'Tracking product',
+    notes: 'Return list of history',
+    tags: ['api', 'v1'],
+    handler: controller.getHistory.bind(controller),
+    auth: {
+      strategy: 'jwt',
+    },
+    validate: {
+
+    }
+  };
+
+
   exports.deleteRequest = {
     description: 'Update Order',
     notes: 'Return updated Order by id',
@@ -91,6 +106,28 @@ const controller = new ExchangeController();
     auth: {
       strategy: 'jwt',
     },
+    validate: {
+
+    }
+  };
+
+  exports.getStore = {
+    description: 'Tracking product',
+    notes: 'Return list of history',
+    tags: ['api', 'v1'],
+    handler: controller.getStore.bind(controller),
+    auth: 'jwt',
+    validate: {
+
+    }
+  };
+
+  exports.getProductbyOwner = {
+    description: 'Tracking product',
+    notes: 'Return list of history',
+    tags: ['api', 'v1'],
+    handler: controller.getProductbyOwner.bind(controller),
+    auth: 'jwt',
     validate: {
 
     }

@@ -23,12 +23,20 @@ class OrderService extends BaseServiceCRUD {
     if (!user) {
       throw Boom.notFound('user not found')
     }
-    MailUtils.sendEmailCreateOrderEmail(user.email)
+    // MailUtils.sendEmailCreateOrderEmail(user.email)
     return result;
   }
 
   async getMany(query) {
     const builder = this.model.queryBuilder(query).eager('orderDetails');
+    if (this.getSearchQuery && query.q) {
+      this.getSearchQuery(builder, query.q);
+    }
+    return builder;
+  }
+
+  async getManyS(query, user) {
+    const builder = this.model.queryBuilder(query).where('atStore', user).eager('orderDetails');
     if (this.getSearchQuery && query.q) {
       this.getSearchQuery(builder, query.q);
     }
