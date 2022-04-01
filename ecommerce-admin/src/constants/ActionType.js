@@ -20,6 +20,8 @@ export const ADD_DISCOUNT = 'ADD_DISCOUNT';
 export const REMOVE_DISCOUNT = 'REMOVE_DISCOUNT';
 
 export const FETCH_PRODUCTS = 'FETCH_PRODUCTS';
+export const FETCH_PRODUCTS2 = 'FETCH_PRODUCTS2';
+
 export const FIND_PRODUCTS = 'FIND_PRODUCTS';
 export const EDIT_PRODUCT = 'EDIT_PRODUCT';
 export const ADD_PRODUCT = 'ADD_PRODUCT';

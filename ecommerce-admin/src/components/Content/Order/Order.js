@@ -9,6 +9,8 @@ import withReactContent from 'sweetalert2-react-content'
 import MyFooter from '../../MyFooter/MyFooter'
 import Paginator from 'react-js-paginator';
 import {exportExcel} from '../../../utils/exportExcel'
+import callApi from '../../../utils/apiCaller';
+
 const MySwal = withReactContent(Swal)
 
 let token;
@@ -19,18 +21,33 @@ class Order extends Component {
     this.state = {
       searchText: '',
       total: 0,
-      currentPage: 1
+      currentPage: 1,
+      user: [],
     }
   }
 
 
-  componentDidMount() {
-    this.fetch_reload_data(); //recive data from return promise dispatch
+  async componentDidMount() {
+    token = localStorage.getItem('_auth');
+    if (token) {
+      const res = await callApi('users/me', 'GET', null, token);
+      if (res && res.status === 200) {
+        this.setState({
+          user: res.data.results
+        })
+        // console.log("user",this.state.user[0].name)
+      }
+    } else {
+      this.setState({
+        redirect: true
+      })    
+    }
+    await this.fetch_reload_data(); //recive data from return promise dispatch
   }
 
   fetch_reload_data(){
     token = localStorage.getItem('_auth');
-    this.props.fetch_orders(token).then(res => {
+    this.props.fetch_orders(token, null, this.state.user[0].name).then(res => {
       this.setState({
         total: res.total
       });
@@ -269,8 +286,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetch_orders: (token, offset) => {
-      return dispatch(actFetchOrdersRequest(token, offset))
+    fetch_orders: (token, offset, storename) => {
+      return dispatch(actFetchOrdersRequest(token, offset, storename))
     },
     delete_order: (id, token) => {
       dispatch(actDeleteOrderRequest(id, token))

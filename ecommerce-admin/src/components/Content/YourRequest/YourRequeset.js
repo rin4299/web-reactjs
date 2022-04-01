@@ -94,6 +94,7 @@ class YourRequest extends Component {
           'success'
         )
       }
+      // window.location.reload()
     })
   }
   updateConfirm = (id) => {
@@ -102,6 +103,7 @@ class YourRequest extends Component {
       console.log(res)
     })
     this.setState({modalShow: false})
+    // window.location.reload()
   }
 
 
@@ -138,7 +140,7 @@ class YourRequest extends Component {
                 <table className="table table-hover" style={{ textAlign: "center" }}>
                   <thead>
                     <tr>
-                      <th style={{width:'30%'}}>Number</th>
+                      {/* <th style={{width:'30%'}}>Number</th> */}
                       <th>Id-product</th>
                       <th>Name Product</th>
                       <th>Image</th>
@@ -149,7 +151,7 @@ class YourRequest extends Component {
                     {this.state.receive.products && this.state.receive.products.length ? this.state.receive.products.map((item, index) => {
                         return (
                           <tr key = {index}>
-                            <td scope="row">{index + 1}</td>
+                            {/* <td scope="row">{index + 1}</td> */}
                             <td><span className="text-truncate" >{item.id}</span></td>
                             <td><span className="text-truncate" style={{width:'100%'}} >{item.nameProduct}</span></td>
                             <td>
@@ -187,51 +189,6 @@ class YourRequest extends Component {
     );
   }
 
-  CreateRequestModal = (props) => {
-    return (
-      <Modal
-        {...props}
-        size="lg"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Create Your Request
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {/* <h4>Name Product </h4>
-          <input  style={{width:"100%"}} disabled defaultValue={props.receive.name}/>   */}
-          <form >
-            <div className="form-group">
-              <label htmlFor="from">From </label>
-               <input className="form-control" disabled defaultValue='a'/>  
-            </div>
-            <div className="form-group">
-              <label htmlFor="to">To </label>
-               <input className="form-control" disabled defaultValue='b'/>  
-            </div>
-            <div className="form-group">
-              <label htmlFor="name">Quantity </label>
-              <input className="form-control" disabled defaultValue='c'/>
-            </div>
-            <div className="form-group">
-            <button className="form-control btn btn-primary" type="button" onClick= {() => {
-                this.updateConfirm(props.receive.indexExchange)
-                this.fetch_reload_data()
-              }}>
-                Confirm
-              </button>
-            </div>
-          </form>
-        </Modal.Body>
-        <Modal.Footer>
-          <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
-        </Modal.Footer>
-      </Modal>
-    );
-  }
 
   render() {
     // let { requests } = this.props;
@@ -264,12 +221,6 @@ class YourRequest extends Component {
                 <div className="card">
                   <div className="card-header d-flex align-items-center">
                     <h3 className="h4">List Your Request</h3>
-                    {/* <button class="btn btn-info" style={{ 'margin-left': '850px' }}>Create</button> */}
-                    <button class="btn btn-info" style={{ 'margin-left': '850px' }} onClick={() => {this.setState({modalShow: true} )}}>Create</button>
-                                    <this.CreateRequestModal
-                                      show={this.state.modalShow}
-                                      onHide={() => this.setState({modalShow: false})}
-                                    />
                   </div>
                   <div className="card-body">
                     <div className="table-responsive">
@@ -277,10 +228,10 @@ class YourRequest extends Component {
                         <thead>
                           <tr>
                             <th>Number</th>
-                            <th>Name</th>
+                            <th>Id-Request</th>
                             <th>From</th>
                             <th>To</th>
-                            <th>Quantity</th>
+                            <th>Number Product</th>
                             <th>Active</th>
                             <th>Action</th>
                           </tr>
@@ -295,10 +246,10 @@ class YourRequest extends Component {
                               return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
-                                <td>{item.products[0].nameProduct}</td>
+                                <td>{item.id}</td>
                                 <td><span className="text-truncate" >{item.reqUserName}</span></td>
                                 <td><span className="text-truncate" >{item.recUserName}</span></td>
-                                <td><span className="text-truncate" >{item.products[0].quantity}</span></td>
+                                <td><span className="text-truncate" >{item.products.length}</span></td>
                                 <td>{item.isAccepted ?
                                   <div className="i-checks">
                                     <input type="checkbox" checked={true} className="checkbox-template" />

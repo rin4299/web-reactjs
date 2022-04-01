@@ -104,6 +104,7 @@ class HistoryRequest extends Component {
       console.log(res)
     })
     this.setState({modalShow: false})
+    window.location.reload()
   }
 
   MyVerticallyCenteredModal = (props) => {
@@ -123,7 +124,7 @@ class HistoryRequest extends Component {
           {/* {console.log('history',this.state.history)} */}
           {/* <h4>Name Product </h4>
           <input  style={{width:"100%"}} disabled defaultValue={props.requests.name}/>   */}
-          <div>
+          <div >
             {this.state.history.id ? 
             <form >
               <div className="form-group">
@@ -144,7 +145,7 @@ class HistoryRequest extends Component {
               </div>
               <div className="form-group">
                 <label htmlFor="from">Time </label>
-                <input className="form-control" disabled defaultValue={this.state.history.id}/>  
+                <input className="form-control" disabled defaultValue={props.history.times}/>  
               </div>
               <div className="table-responsive">
                 <table className="table table-hover" style={{ textAlign: "center" }}>
@@ -202,7 +203,6 @@ class HistoryRequest extends Component {
   render() {
     // let { requests } = this.props;
     const {total} = this.state;
-    console.log('total',total)
     return (
       <div className="content-inner">
         {/* Page Header*/}
@@ -250,7 +250,8 @@ class HistoryRequest extends Component {
                           {total && total.length ? total.map((item, index) => {
                             {/* console.log('item.latestUpdate', item.latestUpdate) */}
                             {/* console.log('item', item) */}
-                            var date = new Date(item.latestUpdate.slice(8,18) * 1000);
+                            {/* var date = new Date(item.latestUpdate.slice(8,18) * 1000); */}
+                            {/* console.log(item.latestUpdate) */}
                               return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
@@ -263,18 +264,17 @@ class HistoryRequest extends Component {
                                 <span>RECEIVE</span> 
                                 }
                                 </td>
-                                <td>{date.toString()}</td>
+                                <td><p style={{width:'210px'}}>{item.latestUpdate}</p></td>
                                 <td>
                                   <div>
                                   <button class="btn btn-info" onClick={() => this.setState({modalShow: true, history : item })}>View More</button>
                                   <this.MyVerticallyCenteredModal
                                       show={this.state.modalShow}
                                       onHide={() => this.setState({modalShow: false})}
-                                      requests ={{}}
+                                      history ={{times : item.latestUpdate}}
                                     />
                                   </div>
                                 </td>
-                                <div>{console.log(date.toString())}</div>
                               </tr>
                               )
                             {/* }                            */}

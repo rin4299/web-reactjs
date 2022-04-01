@@ -12,6 +12,9 @@ import callApi from '../../../utils/apiCaller';
 
 import Modal from 'react-bootstrap/Modal'
 
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const MySwal = withReactContent(Swal)
 
 let token;
@@ -84,6 +87,7 @@ class Request extends Component {
     this.props.update_Accept(id,token).then(res => {
       console.log(res)
     })
+    toast.success('The request is updated');
     this.setState({modalShow: false})
   }
 
@@ -117,7 +121,7 @@ class Request extends Component {
                 <table className="table table-hover" style={{ textAlign: "center" }}>
                   <thead>
                     <tr>
-                      <th style={{width:'30%'}}>Number</th>
+                      {/* <th style={{width:'30%'}}>Number</th> */}
                       <th>Id-product</th>
                       <th>Name Product</th>
                       <th>Image</th>
@@ -128,7 +132,7 @@ class Request extends Component {
                     {this.state.request.products && this.state.request.products.length ? this.state.request.products.map((item, index) => {
                         return (
                           <tr key = {index}>
-                            <td scope="row">{index + 1}</td>
+                            {/* <td scope="row">{index + 1}</td> */}
                             <td><span className="text-truncate" >{item.id}</span></td>
                             <td><span className="text-truncate" style={{width:'100%'}} >{item.nameProduct}</span></td>
                             <td>
@@ -148,6 +152,7 @@ class Request extends Component {
               <button className="form-control btn btn-primary" type="button" onClick= {() => {
                 this.updateAccept(props.requests.indexExchange)
                 this.fetch_reload_data()
+                // window.location.reload()
               }}>
                 Confirm
               </button>
@@ -200,15 +205,16 @@ class Request extends Component {
                         <thead>
                           <tr>
                             <th>Number</th>
-                            <th>Name</th>
+                            <th>Id-Request</th>
                             <th>From</th>
                             <th>To</th>
-                            <th >Quantity</th>
+                            <th >Number Product</th>
                             <th>Action</th>
                           </tr>
                         </thead>
                         <tbody>
                           {total && total.length ? total.map((item, index) => {
+                            console.log('item', item)
                             if(item.isAccepted){
                               return null;
                             }
@@ -216,10 +222,10 @@ class Request extends Component {
                               return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
-                                <td>{item.products[0].nameProduct}</td>
+                                <td>{item.id}</td>
                                 <td><span className="text-truncate" >{item.reqUserName}</span></td>
                                 <td><span className="text-truncate" >{item.recUserName}</span></td>
-                                <td><span>{item.products[0].quantity}</span></td>
+                                <td><span>{item.products.length}</span></td>
                                 <td>{item.isAccepted ?
                                   <div className="i-checks">
                                     <input type="checkbox" checked={true} className="checkbox-template" />

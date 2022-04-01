@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { actFetchProductsRequest, actDeleteProductRequest, actFindProductsRequest } from '../../../redux/actions/product';
+import { actFetchProductsRequest, actDeleteProductRequest, actFindProductsRequest , actFetchProductsRequest2} from '../../../redux/actions/product';
 import { actCreateExchange, actGetManyDiff } from '../../../redux/actions/exchange';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -72,22 +72,23 @@ class Product extends Component {
 
   fetch_reload_data(){
     token = localStorage.getItem('_auth');
-    this.props.fetch_products(token).then(res => {
+    // console.log('name', this.state.user[0].name)
+    this.props.fetch_products(token,null, this.state.user[0].name).then(res => {
+      // console.log('res', res)
+      var lng = res.length;
       this.setState({
-        total: res.total
+        total: res.data
       });
     }).catch(err => {
       console.log(err);  
-    })
-
-  
+    })  
   }
 
 
   pageChange(content){
     const limit = 10;
     const offset = limit * (content - 1);
-    this.props.fetch_products(token, offset);
+    this.props.fetch_products2(token,null, this.state.user[0].name);
     this.setState({
       currentPage: content
     })
@@ -130,7 +131,7 @@ class Product extends Component {
     const { searchText } = this.state;
     this.props.find_products(token, searchText).then(res => {
       this.setState({
-        total: res.total
+        total: res.data
       })
     })
   }
@@ -158,7 +159,7 @@ class Product extends Component {
 
   MyVerticallyCenteredModal = (props) => {
     // let optionTo = this.state.usediff;
-    // console.log("test2", this.state.userdiff)
+    // console.log("test2", props)
     return (
       <Modal
         {...props}
@@ -174,7 +175,7 @@ class Product extends Component {
         <Modal.Body>
           <h4>Name Product </h4>
           <input style={{width:"100%"}} disabled defaultValue={props.products.name}/>  
-          <form>
+          <form>                                                                                                                                                                                                                                                                                                                                                                                                                              
             <div className="form-group">
               <label style={{"margin-top":"20px"}} htmlFor="name">Request To </label>
               <br />
@@ -221,7 +222,8 @@ class Product extends Component {
   }
 
   render() {
-    let { products } = this.props;
+    let {products} = this.props;
+    // console.log('props', this.props)
     const { searchText, total } = this.state;
     return (
       <div className="content-inner">
@@ -281,21 +283,21 @@ class Product extends Component {
                         </thead>
                         <tbody>
                           {products && products.length ? products.map((item, index) => {
-
+                            {/* console.log('ownership',item) */}
                             return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
-                                <td>{item.nameProduct}</td>
-                                <td><span className="text-truncate" style={{ width: 300 }}>{item.description}</span></td>
-                                <td>{item.price}</td>
-                                <td>{item.numberAvailable}</td>
+                                <td>{item.ownership[0].nameProduct}</td>
+                                <td><span className="text-truncate" style={{ width: 300 }}>{item.ownership[0].description}</span></td>
+                                <td>{item.ownership[0].price}</td>
+                                <td>{item.quantity}</td>
                                 {/* <td>{item.properties}</td> */}
                                 <td style={{ textAlign: "center" }}>
                                   <div className="fix-cart">
-                                    <img src={item && item.image ? item.image : null} className="fix-img" alt="not found" />
+                                    <img src={item.ownership && item.ownership[0].image ? item.ownership[0].image : null} className="fix-img" alt="not found" />
                                   </div>
                                 </td>
-                                <td style={{ textAlign: "center" }}>{item.isActive ?
+                                <td style={{ textAlign: "center" }}>{item.ownership[0].isActive ?
                                   <div className="i-checks">
                                     <input type="checkbox" checked={true} className="checkbox-template" />
                                   </div>
@@ -306,12 +308,12 @@ class Product extends Component {
                                 </td>
                                 <td style={{ textAlign: "center" }}>
                                   <div>
-                                    <span title='Edit' className="fix-action"><Link to={`/products/edit/${item.id}`}> <i className="fa fa-edit"></i></Link></span>
-                                    <span title='Delete' onClick={() => this.handleRemove(item.id)} className="fix-action"><Link to="#"> <i className="fa fa-trash" style={{ color: '#ff00008f' }}></i></Link></span>
+                                    <span title='Edit' className="fix-action"><Link to={`/products/edit/${item.ownership[0].id}`}> <i className="fa fa-edit"></i></Link></span>
+                                    <span title='Delete' onClick={() => this.handleRemove(item.ownership[0].id)} className="fix-action"><Link to="#"> <i className="fa fa-trash" style={{ color: '#ff00008f' }}></i></Link></span>
                                   </div>
                                 </td>
                                 <td>
-                                  <button class="btn btn-info" onClick={() => this.setState({modalShow: true, productName : item.nameProduct})}>Request</button>
+                                  <button class="btn btn-info" onClick={() => this.setState({modalShow: true, productName : item.ownership[0].nameProduct})}>Request</button>
                                   <this.MyVerticallyCenteredModal
                                     show={this.state.modalShow}
                                     onHide={() => this.setState({modalShow: false})}
@@ -319,7 +321,7 @@ class Product extends Component {
                                   />
                                 </td>
                                 <td>
-                                  <button className="add-cart active"><Link to="#" onClick={() => this.addItemToCart(item)} >Add</Link></button>
+                                  <button className="add-cart active"><Link to="#" onClick={() => this.addItemToCart(item.ownership[0])} >Add</Link></button>
 
                                   {/* <button>Add</button> */}
                                 </td>
@@ -359,9 +361,12 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetch_products: (token, offset) => {
-       return dispatch(actFetchProductsRequest(token, offset))
+    fetch_products: (token, offset, storename) => {
+       return dispatch(actFetchProductsRequest(token, offset, storename))
     },
+    fetch_products2: (token, storename) => {
+      return dispatch(actFetchProductsRequest2(token, storename))
+   },
     delete_product: (id, token) => {
       dispatch(actDeleteProductRequest(id, token))
     },

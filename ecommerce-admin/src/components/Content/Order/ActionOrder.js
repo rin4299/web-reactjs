@@ -262,7 +262,7 @@ class ActionOrder extends Component {
                                 )
                               }
                               ) : null
-                            }}
+                            }
                           </select>
                         </div>
                         <label className="col-sm-3 form-control-label" style={{textAlign: 'center'}}>States</label>
@@ -279,7 +279,7 @@ class ActionOrder extends Component {
                                 )
                               }
                               ) : null
-                            }}
+                            }
                             </select>
                         </div>
                       </div>
@@ -351,7 +351,7 @@ class ActionOrder extends Component {
                           <div className="form-group row">
                             <label className="col-sm-3 form-control-label">Code Order</label>
                             <div className="col-sm-3">
-                              <input disabled value={code} type="text" disabled className="form-control" />
+                              <input disabled value={code} type="text" className="form-control" />
                             </div>
                             <label className="col-sm-3 form-control-label" style={{textAlign: 'center'}} >Paypal Code</label>
                             <div className="col-sm-3">
@@ -411,7 +411,7 @@ class ActionOrder extends Component {
                       <div className="form-group row">
                         <label className="col-sm-3 form-control-label">Status</label>
                         <div className="col-sm-9">
-                          <select name="account" className="form-control mb-3" name="status" value={status} onChange={this.handleChange}>
+                          <select  className="form-control mb-3" name="status" value={status} onChange={this.handleChange}>
                             <option value='Unconfirm'>Unconfirm</option>
                             <option value='Confirm'>Confirm</option>
                             <option value='Shipping' >Shipping</option>
