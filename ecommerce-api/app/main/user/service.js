@@ -49,7 +49,7 @@ class UserService extends BaseServiceCRUD {
   }
 
   async getHistoryBooking(query, userId) {
-    const builder = Models.Order.queryBuilder(query).findOne({userId});
+    const builder = Models.Order.queryBuilder(query).findOne({userId}).eager('orderDetails');
     if (this.getSearchQuery && query.q) {
       this.getSearchQuery(builder, query.q);
     }

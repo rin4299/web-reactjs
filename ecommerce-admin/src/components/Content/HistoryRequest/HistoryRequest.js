@@ -121,9 +121,6 @@ class HistoryRequest extends Component {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{overflow: 'auto'}}>
-          {/* {console.log('history',this.state.history)} */}
-          {/* <h4>Name Product </h4>
-          <input  style={{width:"100%"}} disabled defaultValue={props.requests.name}/>   */}
           <div >
             {this.state.history.id ? 
             <form >
@@ -178,15 +175,6 @@ class HistoryRequest extends Component {
                   </tbody>
                 </table>
               </div>
-              
-              {/* <div className="form-group">
-                <button className="form-control btn btn-primary" type="button" onClick= {() => {
-                  this.updateAccept(props.requests.indexExchange)
-                  this.fetch_reload_data()
-                }}>
-                  Confirm
-                </button>
-              </div> */}
             </form>
             : null
             }
@@ -267,12 +255,12 @@ class HistoryRequest extends Component {
                                 <td><p style={{width:'210px'}}>{item.latestUpdate}</p></td>
                                 <td>
                                   <div>
-                                  <button class="btn btn-info" onClick={() => this.setState({modalShow: true, history : item })}>View More</button>
-                                  <this.MyVerticallyCenteredModal
-                                      show={this.state.modalShow}
-                                      onHide={() => this.setState({modalShow: false})}
-                                      history ={{times : item.latestUpdate}}
-                                    />
+                                    <button class="btn btn-info" onClick={() => this.setState({modalShow: true, history : item })}>View More</button>
+                                    <this.MyVerticallyCenteredModal
+                                        show={this.state.modalShow}
+                                        onHide={() => this.setState({modalShow: false})}
+                                        history ={{times : item.latestUpdate}}
+                                      />
                                   </div>
                                 </td>
                               </tr>
