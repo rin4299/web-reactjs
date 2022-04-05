@@ -249,6 +249,29 @@ class ExchangeService extends BaseServiceCRUD {
       }
         var sres = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object1);
         if(sres.data){
+          // console.log(sres.data)
+          // var data = sres.data.result.data;
+          // var listofP = Buffer.from(JSON.parse(JSON.stringify(data))).toString();
+          // console.log(listofP);
+          // var information = listofP.split(",")
+          // var shell = []
+          // var return_list = {}
+          // for(var j = 0; j < information.length; j++){
+          //   var split_data = information[j].split(",");
+          //   if(shell.includes(split_data[0])){
+          //     return_list[split_data[0]]['ids'] += "," + split_data[1];
+          //     return_list[split_data[0]]['quantity'] += 1;
+          //   } else{
+          //     shell.push(split_data[0]);
+          //     var product_infor = await Models.Product.query().findOne({id: parseInt(split_data[0])})
+          //     var obj = {
+          //       'ids': split_data[1],
+          //       'quantity': 1,
+          //       'product': product_infor
+          //     }
+          //     return_list[split_data[0]] = obj;
+          //   }
+          // }
           return sres.data
         } else {
           throw Boom.badRequest('Failed to update ProuctDetail!');
@@ -360,11 +383,7 @@ class ExchangeService extends BaseServiceCRUD {
 
   getSearchQuery(builder, q) {
     builder.andWhere(function () {
-<<<<<<< HEAD
-      this.whereRaw('LOWER("id") LIKE \'%\' || LOWER(?) || \'%\' ', q);
-=======
       this.whereRaw('LOWER("fullName") LIKE \'%\' || LOWER(?) || \'%\' ', q);
->>>>>>> remotes/origin/Vu---Front-end
     });
   }
 
