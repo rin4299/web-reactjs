@@ -86,9 +86,19 @@ class UserService extends BaseServiceCRUD {
       throw Boom.badRequest(`You can't cancel with order status is Confirmed or Shipped `);
     }
     if(builder.status === 'Canceled') {
+      await Models.OrderDetail.query().delete().where("orderId", id);
       return await Models.Order.query().deleteById(id)
     }
     const result = await Models.Order.query().patchAndFetchById(id, {status: 'Canceled'})
+    var newVal = 0;
+    const orderDetails = await Models.OrderDetail.query().where("orderId", id);
+    console.log("OD",orderDetails)
+    for(var i = 0; i < orderDetails.length; i++){
+      var product = await Models.Product.query().findOne({id: orderDetails[i].productId})
+      newVal = product.numberAvailable + orderDetails[i].quantity;
+      console.log(newVal)
+      await Models.Product.query().update({numberAvailable: newVal}).where("id", product.id);
+    }
     return result;
   }
 

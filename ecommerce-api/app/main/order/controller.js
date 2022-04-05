@@ -68,6 +68,17 @@ class OrderController extends BaseControllerCRUD {
     }
   };
 
+  async deleteOrder(request) {
+    try {
+      const {
+        id
+      } = request.params;
+      return await this.service.deleteOrder(id);
+    } catch (err) {
+      throw err;
+    }
+  };
+
 }
 
 module.exports = OrderController;
