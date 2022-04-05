@@ -25,7 +25,7 @@ class Tracking extends Component {
     this.state = {
       total: [],
       currentPage: 1,
-      searchText: 2,
+      searchText: '',
       modalShow: false,
       productName : '',
       selected:'',
@@ -198,11 +198,8 @@ class Tracking extends Component {
                 this.createExchange({
                   reqUserName:this.state.user[0].name,
                   recUserName:this.state.recUser,
-                  // pName: props.products.name,
-                  // quantity: this.state.quantity
                   multiRequest: [{pName:props.products.name, quantity:this.state.quantity}]
                 })
-                // console.log("3",this.state.recUser)
               }>
                 Submit
               </button>
@@ -259,7 +256,6 @@ class Tracking extends Component {
                         className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
                         aria-label="Search" />
                     </div>
-                    {/* <Link to='/products/add' className="btn btn-primary" > Create</Link> */}
                   </form>
                   <div className="card-body">
                     <div className="table-responsive">
@@ -271,17 +267,11 @@ class Tracking extends Component {
                             <th>Product Name</th>
                             <th>Id Product</th>
                             <th>Owner Name</th>
-                            {/* <th>Properties</th> */}
                             <th style={{ textAlign: "center" }}>Time</th>
-                            {/* <th style={{ textAlign: "center" }}>Active</th>
-                            <th style={{ textAlign: "center" }}>Action</th> */}
-                            {/* <th style={{ textAlign: "center" }}>Request</th> */}
                           </tr>
                         </thead>
                         <tbody>
                           {total && total.length ? total.map((item, index) => {
-                            {/* console.log('total',total) */}
-                            {/* console.log('item',item.Value.productName) */}
                             return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
@@ -289,16 +279,7 @@ class Tracking extends Component {
                                 <td><span >{item.Value.productName}</span></td>
                                 <td>{item.Value.id}</td>
                                 <td>{item.Value.ownerName}</td>
-                                {/* <td>{item.properties}</td> */}
-                                {/* width: 200px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  resize: horizontal;
-  
-  padding: 10px;
-  margin: 0; */}
-                                <td><p>{item.Timestamp}</p></td>
+                                <td><p1>{item.Timestamp}</p1></td>
                               </tr>
                             )
                           }) : null}

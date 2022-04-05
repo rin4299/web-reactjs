@@ -34,7 +34,7 @@ class Header extends Component {
     
     // console.log('localStorage',JSON.parse(localStorage.getItem('_cart')))
     cart = JSON.parse(localStorage.getItem('_cart'))
-    console.log('cart header',cart)
+    // console.log('cart header',cart)
     // if (cart.length > 0) {
     //   count = countCart.reduce((sum, item) => {
     //     return sum += item.quantity

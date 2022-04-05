@@ -40,6 +40,7 @@ class ShoppingCart extends Component {
                         <th className="cart-product-name">Product</th>
                         <th className="li-product-price">Unit Price</th>
                         <th className="li-product-quantity">Quantity</th>
+                        <th className="li-product-available">Available</th>
                         <th className="li-product-subtotal">Total</th>
                       </tr>
                     </thead>

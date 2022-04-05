@@ -35,6 +35,7 @@ class OrderService extends BaseServiceCRUD {
     return builder;
   }
 
+  // load order with owner
   async getManyS(query, user) {
     const builder = this.model.queryBuilder(query).where('atStore', user).eager('orderDetails');
     if (this.getSearchQuery && query.q) {

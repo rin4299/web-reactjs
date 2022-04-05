@@ -4,16 +4,17 @@ import { toast } from 'react-toastify';
 import { actShowLoading, actHiddenLoading } from './loading'
 import 'react-toastify/dist/ReactToastify.css';
 
-export const actFetchProductsRequest = (token, offset) => {
+export const actFetchProductsRequest = (token, offset, storename) => {
   const newOffset = offset === null || offset === undefined ? 0 : offset;
   const limit = 10;
   return dispatch => {
     dispatch(actShowLoading());
     return new Promise((resolve, reject) => {
-      callApi(`products?limit=${limit}&offset=${newOffset}&orderBy=-createdAt`, 'GET', null)
+      callApi(`getproductbyowner/${storename}?limit=${limit}&offset=${newOffset}&orderBy=-createdAt`, 'GET', null, token)
         .then(res => {
           if (res && res.status === 200) { 
-            dispatch(actFetchProducts(res.data.results));
+            // console.log('res.data', res.data)
+            dispatch(actFetchProducts(res.data));
             resolve(res.data);
             setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
           }
@@ -30,6 +31,36 @@ export const actFetchProductsRequest = (token, offset) => {
 export const actFetchProducts = (products) => {
   return {
     type: Types.FETCH_PRODUCTS,
+    products
+  }
+}
+
+export const actFetchProductsRequest2 = (token, storename) => {
+  // const newOffset = offset === null || offset === undefined ? 0 : offset;
+  // const limit = 10;
+  return dispatch => {
+    dispatch(actShowLoading());
+    return new Promise((resolve, reject) => {
+      callApi(`getproductbyowner/${storename}`, 'GET', null, token)
+        .then(res => {
+          if (res && res.status === 200) { 
+            dispatch(actFetchProducts2(res.data));
+            resolve(res.data);
+            setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          reject(err);
+          setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+        });
+    });
+  };
+};
+
+export const actFetchProducts2 = (products) => {
+  return {
+    type: Types.FETCH_PRODUCTS2,
     products
   }
 }
@@ -58,7 +89,6 @@ export const actFindProductsRequest = (token, searchText) => {
         if (res && res.status === 200) { 
           dispatch(actFindProducts(res.data.results));
           resolve(res.data);
-          // console.log(res.data)
           setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
         }
       })

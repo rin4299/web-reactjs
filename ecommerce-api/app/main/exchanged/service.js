@@ -360,7 +360,11 @@ class ExchangeService extends BaseServiceCRUD {
 
   getSearchQuery(builder, q) {
     builder.andWhere(function () {
+<<<<<<< HEAD
       this.whereRaw('LOWER("id") LIKE \'%\' || LOWER(?) || \'%\' ', q);
+=======
+      this.whereRaw('LOWER("fullName") LIKE \'%\' || LOWER(?) || \'%\' ', q);
+>>>>>>> remotes/origin/Vu---Front-end
     });
   }
 

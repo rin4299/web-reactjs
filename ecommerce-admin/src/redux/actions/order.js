@@ -4,13 +4,13 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { actShowLoading, actHiddenLoading } from './loading'
 
-export const actFetchOrdersRequest = (token, offset) => {
+export const actFetchOrdersRequest = (token, offset, storename) => {
   const newOffset = offset === null || offset === undefined ? 0 : offset;
   const limit = 10;
   return dispatch => {
     dispatch(actShowLoading());
     return new Promise((resolve, reject) => {
-      callApi(`orders?limit=${limit}&offset=${newOffset}&orderBy=-createdAt`, "GET", null, token)
+      callApi(`orders/new/${storename}?limit=${limit}&offset=${newOffset}&orderBy=-createdAt`, "GET", null, token)
         .then(res => {
           if (res && res.status === 200) {
             dispatch(actFetchOrders(res.data.results));
@@ -33,6 +33,35 @@ export const actFetchOrders = orders => {
     orders
   };
 };
+
+// export const actFetchOrdersRequest2 = (token, storename) => {
+//   return dispatch => {
+//     dispatch(actShowLoading());
+//     return new Promise((resolve, reject) => {
+//       callApi(`orders/new/${storename}`, "GET", null, token)
+//         .then(res => {
+//           if (res && res.status === 200) {
+//             dispatch(actFetchOrders2(res.data.results));
+//             resolve(res.data);
+//             setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+//           }
+//         })
+//         .catch(err => {
+//           console.log(err);
+//           reject(err);
+//           setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+//         });
+//     });
+//   };
+// };
+
+// export const actFetchOrders2 = orders => {
+//   return {
+//     type: Types.FETCH_ORDERS2,
+//     orders
+//   };
+// };
+
 
 export const actFindOrdersRequest = (token, searchText) => {
   return dispatch => {

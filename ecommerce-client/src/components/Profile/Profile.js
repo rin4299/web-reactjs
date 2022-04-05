@@ -13,6 +13,7 @@ import { formatNumber } from '../../config/TYPE'
 import { Link } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+
 const MySwal = withReactContent(Swal)
 
 toast.configure()
@@ -41,7 +42,8 @@ class Profile extends Component {
       oldPassword: '',
       password: '',
       rePassword: '',
-      historyBooking: []
+      historyBooking: [],
+      modalShow: false,
     }
   }
 
@@ -58,6 +60,7 @@ class Profile extends Component {
       avatar: res.data.results[0].avatar,
       historyBooking: res2.data.results
     })
+    console.log(res2)
   }
 
   handleChangeImage = (event) => {
@@ -154,37 +157,39 @@ class Profile extends Component {
 
   showOrder(status){
     if (status === 'Unconfirm') { 
-      return (<div className="col-md-3"><label className="fix-status" style={{background: '#ff9800'}} >{status}</label></div>)
+      return (<div className="col-md-2"><label className="fix-status" style={{background: '#ff9800'}} >{status}</label></div>)
     
     }
     if (status === 'Confirm') {
       return (
-        <div className="col-md-3"><label className="fix-status" style={{background: '#337ab7'}} >{status}</label></div>
+        <div className="col-md-2"><label className="fix-status" style={{background: '#337ab7'}} >{status}</label></div>
       )
      
     }
     if (status === 'Shipping') {
       return (
-   <div className="col-md-3"><label className="fix-status" style={{background: '#634a41'}} >{status}</label></div>
+   <div className="col-md-2"><label className="fix-status" style={{background: '#634a41'}} >{status}</label></div>
       )
       
     }
     if (status === 'Complete') {
       return (
-        <div className="col-md-3"><label className="fix-status" style={{background: '#5cb85c'}} >{status}</label></div>
+        <div className="col-md-2"><label className="fix-status" style={{background: '#5cb85c'}} >{status}</label></div>
       )
      
     }
     if (status === 'Canceled') {
       return (
-        <div className="col-md-3"><label className="fix-status" style={{background: '#d9534f'}} >{status}</label></div>
+        <div className="col-md-2"><label className="fix-status" style={{background: '#d9534f'}} >{status}</label></div>
       )
      
     }
   }
+  
 
   render() {
     const { name, email, phone, address, avatar, loading, oldPassword, password, rePassword, historyBooking } = this.state;
+    console.log('historybooking', historyBooking)
     return (
       <div className="container emp-profile">
         <div className='sweet-loading'>
@@ -313,26 +318,58 @@ class Profile extends Component {
                   </form>
                 </div>
                 <div className="tab-pane fade" id="history" aria-labelledby="history-tab">
-                  <div className="row">
+                  <div className="row">        
                     <div className="col-md-1"><b>Code Order</b></div>
-                    <div className="col-md-3"><b>Date Order</b></div>
-                    <div className="col-md-3"><b>Status</b></div>
-                    <div className="col-md-3"><b>Total Amount</b></div>
-                    <div className="col-md-2"><b>Action</b></div>
+                    <div className="col-md-2"><b>View</b></div>
+                    <div className="col-md-2"><b>Date Order</b></div>
+                    <div className="col-md-2"><b>Status</b></div>
+                    <div className="col-md-2"><b>Total Amount</b></div>
+                    <div className="col-md-2"><b>Action</b></div>              
                   </div>
                   {
                     historyBooking && historyBooking.length ? historyBooking.map((item, index) => {
+                      console.log('item',item.orderDetails)
                       return (
                         <div key={index} className="row">
                           <div className="col-md-1">  <Link to="/orders/history/item">#{item.id}</Link></div>
-                          <div className="col-md-3">
+                          <div class="dropdown" className="col-md-2">
+                            <button type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              View
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                               <table className="table table-hover" style={{ textAlign: "center" }}>
+                                  <thead>
+                                    <tr>
+                                      <th style={{width:'30%'}}>Number</th>
+                                      <th>Name Product</th>
+                                      <th>Price</th>
+                                      <th>Quantity</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {item.orderDetails && item.orderDetails.length ? item.orderDetails.map((order,index) => {
+                                      return(
+                                        <tr key = {index}>
+                                          <td scope="row">{index + 1}</td>
+                                          <td><span className="text-truncate" style={{width:'100%'}} >{order.nameProduct}</span></td>
+                                          <td>{order.price}</td>
+                                          <td>{order.quantity}</td>
+                                        </tr>
+
+                                      )
+                                    }) : null }
+                                  </tbody>
+                                </table>
+                            </div>
+                          </div>
+                          <div className="col-md-2">
                           <Moment format="YYYY-MM-DD">
                             {item.createdAt}
                           </Moment></div>
                           { item.status === 'Canceled' }
                           {this.showOrder(item.status)}                        
-                          <div className="col-md-3">{formatNumber.format(item.totalAmount)}</div>
-                          <div className="col-md-2"><Link to="#" onClick={(id)=>this.cancelOrder(item.id)} style={{ backgroundColor: '#ffff', border: '#ffff' }}><i className="fa fa-window-close" style={{color: 'red', fontSize: 15}}></i></Link></div>
+                          <div className="col-md-2">{formatNumber.format(item.totalAmount)}</div>
+                          <div className="col-md-2"><Link to="#" onClick={(id)=>this.cancelOrder(item.id)} style={{ backgroundColor: '#ffff', border: '#ffff' }}><i className="fa fa-window-close" style={{color: 'red', fontSize: 15}}></i></Link></div>               
                         </div>
                       )
                     }) : null                   

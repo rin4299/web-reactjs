@@ -90,28 +90,7 @@ class RequestCart extends Component {
     window.scrollTo(0, 0);
   }
 
- 
 
-//   handleRemove = (id) => {
-//     MySwal.fire({
-//       title: 'Are you sure?',
-//       text: "You won't be able to revert this!",
-//       icon: 'warning',
-//       showCancelButton: true,
-//       confirmButtonColor: '#3085d6',
-//       cancelButtonColor: '#d33',
-//       confirmButtonText: 'Yes'
-//     }).then(async (result) => {
-//       if (result.value) {
-//         await this.props.delete_product(id, token);
-//         Swal.fire(
-//           'Deleted!',
-//           'Your file has been deleted.',
-//           'success'
-//         )
-//       }
-//     })
-//   }
   handleChange = (event) => {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -136,9 +115,7 @@ class RequestCart extends Component {
     this.props.create_exchange(token, payload).then(res => {
       console.log(res)
     })
-    // console.log('localstorage before', localStorage.getItem('_cart'));
     localStorage.removeItem('_cart');
-    // console.log('localstorage after', localStorage.getItem('_cart'));
     this.setState({modalShow: false})
   }
 
@@ -155,15 +132,6 @@ class RequestCart extends Component {
     }
     return result;
   }
-
-
-  // createDefaultOption = () => {
-    // this.setState({
-    //   recUser: this.state.userdiff[0].name
-    // })
-  //   console.log("recU",this.state.recUser)
-  // }
-
 
 
   render() {

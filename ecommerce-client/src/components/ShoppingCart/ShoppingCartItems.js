@@ -11,8 +11,8 @@ toast.configure()
 class ShoppingCartItems extends Component {
 
   upItem = (item) => {
-    if (item.quantity >= 20) {
-      toast.error('You can only purchase up to 5 products')
+    if (item.quantity >= item.numberAvailable) {
+      toast.error('Quantity products exceeds the limit we have')
       return
     }
     let newItem = item;
@@ -51,7 +51,9 @@ class ShoppingCartItems extends Component {
             <div onClick={() => this.upItem(item)} className="inc qtybutton"><i className="fa fa-angle-up" /></div>
           </div>
         </td>
+        <td className='number-Available'><span className="amount">{item.numberAvailable}</span></td>
         <td className="product-subtotal"><span className="amount">{formatNumber.format(item.price * item.quantity)}</span></td>
+        
       </tr>
     )
   }

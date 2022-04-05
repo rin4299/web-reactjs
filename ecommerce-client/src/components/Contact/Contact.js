@@ -54,16 +54,13 @@ export default class Contact extends Component {
               <div className="contact-page-side-content">
                 <h3 className="contact-page-title">Contact Us</h3>
                 <p className="contact-page-message mb-25">
-                  Claritas est etiam processus dynamicus, qui sequitur
-                  mutationem consuetudium lectorum. Mirum est notare quam
-                  littera gothica, quam nunc putamus parum claram anteposuerit
-                  litterarum formas human.
+                  Tran Nhu Anh Vu - Nguyen Phuc Minh
                 </p>
                 <div className="single-contact-block">
                   <h4>
                     <i className="fa fa-fax" /> Address
                   </h4>
-                  <p>03 Quang Trung – Da Nang - VN</p>
+                  <p>268 Ly Thuong Kiet – HCM - VN</p>
                 </div>
                 <div className="single-contact-block">
                   <h4>
@@ -76,8 +73,8 @@ export default class Contact extends Component {
                   <h4>
                     <i className="fa fa-envelope-o" /> Email
                   </h4>
-                  <p>admin@limupa.com</p>
-                  <p>support@limupa.com</p>
+                  <p>admin@bkshop.com</p>
+                  <p>support@bkshop.com</p>
                 </div>
               </div>
             </div>
