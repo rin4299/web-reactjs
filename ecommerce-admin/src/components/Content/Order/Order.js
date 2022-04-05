@@ -10,6 +10,7 @@ import MyFooter from '../../MyFooter/MyFooter'
 import Paginator from 'react-js-paginator';
 import {exportExcel} from '../../../utils/exportExcel'
 import callApi from '../../../utils/apiCaller';
+import { toast } from "react-toastify";
 
 const MySwal = withReactContent(Swal)
 
@@ -23,7 +24,6 @@ class Order extends Component {
       total: 0,
       currentPage: 1,
       user: [],
-      status: 'Unconfirm',
     }
   }
 
@@ -153,10 +153,18 @@ class Order extends Component {
      
     }
   }
+  testfunction(){
+    return toast.success('test tahnh cong')
+  }
 
-  printout(status,fullname){
-    console.log('status', status)
-    console.log('fullname', fullname)
+  async handleChangeStatus(payload){
+    // console.log(payload)
+    token = localStorage.getItem('_auth');
+    const res = await callApi('order/changestatus',"POST", payload, token)
+    if (res && res.status === 200) {
+      return toast.success(res.data);
+    }
+    this.fetch_reload_data()
   }
 
   render() {
@@ -225,7 +233,7 @@ class Order extends Component {
                         </thead>
                         <tbody>
                           {orders && orders.length ? orders.map((item, index) => {
-                            console.log('order',item)
+                            {/* console.log('order',item) */}
                             return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
@@ -234,9 +242,14 @@ class Order extends Component {
                                 <td>{item.phone}</td>
                                 {/* <td>{this.showOrder(item.status)} </td> */}
                                 <td>
-                                  <select  className="form-control mb-3" name="status" onChange={(event) => {
-                                                                                                              this.printout(event.target.value,item.fullName)
+                                  <select  className="form-control mb-3" value={item.status} name="status" onChange={(event) => {
                                                                                                               item.status = event.target.value
+                                                                                                              this.handleChangeStatus({
+                                                                                                                orderId: item.id,
+                                                                                                                status: event.target.value,
+                                                                                                                atStore: item.atStore,
+                                                                                                                fullName: item.fullName
+                                                                                                                })
                                                                                                             }} >
                                     <option value='Unconfirm'>Unconfirm</option>
                                     <option value='Confirm'>Confirm</option>
@@ -245,7 +258,7 @@ class Order extends Component {
                                     <option value='Canceled' >Cancel</option>
                                   </select>
                                 </td>
-                                {console.log(item.status)}
+                                {/* {console.log(item.status)} */}
                                 <td>{item.isPaid ?
                                   <div className="i-checks">
                                     <input type="checkbox" onChange={()=>{}} checked={true} className="checkbox-template" />
@@ -281,7 +294,7 @@ class Order extends Component {
                                     <span title='Delete' onClick={() => this.handleRemove(item.id)} className="fix-action"><Link to="#"> <i className="fa fa-trash" style={{ color: '#ff00008f' }}></i></Link></span>
                                   </div>
                                   <div>
-                                    {console.log('statuts',item.status)}
+                                    {/* {console.log('statuts',item.status)} */}
                                   </div>
                                 </td>
                               </tr>

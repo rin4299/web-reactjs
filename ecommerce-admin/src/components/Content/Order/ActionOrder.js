@@ -5,6 +5,7 @@ import callApi from '../../../utils/apiCaller';
 import { actAddOrderRequest, actGetOrderRequest, actEditOrderRequest } from '../../../redux/actions/order';
 import { Redirect } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom'
 let token;
 let id;
 
@@ -446,7 +447,8 @@ class ActionOrder extends Component {
                       <div className="line" />
                       <div className="form-group row">
                         <div className="col-sm-4 offset-sm-3">
-                          <button type="reset" className="btn btn-secondary" style={{ marginRight: 2 }}>Cancel</button>
+                        <Link to="/orders"><button type="reset" className="btn btn-secondary" style={{ marginRight: 2 }}>Cancel</button></Link>
+                          {/* <button type="reset" className="btn btn-secondary" style={{ marginRight: 2 }}>Cancel</button> */}
                           <button type="submit" className="btn btn-primary">Save changes</button>
                         </div>
                       </div>
