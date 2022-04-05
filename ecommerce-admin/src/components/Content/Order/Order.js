@@ -23,6 +23,7 @@ class Order extends Component {
       total: 0,
       currentPage: 1,
       user: [],
+      status: 'Unconfirm',
     }
   }
 
@@ -91,9 +92,20 @@ class Order extends Component {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
+    console.log(event)
     this.setState({
       [name]: value
     });
+  }
+
+  handleChange2 = (event) => {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    console.log(event)
+    // this.setState({
+    //   [name]: value
+    // });
   }
 
   handleSubmit = (event) => {
@@ -140,6 +152,11 @@ class Order extends Component {
       )
      
     }
+  }
+
+  printout(status,fullname){
+    console.log('status', status)
+    console.log('fullname', fullname)
   }
 
   render() {
@@ -208,13 +225,27 @@ class Order extends Component {
                         </thead>
                         <tbody>
                           {orders && orders.length ? orders.map((item, index) => {
+                            console.log('order',item)
                             return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
                                 <td>{item.fullName}</td>
                                 {/* <td>{item.address}</td> */}
                                 <td>{item.phone}</td>
-                                <td>{this.showOrder(item.status)} </td>
+                                {/* <td>{this.showOrder(item.status)} </td> */}
+                                <td>
+                                  <select  className="form-control mb-3" name="status" onChange={(event) => {
+                                                                                                              this.printout(event.target.value,item.fullName)
+                                                                                                              item.status = event.target.value
+                                                                                                            }} >
+                                    <option value='Unconfirm'>Unconfirm</option>
+                                    <option value='Confirm'>Confirm</option>
+                                    <option value='Shipping' >Shipping</option>
+                                    <option value='Complete' >Complete</option>
+                                    <option value='Canceled' >Cancel</option>
+                                  </select>
+                                </td>
+                                {console.log(item.status)}
                                 <td>{item.isPaid ?
                                   <div className="i-checks">
                                     <input type="checkbox" onChange={()=>{}} checked={true} className="checkbox-template" />
@@ -248,6 +279,9 @@ class Order extends Component {
                                   <div>
                                     <span title='Edit' className="fix-action"><Link to={`/orders/edit/${item.id}`}> <i className="fa fa-edit"></i></Link></span>
                                     <span title='Delete' onClick={() => this.handleRemove(item.id)} className="fix-action"><Link to="#"> <i className="fa fa-trash" style={{ color: '#ff00008f' }}></i></Link></span>
+                                  </div>
+                                  <div>
+                                    {console.log('statuts',item.status)}
                                   </div>
                                 </td>
                               </tr>
