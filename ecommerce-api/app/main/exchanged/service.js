@@ -154,6 +154,7 @@ class ExchangeService extends BaseServiceCRUD {
         } else {
           throw Boom.badRequest('Unsuccessful Creating!');
         }
+        
       // let data = await Models.Exchanged.query()
       //   .insert(payload)
       //   .returning('*');
@@ -168,7 +169,7 @@ class ExchangeService extends BaseServiceCRUD {
     }
   }
 
-  async updateAccept(id) {
+  async updateAccept(id, lop, storeName) {
     // await Models.Exchanged.query()
     //   .update({ isAccepted: true })
     //   .where('id', id);
@@ -176,6 +177,17 @@ class ExchangeService extends BaseServiceCRUD {
     // let data = await Models.Exchanged.query().where('id', id);
     // return data[0];
     
+    var temp = lop.split(",");
+    for(var i = 0; i < temp.length; i++){
+      var infor = temp[i].split("-");
+      var productQ = await Models.Ownership.query().where('storeName', storeName).findOne({pId: parseInt(infor[0])});
+      if(productQ.quantity > parseInt(infor[1])){
+        await Models.Ownership.query().update({quantity: productQ.quantity - parseInt(infor[1])} ).where('storeName', storeName).where('pId', productQ.pId);
+      } else {
+        throw Boom.badRequest(`The number of product which has ID = ${productQ.pId} is lower than requested (${parseInt(infor[1])} > ${productQ.quantity})`);
+      }
+    }
+
     let object = {
       fcn: "changeExchangeInfor",
       peers:["peer0.org1.example.com","peer0.org2.example.com"],
@@ -192,7 +204,7 @@ class ExchangeService extends BaseServiceCRUD {
   }
 
 
-  async updateConfirm(id) {
+  async updateConfirm(id, lop, storeName) {
 
     // let exchange = await Models.Exchanged.query().where('id', id);
     // let e = exchange[0];
@@ -211,6 +223,14 @@ class ExchangeService extends BaseServiceCRUD {
     // let data = await Models.Exchanged.query().where('id', id);
     // // return { message: 'Update isReceived is successfully' };
     // return data[0];
+
+    var temp = lop.split(",");
+    for(var i = 0; i < temp.length; i++){
+      var infor = temp[i].split("-");
+      var productQ = await Models.Ownership.query().where('storeName', storeName).findOne({pId: parseInt(infor[0])});
+      await Models.Ownership.query().update({quantity: productQ.quantity + parseInt(infor[1])} ).where('storeName', storeName).where('pId', productQ.pId);
+    }
+
     let object = {
       fcn: "changeExchangeInfor",
       peers:["peer0.org1.example.com","peer0.org2.example.com"],
@@ -332,9 +352,17 @@ class ExchangeService extends BaseServiceCRUD {
   async getProductbyOwner(query, user){
     const products = Models.Ownership.queryBuilder(query).eager('[ownership]').where('storeName', user);
     console.log(products);
+    if (this.getSearchQuery && query.q) {
+      this.getSearchQuery(products, query.q);
+    }
     return products;
   }
 
+  getSearchQuery(builder, q) {
+    builder.andWhere(function () {
+      this.whereRaw('LOWER("id") LIKE \'%\' || LOWER(?) || \'%\' ', q);
+    });
+  }
 
   async getStore(payload){
     
@@ -358,17 +386,20 @@ class ExchangeService extends BaseServiceCRUD {
       provider: 'opencage',
       apiKey: 'bd94e47e842341c1a497f48a2ad09182'
     });
+
+
     geocoder.geocode({address: address}, async function(err,res){
       var lat = res[0]['latitude']
       var lng = res[0]['longitude']
       var listofStore = []
+      var strongestFlag = true;
       console.log("1111111111111")
       const stores = await Models.Store.query();
       console.log(stores);
       for(var i = 0; i < stores.length; i++){
         listofStore.push({'distance': disCalculate(stores[i]['lat'],stores[i]['lng'],lat,lng),'storeName': stores[i]['storeName']})
       }
-      listofStore.sort();
+      listofStore.sort((a,b) => (a.distance > b.distance) ? 1 : (b.distance > a.distance) ? -1 : 0);
       console.log(listofStore)
       const arrPQ = []
       var proQ  = lop.split(",");
@@ -378,26 +409,50 @@ class ExchangeService extends BaseServiceCRUD {
       }
       var flag1 = true
       var memoryShell = [];
+      
       console.log("ARRPQ", arrPQ)
+
+      // var firstStore = await Models.Ownership.query().where('storeName', listofStore[0]['storeName']);
+      // for(var p = 0; p < arrPQ.length; p++){
+      //   for(var q = 0; q < productInStore.length; q++){
+      //     if(arrPQ[p]['pId'] === productInStore[q].pId){
+      //       productMatch.push({'pId': arrPQ[p]['pId'], 'currentQ': productInStore[q].quantity}); //Luu thong tin cac product matching cua moi store
+      //       if(arrPQ[p]['quantity'] > productInStore[q].quantity){ //quantity yeu cau > quantity co thi store do ko dap ung duoc
+      //         flag1 = false;
+      //         shortageShell.push({'pId': arrPQ[p]['pId'], 'lostQ': arrPQ[p]['quantity'] - productInStore[q].quantity})
+      //         console.log("3333333333333", shortageShell)
+      //       } 
+      //     }
+      //   }
+      // }
+      var productMatch = {};
+      var shortageShell = [];
       for(var j = 0;j < listofStore.length; j++){
         var productInStore = await Models.Ownership.query().where('storeName', listofStore[j]['storeName'])
         memoryShell.push({'storeName': listofStore[j]['storeName']})
-        var productMatch = [];
-    
+        productMatch = {};
+        // shortageShell = [];
         for(var x = 0; x < arrPQ.length; x++){
           for(var y = 0; y < productInStore.length; y++){
             if(arrPQ[x]['pId'] === productInStore[y].pId){
-              productMatch.push({'pId': arrPQ[x]['pId'], 'currentQ': productInStore[y].quantity}); //Luu thong tin cac product matching cua moi store
+              productMatch[arrPQ[x]['pId']] = productInStore[y].quantity
+              // productMatch.push({'pId': arrPQ[x]['pId'], 'currentQ': productInStore[y].quantity}); //Luu thong tin cac product matching cua moi store
               if(arrPQ[x]['quantity'] > productInStore[y].quantity){ //quantity yeu cau > quantity co thi store do ko dap ung duoc
                 flag1 = false;
-                console.log("3333333333333")
-              }
+                if(listofStore[j]['storeName'] === listofStore[0]['storeName']){
+                  shortageShell.push({'pId': arrPQ[x]['pId'], 'lostQ': arrPQ[x]['quantity'] - productInStore[y].quantity})
+                  // shortageShell[arrPQ[x]['pId']] = arrPQ[x]['quantity'] - productInStore[y].quantity
+                }
+                console.log("3333333333333", shortageShell)
+              } 
             }
           }
         }
         console.log(productMatch)
         if(flag1 === true){
           await Models.Order.query().update({atStore: listofStore[j]['storeName']} ).where('id', orderId);
+          console.log(listofStore[j]['storeName']);
+          strongestFlag = false;
           break;
         } else {
           memoryShell[j]['products'] = productMatch;
@@ -409,8 +464,98 @@ class ExchangeService extends BaseServiceCRUD {
           // 2: neu storeA ko du lưu giá trị của store gần nhất và check các store khác và lưu giá trị, nếu đủ stop và -> y chang 1
           // 3: neu ko có store đủ thì dựa vào độ thiếu của store gần nhất đối với mỗi sp mà tìm store phù hợp
       } // end checking 1 for each store and take the value of matching product in each store
-      console.log(memoryShell);
-     
+      // memoryShell chua thong tin hang tai tung store 
+      // shortageShell chua so luong thieu neu ko co store nao dap du
+      if(strongestFlag){
+        console.log('memoryShell',memoryShell);
+
+        await Models.Order.query().update({atStore: listofStore[0]['storeName']} ).where('id', orderId);
+        var candidates = {};
+        var flag2 = true;
+        for(var n = 0; n < shortageShell.length; n++){
+
+          for(var z = 1; z < memoryShell.length; z++){
+            if(shortageShell[n]['lostQ'] > 0 && memoryShell[z]['products'][shortageShell[n]['pId']] >= shortageShell[n]['lostQ']){
+              if(candidates[memoryShell[z]['storeName']] !== undefined){
+                candidates[memoryShell[z]['storeName']] += shortageShell[n]['pId'].toString() + "-" +  shortageShell[n]['lostQ'].toString() + ",";
+                shortageShell[n]['lostQ'] = shortageShell[n]['lostQ']  - memoryShell[z]['products'][shortageShell[n]['pId']];
+                flag2 = false;
+              } else {
+                candidates[memoryShell[z]['storeName']] = shortageShell[n]['pId'].toString() + "-" +  shortageShell[n]['lostQ'].toString() + ",";
+                shortageShell[n]['lostQ'] = shortageShell[n]['lostQ']  - memoryShell[z]['products'][shortageShell[n]['pId']];
+                flag2 = false;
+              }
+            }
+          }
+
+          if(flag2){
+            for(var z = 1; z < memoryShell.length; z++){
+              if(shortageShell[n]['lostQ'] > 0 && shortageShell[n]['lostQ'] >= memoryShell[z]['products'][shortageShell[n]['pId']]){
+                if(candidates[memoryShell[z]['storeName']] !== undefined){
+                  candidates[memoryShell[z]['storeName']] += shortageShell[n]['pId'].toString() + "-" +  memoryShell[z]['products'][shortageShell[n]['pId']].toString() + ",";
+                  shortageShell[n]['lostQ'] = shortageShell[n]['lostQ'] - memoryShell[z]['products'][shortageShell[n]['pId']];
+                  flag2 = false;
+                } else {
+                  candidates[memoryShell[z]['storeName']] = shortageShell[n]['pId'].toString() + "-" +  memoryShell[z]['products'][shortageShell[n]['pId']].toString() + ",";
+                  shortageShell[n]['lostQ'] = shortageShell[n]['lostQ']  - memoryShell[z]['products'][shortageShell[n]['pId']];
+                  flag2 = false;
+                }
+              } else {
+                if(candidates[memoryShell[z]['storeName']] !== undefined){
+                  candidates[memoryShell[z]['storeName']] += shortageShell[n]['pId'].toString() + "-" +  shortageShell[n]['lostQ'].toString() + ",";
+                  shortageShell[n]['lostQ'] = shortageShell[n]['lostQ'] - memoryShell[z]['products'][shortageShell[n]['pId']];
+                  flag2 = false;
+                } else {
+                  candidates[memoryShell[z]['storeName']] = shortageShell[n]['pId'].toString() + "-" +  shortageShell[n]['lostQ'].toString() + ",";
+                  shortageShell[n]['lostQ'] = shortageShell[n]['lostQ']  - memoryShell[z]['products'][shortageShell[n]['pId']];
+                  flag2 = false;
+                }
+              }
+            }
+          } else {
+            flag2 = true;
+          }
+        }
+        
+
+        // candidates[memoryShell[z]['storeName']] = "";
+         
+        //     for(var o = 0; o < memoryShell[z]['products'].length; o++){
+        //       if(shortageShell[memoryShell[z]['products'][o]['pId']] !== undefined && shortageShell[memoryShell[z]['products'][o]['pId']] > 0 && shortageShell[memoryShell[z]['products'][o]['pId']] <= memoryShell[z]['products'][o]['currentQ']){
+        //         candidates[memoryShell[z]['storeName']] += memoryShell[z]['products'][o]['pId'].toString() + "-" + shortageShell[memoryShell[z]['products'][o]['pId']].toString() + ",";
+        //         shortageShell[memoryShell[z]['products'][o]['pId']] = shortageShell[memoryShell[z]['products'][o]['pId']] - memoryShell[z]['products'][o]['currentQ'];
+        //         flag2 = false;
+        //       }
+        //     }
+  
+        //     // if(flag2){
+        //     //   for(var o = 0; o < memoryShell[z]['products'].length; o++){
+        //     //     if(shortageShell[memoryShell[z]['products'][o]['pId']] !== undefined){
+        //     //       shortageShell[memoryShell[z]['products'][o]['pId']] = shortageShell[memoryShell[z]['products'][o]['pId']]  - memoryShell[z]['products'][o]['currentQ']
+        //     //       candidates[memoryShell[z]['storeName']] += memoryShell[z]['products'][o]['pId'].toString() + "-" + memoryShell[z]['products'][o]['currentQ'].toString() + ",";
+        //     //     }
+        //     //   }
+        //     // } else{
+        //     //   flag2 = true;
+        //     // }
+
+
+        console.log(candidates);
+        let obj = Object.keys(candidates);
+        for(var m = 0; m < obj.length; m++){
+          let object = {
+            fcn: "createExchange",
+            peers:["peer0.org1.example.com","peer0.org2.example.com"],
+            chaincodeName:"productdetail",
+            channelName:"mychannel",
+            args:[listofStore[0]['storeName'], obj[m], candidates[obj[m]].slice(0, -1)]
+          }
+          console.log(object)
+          // let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+          // console.log(res.data);
+        }
+      }
+      
     })
     return "successful"
   }

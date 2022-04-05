@@ -110,3 +110,13 @@ exports.exportExcel = {
   }
 };
 
+exports.changeStatus = {
+  description: 'change status of a Order',
+  notes: 'Return',
+  tags: ['api', 'v1'],
+  handler: controller.changeStatus.bind(controller),
+  auth: 'jwt',
+  validate: {
+    
+  }
+};

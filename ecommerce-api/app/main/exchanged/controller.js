@@ -33,8 +33,8 @@ class ExchangeController extends BaseControllerCRUD {
 
   async updateAccept(request) {
     try {
-      const {id} = request.params;
-      return await this.service.updateAccept(id);
+      const {id, listofProducts, storeName} = request.params;
+      return await this.service.updateAccept(id, listofProducts, storeName);
     } catch (err) {
       throw err;
     }
@@ -43,9 +43,9 @@ class ExchangeController extends BaseControllerCRUD {
   async updateConfirm(request) {
     try {
       const {
-        id
+        id, listofProducts, storeName
       } = request.params;
-      return await this.service.updateConfirm(id);
+      return await this.service.updateConfirm(id, listofProducts, storeName);
     } catch (err) {
       throw err;
     }
