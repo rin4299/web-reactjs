@@ -42,7 +42,12 @@ const Routes = [
     method: 'GET',
     path: '/api/v1/orders/exportExcel',
     config: handler.exportExcel
-  }
+  },
+  {
+    method: 'POST',
+    path: '/api/v1/order/changestatus',
+    config: handler.changeStatus
+  },
 ];
 
 module.exports = Routes;

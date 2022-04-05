@@ -56,6 +56,18 @@ class OrderController extends BaseControllerCRUD {
       throw err;
     }
   };
+
+  async changeStatus(request) {
+    try {
+      const {
+        payload
+      } = request;
+      return await this.service.changeStatus(payload);
+    } catch (err) {
+      throw err;
+    }
+  };
+
 }
 
 module.exports = OrderController;
