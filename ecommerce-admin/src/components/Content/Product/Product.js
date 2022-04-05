@@ -75,7 +75,6 @@ class Product extends Component {
     // console.log('name', this.state.user[0].name)
     this.props.fetch_products(token,null, this.state.user[0].name).then(res => {
       // console.log('res', res)
-      var lng = res.length;
       this.setState({
         total: res.data
       });
@@ -88,7 +87,7 @@ class Product extends Component {
   pageChange(content){
     const limit = 10;
     const offset = limit * (content - 1);
-    this.props.fetch_products2(token,null, this.state.user[0].name);
+    this.props.fetch_products(token,offset, this.state.user[0].name);
     this.setState({
       currentPage: content
     })

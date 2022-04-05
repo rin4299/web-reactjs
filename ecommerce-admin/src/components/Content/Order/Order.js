@@ -24,6 +24,7 @@ class Order extends Component {
       total: 0,
       currentPage: 1,
       user: [],
+      filterStatus: '...',
     }
   }
 
@@ -199,6 +200,20 @@ class Order extends Component {
                     onSubmit={(event) => this.handleSubmit(event)}
                     className="form-inline md-form form-sm mt-0" style={{ justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20 }}>
                     <div>
+                    <select  className="form-control mb-3" name="status" onChange={(event) => {
+                                                                                                this.state.filterStatus = event.target.value
+                                                                                                console.log(this.state.filterStatus)
+                                                                                                this.fetch_reload_data()
+                                                                                              }} >
+                      <option value='...'>...</option>
+                      <option value='Unconfirm'>Unconfirm</option>
+                      <option value='Confirm'>Confirm</option>
+                      <option value='Shipping' >Shipping</option>
+                      <option value='Complete' >Complete</option>
+                      <option value='Canceled' >Cancel</option>
+                    </select>
+                    </div>
+                    <div>
                       <button style={{ border: 0, background: 'white' }}><i className="fa fa-search" aria-hidden="true"></i></button>
                       <input
                         name="searchText"
@@ -232,7 +247,14 @@ class Order extends Component {
                           </tr>
                         </thead>
                         <tbody>
-                          {orders && orders.length ? orders.map((item, index) => {
+                          {orders && orders.length ? orders
+                          .filter((item,index) => {
+                            if(this.state.filterStatus === '...'){
+                              return true
+                            }
+                            return item.status == this.state.filterStatus
+                          })
+                          .map((item, index) => {
                             {/* console.log('order',item) */}
                             return (
                               <tr key={index}>
@@ -281,7 +303,7 @@ class Order extends Component {
                                 <td>{item.shippingTotal}</td>
                                 <td>{item.promoTotal}</td>
                                 <td>{item.totalAmount}</td>
-                                <td>{item.note}</td>
+                                <td><p>{item.note}</p></td>
                                 <td>{item.id}</td>
                                 <td>
                                   <Moment format="YYYY/MM/DD">

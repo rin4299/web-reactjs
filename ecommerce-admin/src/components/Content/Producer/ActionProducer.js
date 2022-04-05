@@ -7,6 +7,7 @@ import callApi from '../../../utils/apiCaller';
 import { uploadImage } from '../../../utils/upload'
 import { css } from '@emotion/core';
 import ClipLoader from 'react-spinners/ClipLoader';
+import { Link } from 'react-router-dom'
 let token;
 let id;
 const override = css`
@@ -188,13 +189,14 @@ class ActionProducer extends Component {
                           {/* <textarea name="properties" onChange={this.handleChange} value={properties} rows="5" className="form-control" /> */}
                           {dataCategories && dataCategories.length ?
                             dataCategories.map((item, index) => {
+                              {console.log(categoryId)}
                               return (
                                 <div key={index} className="i-checks" style={{ display: 'inline-block', paddingRight: 35 }} >
                                   {
                                     item.id === categoryId ?
-                                      <input id={index} name="categoryId" checked value={categoryId} onChange={this.handleChange} type="radio" value={item.id} className="radio-template" />
+                                      <input id={index} name="categoryId" checked value={categoryId} onChange={this.handleChange} type="radio" className="radio-template" />
                                       :
-                                      <input id={index} name="categoryId" value={categoryId} onChange={this.handleChange} type="radio" value={item.id} className="radio-template" />
+                                      <input id={index} name="categoryId" value={categoryId} onChange={this.handleChange} type="radio" className="radio-template" />
                                   }
                                   <label>{item.nameCategory}</label>
                                 </div>
@@ -231,7 +233,7 @@ class ActionProducer extends Component {
                       <div className="line" />
                       <div className="form-group row">
                         <div className="col-sm-4 offset-sm-3">
-                          <button type="reset" className="btn btn-secondary" style={{ marginRight: 2 }}>Cancel</button>
+                          <Link to="/producers"><button type="reset" className="btn btn-secondary" style={{ marginRight: 2 }}>Cancel</button></Link>   
                           <button type="submit" className="btn btn-primary">Save changes</button>
                         </div>
                       </div>

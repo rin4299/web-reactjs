@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { actFetchProductsRequest, actDeleteProductRequest, actFindProductsRequest } from '../../../redux/actions/product';
+import { actFetchProductsRequest, actFindProductsRequest } from '../../../redux/actions/product';
 import {actTrackingRequest} from '../../../redux/actions/tracking';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'

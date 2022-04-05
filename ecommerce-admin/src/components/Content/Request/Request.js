@@ -34,6 +34,7 @@ class Request extends Component {
       id:0,
       nameProduct:'',
       quantityRequest:0,
+      total2: 0,
     }
   }
 
@@ -64,7 +65,8 @@ class Request extends Component {
     // console.log("id", this.state.user[0].id);
     this.props.fetch_exchange_request(this.state.user[0].id, token).then(res => {
       this.setState({
-        total: res
+        total: res,
+        total2 : res.slice(0,10)
       })
     }).catch(err => {
       console.log(err)
@@ -74,8 +76,8 @@ class Request extends Component {
   pageChange(content){
     const limit = 10;
     const offset = limit * (content - 1);
-    this.props.fetch_products(token, offset);
     this.setState({
+      total2: this.state.total.slice(offset, offset + 10),
       currentPage: content
     })
     window.scrollTo(0, 0);
@@ -167,8 +169,7 @@ class Request extends Component {
   }
 
   render() {
-    // let { requests } = this.props;
-    const {total} = this.state;
+    const {total2, total} = this.state;
     // console.log('total request', total)
     return (
       <div className="content-inner">
@@ -213,8 +214,7 @@ class Request extends Component {
                           </tr>
                         </thead>
                         <tbody>
-                          {total && total.length ? total.map((item, index) => {
-                            console.log('item', item)
+                          {total2 && total2.length ? total2.map((item, index) => {
                             if(item.isAccepted){
                               return null;
                             }
@@ -253,7 +253,7 @@ class Request extends Component {
                   <ul className="pagination">
                     <Paginator
                         pageSize={10}
-                        totalElements={total}
+                        totalElements={total.length}
                         onPageChangeCallback={(e) => {this.pageChange(e)}}
                       />
                   </ul>
