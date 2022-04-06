@@ -131,3 +131,14 @@ exports.deleteOrder = {
     
   }
 };
+
+exports.deleteOrder = {
+  description: 'change status of a Order',
+  notes: 'Return',
+  tags: ['api', 'v1'],
+  handler: controller.loadProductDetailinOrder.bind(controller),
+  auth: 'jwt',
+  validate: {
+    
+  }
+};

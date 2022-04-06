@@ -79,6 +79,17 @@ class OrderController extends BaseControllerCRUD {
     }
   };
 
+  async loadProductDetailinOrder(request) {
+    try {
+      const {
+        id
+      } = request.params;
+      return await this.service.loadProductDetailinOrder(id);
+    } catch (err) {
+      throw err;
+    }
+  };
+
 }
 
 module.exports = OrderController;

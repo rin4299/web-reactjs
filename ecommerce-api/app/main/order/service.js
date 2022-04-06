@@ -4,6 +4,7 @@ const Boom = require('@hapi/boom');
 const Models = require('../../db/models');
 const BaseServiceCRUD = require('../../base/BaseServiceCRUD');
 const MailUtils = require('../../emailService');
+const { default: Axios } = require('axios');
 
 class OrderService extends BaseServiceCRUD {
   constructor() {
@@ -106,6 +107,35 @@ class OrderService extends BaseServiceCRUD {
         throw Boom.badRequest(`Can not change the ${order.status} order!`)
       }
       // Blockchain Update
+      const lopd = await Models.OrderDetail.query().where("orderId", orderId);
+      var buffer = "";
+      for(var p = 0; p < lopd.length; p++){
+        buffer += lopd[p].productId + "-" + lopd[p].quantity + ",";
+      }
+      buffer = buffer.slice(0,-1);
+      console.log(buffer)
+      let object = {
+        fcn: "sellingProducts",
+        peers:["peer0.org1.example.com","peer0.org2.example.com"],
+        chaincodeName:"productdetail",
+        channelName:"mychannel",
+        args:[buffer, atStore, fullName]
+      }
+      const res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+      if(res){
+        var stringBuffer = res.data.result.data;
+        var pdinOrder = Buffer.from(JSON.parse(JSON.stringify(stringBuffer))).toString();
+        console.log("FinalString",pdinOrder);
+        var payload = {
+          "orderId": orderId,
+          "listPds": pdinOrder
+        }
+        const result = await Models.ProductDetails.query().insert(payload).returning('*');
+        if(!result){
+          throw Boom.badRequest("Can not create Product Details in Order");
+        }
+
+      }
       await Models.Order.query().update({status: status} ).where('id', orderId);
       return `Successfully change the status of Order ${orderId} from ${order.status} to ${status}!`
     } else if (status === "Cancel") { // CANCEL
@@ -149,7 +179,7 @@ class OrderService extends BaseServiceCRUD {
 
   async deleteOrder(id){
     // Neu la 1 Canceled order thi xoa luon do da tru roi
-    const order = await Models.Order.query().where('id', id);
+    const order = await Models.Order.query().findOne({id: id});
     if(order.status === "Complete"){
       throw Boom.badRequest("Can not delete a Complete Order!");
     }
@@ -177,6 +207,29 @@ class OrderService extends BaseServiceCRUD {
     await Models.OrderDetail.query().delete().where('orderId', id);
     return `Delete Successfully Order of ${order.fullName}!`;
 
+  }
+
+  async loadProductDetailinOrder(id){
+    const infor = await Models.ProductDetails.query().findOne({orderId: id});
+    var return_list = {}
+    var shell = [];
+    var listofProduct = infor.listPds.split(",");
+    for(var l = 0; l < listofProduct.length; l++){
+        var split_data = listofProduct[l].split("-");
+        if(shell.includes(split_data[0])){
+          return_list[split_data[0]]['ids'] += "," + split_data[1];
+          return_list[split_data[0]]['quantity'] += 1;
+        } else{
+          shell.push(split_data[0]);
+          var product_infor = await Models.Product.query().findOne({id: parseInt(split_data[0])})
+          var obj = {
+            'ids': split_data[1],
+            'quantity': 1,
+            'product': product_infor
+          }
+          return_list[split_data[0]] = obj;
+        }
+    }
   }
 
   getSearchQuery(builder, q) {

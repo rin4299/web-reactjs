@@ -53,6 +53,11 @@ const Routes = [
     path: '/api/v1/orders/delete/{id}',
     config: handler.deleteOrder
   },
+  {
+    method: 'GET',
+    path: '/api/v1/orders/productdetails/{id}',
+    config: handler.loadProductDetailinOrder
+  },
 ];
 
 module.exports = Routes;
