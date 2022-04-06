@@ -133,6 +133,10 @@ class ExchangeService extends BaseServiceCRUD {
         var lop = ""
         for(var i = 0; i < multiRequest.length; i++){
             var product = await Models.Product.query().findOne('nameProduct', multiRequest[i]['pName']);
+            var ownership = await Models.Ownership.query().findOne({pId: product.id}).where("storeName", recUserName);
+            if(multiRequest[i]['quantity'] > ownership.quantity){
+              throw Boom.badRequest(`Cannot create this Request because store ${recUserName} only has ${ownership.quantity} while ${multiRequest[i]['quantity']} is needed!`)
+            }
             lop = lop + String(product.id) + "-" + String(multiRequest[i]['quantity']) + ","
         }
         lop = lop.slice(0,-1)
