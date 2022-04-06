@@ -83,7 +83,7 @@ class UserService extends BaseServiceCRUD {
   async cancelOrder(id) {
     const builder = await Models.Order.query().findById(id);
     if (!builder || builder.status === 'Confirm' || builder.status === 'Shipping' || builder.status === 'Complete') {
-      throw Boom.badRequest(`You can't cancel with order status is Confirmed or Shipped `);
+      throw Boom.badRequest(`You can't cancel with order status is ${builder.status} `);
     }
     if(builder.status === 'Canceled') {
       await Models.OrderDetail.query().delete().where("orderId", id);

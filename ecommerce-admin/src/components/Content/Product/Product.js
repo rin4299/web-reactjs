@@ -76,7 +76,7 @@ class Product extends Component {
     this.props.fetch_products(token,null, this.state.user[0].name).then(res => {
       // console.log('res', res)
       this.setState({
-        total: res.data
+        total: res
       });
     }).catch(err => {
       console.log(err);  
@@ -336,7 +336,7 @@ class Product extends Component {
                   <ul className="pagination">
                     <Paginator
                         pageSize={10}
-                        totalElements={total}
+                        totalElements={total.length}
                         onPageChangeCallback={(e) => {this.pageChange(e)}}
                       />
                   </ul>

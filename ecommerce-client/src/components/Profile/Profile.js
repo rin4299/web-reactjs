@@ -189,7 +189,7 @@ class Profile extends Component {
 
   render() {
     const { name, email, phone, address, avatar, loading, oldPassword, password, rePassword, historyBooking } = this.state;
-    console.log('historybooking', historyBooking)
+    // console.log('historybooking', historyBooking)
     return (
       <div className="container emp-profile">
         <div className='sweet-loading'>
@@ -328,7 +328,7 @@ class Profile extends Component {
                   </div>
                   {
                     historyBooking && historyBooking.length ? historyBooking.map((item, index) => {
-                      console.log('item',item.orderDetails)
+                      {/* console.log('item',item.orderDetails) */}
                       return (
                         <div key={index} className="row">
                           <div className="col-md-1">  <Link to="/orders/history/item">#{item.id}</Link></div>

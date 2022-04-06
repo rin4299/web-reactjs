@@ -13,7 +13,6 @@ export const actFetchProductsRequest = (token, offset, storename) => {
       callApi(`getproductbyowner/${storename}?limit=${limit}&offset=${newOffset}&orderBy=-createdAt`, 'GET', null, token)
         .then(res => {
           if (res && res.status === 200) { 
-            // console.log('res.data', res.data)
             dispatch(actFetchProducts(res.data));
             resolve(res.data);
             setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
@@ -149,6 +148,7 @@ export const actGetProductRequest = (token, id) => {
 export const actEditProductRequest = (token, id, data) => {
   return async dispatch => {
     const res = await callApi(`products/${id}`, 'PUT', data, token);
+    console.log(res)
     if (res && res.status === 200) {
       toast.success('Edit Product is success')
       dispatch(actEditProduct(res.data));

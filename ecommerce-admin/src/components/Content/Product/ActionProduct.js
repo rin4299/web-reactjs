@@ -59,7 +59,8 @@ class ActionProduct extends Component {
       img: null,
       loading: false,
       files: [],
-      dataGallery: []
+      dataGallery: [],
+      user: [],
     };
     id = this.props.id
   }
@@ -70,16 +71,36 @@ class ActionProduct extends Component {
     this.setState({
       dataCategories: resCategories.data.results
     })
+
+    if (token) {
+      const res = await callApi('users/me', 'GET', null, token);
+      if (res && res.status === 200) {
+        this.setState({
+          user: res.data.results
+        })
+      }
+    } else {
+      this.setState({
+        redirect: true
+      })    
+    }
+
     if (id) {
       const res = await callApi(`products/${id}`, 'GET', null, token);
       if (res && res.status === 200){
         const resProducer =  await callApi(`category/${res.data.categoryId}/producers`, 'GET', null);
         const convertProperties = JSON.stringify(res.data.properties)
+        var temp = 0;
+        for(let i = 0 ; i < res.data.ownership.length; i++){
+          if(res.data.ownership[i].storeName === this.state.user[0].name){
+            temp = res.data.ownership[i].quantity;
+          }
+        }
         this.setState({
           dataProducer: resProducer.data,
           nameProduct: res.data.nameProduct,
           price: res.data.price,
-          numberAvailable: res.data.numberAvailable,
+          numberAvailable: temp,
           categoryId: res.data.categoryId,
           desc: res.data.description,
           isActive: res.data.isActive,
@@ -213,6 +234,8 @@ class ActionProduct extends Component {
         properties: newProperties,
         producerId: newProducerId
       }
+      // const user = this.state.user[0].name
+      id = id.toString()+"-"+this.state.user[0].name
       await this.props.edit_Product(token, id, editProduct);
       this.setState({
         loading: false,

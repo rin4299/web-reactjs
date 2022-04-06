@@ -93,9 +93,9 @@ exports.updateOne = {
   },
   validate: {
     headers: validator.checkToken,
-    params: {
-      id: validator.idParam
-    },
+    // params: {
+    //   id: validator.idParam
+    // },
     payload: validator.updateProduct
   }
 };

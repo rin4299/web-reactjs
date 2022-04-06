@@ -109,7 +109,7 @@ export const actFindOrders = orders => {
 
 export const actDeleteOrderRequest = (id, token) => {
   return async dispatch => {
-    await callApi(`orders/${id}`, "DELETE", null, token);
+    await callApi(`orders/delete/${id}`, "GET", null, token);
     dispatch(actDeleteOrder(id));
   };
 };
