@@ -4,6 +4,7 @@ const Boom = require('@hapi/boom');
 const Models = require('../../db/models');
 const BaseServiceCRUD = require('../../base/BaseServiceCRUD');
 const { on } = require('../../db/connection');
+const { default: Axios } = require('axios');
 
 class ProductService extends BaseServiceCRUD {
   constructor() {
@@ -84,6 +85,18 @@ class ProductService extends BaseServiceCRUD {
     var newVal = product.numberAvailable + (payload.numberAvailable - ownership.quantity)
     await Models.Product.query().update({numberAvailable:newVal}).where("id", id);
     await Models.Ownership.query().update({quantity: payload.numberAvailable}).where("pId", id).where("storeName", infor[1]);
+    let object = {
+      fcn: "createProductDetail",
+      peers:["peer0.org1.example.com","peer0.org2.example.com"],
+      chaincodeName:"productdetail",
+      channelName:"mychannel",
+      args:[product.id, product.nameProduct, infor[1], newVal]
+    }
+    console.log(object)
+    let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+    if(!res){
+      throw Boom.badRequest(`Cannot connect to update Product Details in Blockchain!`)
+    }
     return result;
   }
 

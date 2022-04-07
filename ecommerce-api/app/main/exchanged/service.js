@@ -7,6 +7,7 @@ const _ = require('lodash');
 const PasswordUtils = require('../../services/password');
 const { default: Axios } = require('axios');
 const NodeGeocoder = require('node-geocoder');
+const OrderService = require('../order/service');
 // require('../../../../../../BasicNetwork-2.0/api-1.4/config.js');
 // var helper = require("../../../../../../BasicNetwork-2.0/api-1.4/app/helper");
 // var instantiate = require('../../../../../../BasicNetwork-2.0/api-1.4/app/instantiate-chaincode.js');
@@ -416,6 +417,13 @@ class ExchangeService extends BaseServiceCRUD {
 
 
     geocoder.geocode({address: address}, async function(err,res){
+      //Check xem Address co hop le ko 
+      if(!res || err){
+        const oS = new OrderService();
+        const successfulMessage = await oS.deleteOrder(orderId);
+        console.log(successfulMessage);
+        throw Boom.badData(`Your current address ${address} is not available. Please try again with the available address!`)
+      }
       var lat = res[0]['latitude']
       var lng = res[0]['longitude']
       var listofStore = []
@@ -586,7 +594,28 @@ class ExchangeService extends BaseServiceCRUD {
     })
     return "successful"
   }
-  
+  async loadProductDetailinExchange(str){
+    var return_list = {}
+    var shell = [];
+    var listofProduct = str.split(",");
+    for(var l = 0; l < listofProduct.length; l++){
+        var split_data = listofProduct[l].split("-");
+        if(shell.includes(split_data[0])){
+          return_list[split_data[0]]['ids'] += "," + split_data[1];
+          return_list[split_data[0]]['quantity'] += 1;
+        } else{
+          shell.push(split_data[0]);
+          var product_infor = await Models.Product.query().findOne({id: parseInt(split_data[0])})
+          var obj = {
+            'ids': split_data[1],
+            'quantity': 1,
+            'product': product_infor
+          }
+          return_list[split_data[0]] = obj;
+        }
+    }
+    return return_list;
+  }
 }
 
 module.exports = ExchangeService;

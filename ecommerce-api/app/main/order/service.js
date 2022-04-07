@@ -235,6 +235,7 @@ class OrderService extends BaseServiceCRUD {
           return_list[split_data[0]] = obj;
         }
     }
+    return return_list;
   }
 
   getSearchQuery(builder, q) {

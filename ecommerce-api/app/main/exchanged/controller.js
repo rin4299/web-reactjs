@@ -113,6 +113,16 @@ class ExchangeController extends BaseControllerCRUD {
     }
   };
 
+  async loadProductDetailinExchange(request) {
+    try {
+      const {
+        str
+      } = request.params;
+      return await this.service.loadProductDetailinExchange(str);
+    } catch (err) {
+      throw err;
+    }
+  };
 
 }
 

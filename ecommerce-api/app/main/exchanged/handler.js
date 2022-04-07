@@ -132,3 +132,14 @@ const controller = new ExchangeController();
 
     }
   };
+
+  exports.loadProductDetailinExchange = {
+    description: 'Tracking product',
+    notes: 'Return list of history',
+    tags: ['api', 'v1'],
+    handler: controller.loadProductDetailinExchange.bind(controller),
+    auth: 'jwt',
+    validate: {
+
+    }
+  };

@@ -53,6 +53,11 @@ const Routes = [
     path: '/api/v1/getproductbyowner/{user}',
     config: handler.getProductbyOwner
   },
+  {
+    method: 'GET',
+    path: '/api/v1/getproductdetaillist/{str}',
+    config: handler.loadProductDetailinExchange
+  },
 ];
 
 module.exports = Routes;
