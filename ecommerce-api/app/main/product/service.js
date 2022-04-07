@@ -3,6 +3,7 @@
 const Boom = require('@hapi/boom');
 const Models = require('../../db/models');
 const BaseServiceCRUD = require('../../base/BaseServiceCRUD');
+const { on } = require('../../db/connection');
 
 class ProductService extends BaseServiceCRUD {
   constructor() {
@@ -53,7 +54,7 @@ class ProductService extends BaseServiceCRUD {
 
 
   async getOne(id) {
-    const result = await this.model.query().findById(id).eager('[categories, rating]').where('isActive', true);
+    const result = await this.model.query().findById(id).eager('[categories, rating, ownership]').where('isActive', true);
     if (!result) {
       throw Boom.notFound(`${this.modelName} not found`);
     }
@@ -69,10 +70,20 @@ class ProductService extends BaseServiceCRUD {
   }
 
   async updateOne(id, payload) {
+    console.log('id', id)
+    var infor = id.split("-");
+    id = parseInt(infor[0])
+    console.log('id', id)
+    const product = await Models.Product.query().findOne({id:id});
+    const ownership = await Models.Ownership.query().findOne({pId:id}).where("storeName",infor[1])
+
     const result = await this.model.query().patchAndFetchById(id, payload).eager('[categories, rating]');
     if (!result) {
       throw Boom.notFound(`${this.modelName} not found`);
     }
+    var newVal = product.numberAvailable + (payload.numberAvailable - ownership.quantity)
+    await Models.Product.query().update({numberAvailable:newVal}).where("id", id);
+    await Models.Ownership.query().update({quantity: payload.numberAvailable}).where("pId", id).where("storeName", infor[1]);
     return result;
   }
 

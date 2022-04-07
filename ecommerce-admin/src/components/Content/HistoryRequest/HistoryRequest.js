@@ -29,6 +29,7 @@ class HistoryRequest extends Component {
       user: [],
       id:0,
       history:'',
+      total2:0,
     }
   }
 
@@ -59,7 +60,8 @@ class HistoryRequest extends Component {
     // console.log("id", this.state.user[0].id);
     this.props.fetch_history_request(this.state.user[0].id, token).then(res => {
       this.setState({
-        total: res
+        total: res,
+        total2: res.slice(0,10)
       })
     }).catch(err => {
       console.log(err)
@@ -69,9 +71,10 @@ class HistoryRequest extends Component {
   pageChange(content){
     const limit = 10;
     const offset = limit * (content - 1);
-    this.props.fetch_products(token, offset);
+    // this.props.fetch_products(token, offset);
     this.setState({
-      currentPage: content
+      currentPage: content,
+      total2: this.state.total.slice(offset, offset + 10),
     })
     window.scrollTo(0, 0);
   }
@@ -190,7 +193,7 @@ class HistoryRequest extends Component {
 
   render() {
     // let { requests } = this.props;
-    const {total} = this.state;
+    const {total, total2} = this.state;
     return (
       <div className="content-inner">
         {/* Page Header*/}
@@ -235,7 +238,7 @@ class HistoryRequest extends Component {
                           </tr>
                         </thead>
                         <tbody>
-                          {total && total.length ? total.map((item, index) => {
+                          {total2 && total2.length ? total2.map((item, index) => {
                             {/* console.log('item.latestUpdate', item.latestUpdate) */}
                             {/* console.log('item', item) */}
                             {/* var date = new Date(item.latestUpdate.slice(8,18) * 1000); */}
@@ -276,7 +279,7 @@ class HistoryRequest extends Component {
                   <ul className="pagination">
                     <Paginator
                         pageSize={10}
-                        totalElements={total}
+                        totalElements={total.length}
                         onPageChangeCallback={(e) => {this.pageChange(e)}}
                       />
                   </ul>

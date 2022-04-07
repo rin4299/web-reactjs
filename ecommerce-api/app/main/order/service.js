@@ -179,7 +179,8 @@ class OrderService extends BaseServiceCRUD {
 
   async deleteOrder(id){
     // Neu la 1 Canceled order thi xoa luon do da tru roi
-    const order = await Models.Order.query().findOne({id: id});
+    const order = await Models.Order.query().findOne({id:id});
+    console.log('order', order, id)
     if(order.status === "Complete"){
       throw Boom.badRequest("Can not delete a Complete Order!");
     }
@@ -190,11 +191,15 @@ class OrderService extends BaseServiceCRUD {
     }
     const orderDetails = await Models.OrderDetail.query().where('orderId', id);
     var newVal = 0;
+    console.log('orderDetail',orderDetails)
+    console.log('status', order.status, orderDetails.length)
+
     // Neu don dang xoa la Confirm thi cap nhat lai ownership
     if(order.status === "Confirm" || order.status === "Shipping"){
       for(var i = 0; i < orderDetails.length; i++){
         var currentP = await Models.Ownership.query().findOne({pId: orderDetails[i].productId}).where("storeName", order.atStore);
         newVal = currentP.quantity + orderDetails[i].quantity;
+        console.log('abc',currentP, newVal)
         await Models.Ownership.query().update({quantity: newVal} ).where('pId', orderDetails[i].productId).where("storeName", order.atStore);
       }
     }

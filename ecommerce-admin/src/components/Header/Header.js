@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { actToken, actGetNameRole  } from '../../redux/actions/auth'
 import { startLoading, doneLoading } from '../../utils/loading'
-import { actAddCartRequest, actFetchCartRequest } from '../../redux/actions/cart';
+import { actFetchCartRequest } from '../../redux/actions/cart';
 
 
 let token;
@@ -28,7 +28,7 @@ class Header extends Component {
     doneLoading();
   }
   render() {
-    let count;
+    // let count;
     // const { cart } = fetch_items();
     // console.log('header', cart)
     

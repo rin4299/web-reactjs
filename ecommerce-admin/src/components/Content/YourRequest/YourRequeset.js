@@ -32,6 +32,7 @@ class YourRequest extends Component {
       id:0,
       nameProduct:'',
       quantityRequest:0,
+      total2:0,
     }
   }
 
@@ -58,7 +59,8 @@ class YourRequest extends Component {
     token = localStorage.getItem('_auth');
     this.props.fetch_exchange_receive(this.state.user[0].id, token).then(res => {
       this.setState({
-        total: res
+        total: res,
+        total2 : res.slice(0,10)
       })
     }).catch(err => {
       console.log(err)
@@ -70,7 +72,8 @@ class YourRequest extends Component {
     const offset = limit * (content - 1);
     this.props.fetch_products(token, offset);
     this.setState({
-      currentPage: content
+      currentPage: content,
+      total2: this.state.total.slice(offset, offset + 10),
     })
     window.scrollTo(0, 0);
   }
@@ -192,7 +195,7 @@ class YourRequest extends Component {
 
   render() {
     // let { requests } = this.props;
-    const {total} = this.state;
+    const {total, total2} = this.state;
 
     return (
       <div className="content-inner">
@@ -237,7 +240,7 @@ class YourRequest extends Component {
                           </tr>
                         </thead>
                         <tbody>
-                          {total && total.length ? total.map((item, index) => {
+                          {total2 && total2.length ? total2.map((item, index) => {
                             console.log('item',item)
                             if(item.isReceived){
                               return null;
@@ -303,7 +306,7 @@ class YourRequest extends Component {
                   <ul className="pagination">
                     <Paginator
                         pageSize={10}
-                        totalElements={total}
+                        totalElements={total.length}
                         onPageChangeCallback={(e) => {this.pageChange(e)}}
                       />
                   </ul>

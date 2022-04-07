@@ -10,6 +10,7 @@ import MyFooter from '../../MyFooter/MyFooter'
 import Paginator from 'react-js-paginator';
 import {exportExcel} from '../../../utils/exportExcel'
 import callApi from '../../../utils/apiCaller';
+import { toast } from "react-toastify";
 
 const MySwal = withReactContent(Swal)
 
@@ -23,6 +24,7 @@ class Order extends Component {
       total: 0,
       currentPage: 1,
       user: [],
+      filterStatus: '...',
     }
   }
 
@@ -91,9 +93,20 @@ class Order extends Component {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
+    console.log(event)
     this.setState({
       [name]: value
     });
+  }
+
+  handleChange2 = (event) => {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    console.log(event)
+    // this.setState({
+    //   [name]: value
+    // });
   }
 
   handleSubmit = (event) => {
@@ -141,6 +154,19 @@ class Order extends Component {
      
     }
   }
+  testfunction(){
+    return toast.success('test tahnh cong')
+  }
+
+  async handleChangeStatus(payload){
+    // console.log(payload)
+    token = localStorage.getItem('_auth');
+    const res = await callApi('order/changestatus',"POST", payload, token)
+    if (res && res.status === 200) {
+      return toast.success(res.data);
+    }
+    this.fetch_reload_data()
+  }
 
   render() {
     const { orders } = this.props;
@@ -173,6 +199,20 @@ class Order extends Component {
                   <form
                     onSubmit={(event) => this.handleSubmit(event)}
                     className="form-inline md-form form-sm mt-0" style={{ justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20 }}>
+                    <div>
+                    <select  className="form-control mb-3" name="status" onChange={(event) => {
+                                                                                                this.state.filterStatus = event.target.value
+                                                                                                console.log(this.state.filterStatus)
+                                                                                                this.fetch_reload_data()
+                                                                                              }} >
+                      <option value='...'>...</option>
+                      <option value='Unconfirm'>Unconfirm</option>
+                      <option value='Confirm'>Confirm</option>
+                      <option value='Shipping' >Shipping</option>
+                      <option value='Complete' >Complete</option>
+                      <option value='Canceled' >Cancel</option>
+                    </select>
+                    </div>
                     <div>
                       <button style={{ border: 0, background: 'white' }}><i className="fa fa-search" aria-hidden="true"></i></button>
                       <input
@@ -207,14 +247,40 @@ class Order extends Component {
                           </tr>
                         </thead>
                         <tbody>
-                          {orders && orders.length ? orders.map((item, index) => {
+                          {orders && orders.length ? orders
+                          .filter((item,index) => {
+                            if(this.state.filterStatus === '...'){
+                              return true
+                            }
+                            return item.status == this.state.filterStatus
+                          })
+                          .map((item, index) => {
+                            {/* console.log('order',item) */}
                             return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
                                 <td>{item.fullName}</td>
                                 {/* <td>{item.address}</td> */}
                                 <td>{item.phone}</td>
-                                <td>{this.showOrder(item.status)} </td>
+                                {/* <td>{this.showOrder(item.status)} </td> */}
+                                <td>
+                                  <select  className="form-control mb-3" value={item.status} name="status" onChange={(event) => {
+                                                                                                              item.status = event.target.value
+                                                                                                              this.handleChangeStatus({
+                                                                                                                orderId: item.id,
+                                                                                                                status: event.target.value,
+                                                                                                                atStore: item.atStore,
+                                                                                                                fullName: item.fullName
+                                                                                                                })
+                                                                                                            }} >
+                                    <option value='Unconfirm'>Unconfirm</option>
+                                    <option value='Confirm'>Confirm</option>
+                                    <option value='Shipping' >Shipping</option>
+                                    <option value='Complete' >Complete</option>
+                                    <option value='Canceled' >Cancel</option>
+                                  </select>
+                                </td>
+                                {/* {console.log(item.status)} */}
                                 <td>{item.isPaid ?
                                   <div className="i-checks">
                                     <input type="checkbox" onChange={()=>{}} checked={true} className="checkbox-template" />
@@ -237,7 +303,7 @@ class Order extends Component {
                                 <td>{item.shippingTotal}</td>
                                 <td>{item.promoTotal}</td>
                                 <td>{item.totalAmount}</td>
-                                <td>{item.note}</td>
+                                <td><p>{item.note}</p></td>
                                 <td>{item.id}</td>
                                 <td>
                                   <Moment format="YYYY/MM/DD">
@@ -248,6 +314,9 @@ class Order extends Component {
                                   <div>
                                     <span title='Edit' className="fix-action"><Link to={`/orders/edit/${item.id}`}> <i className="fa fa-edit"></i></Link></span>
                                     <span title='Delete' onClick={() => this.handleRemove(item.id)} className="fix-action"><Link to="#"> <i className="fa fa-trash" style={{ color: '#ff00008f' }}></i></Link></span>
+                                  </div>
+                                  <div>
+                                    {/* {console.log('statuts',item.status)} */}
                                   </div>
                                 </td>
                               </tr>
