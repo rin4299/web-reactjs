@@ -14,13 +14,13 @@ const Routes = [
     config: handler.createExchange
   },
   {
-    method: 'PUT',
-    path: '/api/v1/exchange/accept/{id}',
+    method: 'POST',
+    path: '/api/v1/exchange/accept',
     config: handler.updateAccept
   },
   {
-    method: 'GET',
-    path: '/api/v1/exchange/confirm/{id}',
+    method: 'POST',
+    path: '/api/v1/exchange/confirm',
     config: handler.updateConfirm
   },
   {

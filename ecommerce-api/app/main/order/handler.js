@@ -132,7 +132,7 @@ exports.deleteOrder = {
   }
 };
 
-exports.deleteOrder = {
+exports.loadProductDetailinOrder = {
   description: 'change status of a Order',
   notes: 'Return',
   tags: ['api', 'v1'],

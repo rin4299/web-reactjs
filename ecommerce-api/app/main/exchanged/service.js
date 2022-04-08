@@ -69,14 +69,12 @@ class ExchangeService extends BaseServiceCRUD {
     let returning = []
     let U = await Models.User.query().findOne({id: id})
     console.log(U.name)
-    console.log(recM[1])
-    console.log(recM[1][type])
     for(var i = 0; i < recM.length; i++){
       if((recM[i][type] === U.name && recM[i]["isActive"] === true) && !(recM[i]["isAccepted"] === true && recM[i]["isConfirm"] === true )){
         var temp = recM[i]["listofProduct"].split(",")
         // console.log("HAHA",temp.length)
         for(var j = 0; j < temp.length; j++){
-          console.log(temp[j][0])
+          // console.log(temp[j][0])
           var product = await Models.Product.query().findOne({id: parseInt(temp[j][0])})
           product.quantity = parseInt(temp[j][2]);
           reValue.push(product);
@@ -174,14 +172,10 @@ class ExchangeService extends BaseServiceCRUD {
     }
   }
 
-  async updateAccept(id, lop, storeName) {
-    // await Models.Exchanged.query()
-    //   .update({ isAccepted: true })
-    //   .where('id', id);
-    // // return { message: 'Update isAccepted is successfully' };
-    // let data = await Models.Exchanged.query().where('id', id);
-    // return data[0];
-    
+  async updateAccept(payload) {
+    console.log(payload)
+    const {id, lop, storeName} = payload;
+    console.log(lop)
     var temp = lop.split(",");
     for(var i = 0; i < temp.length; i++){
       var infor = temp[i].split("-");
@@ -209,8 +203,8 @@ class ExchangeService extends BaseServiceCRUD {
   }
 
 
-  async updateConfirm(id, lop, storeName) {
-
+  async updateConfirm(payload) {
+    console.log(payload)
     // let exchange = await Models.Exchanged.query().where('id', id);
     // let e = exchange[0];
     // console.log(e.pName + "AAA")
@@ -228,7 +222,7 @@ class ExchangeService extends BaseServiceCRUD {
     // let data = await Models.Exchanged.query().where('id', id);
     // // return { message: 'Update isReceived is successfully' };
     // return data[0];
-
+    const {id, lop, storeName} = payload
     var temp = lop.split(",");
     for(var i = 0; i < temp.length; i++){
       var infor = temp[i].split("-");
@@ -586,8 +580,8 @@ class ExchangeService extends BaseServiceCRUD {
             args:[listofStore[0]['storeName'], obj[m], candidates[obj[m]].slice(0, -1)]
           }
           console.log(object)
-          // let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
-          // console.log(res.data);
+          let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+          console.log(res.data);
         }
       }
       

@@ -90,7 +90,7 @@ class ProductService extends BaseServiceCRUD {
       peers:["peer0.org1.example.com","peer0.org2.example.com"],
       chaincodeName:"productdetail",
       channelName:"mychannel",
-      args:[product.id, product.nameProduct, infor[1], newVal]
+      args:[product.id.toString(), product.nameProduct, infor[1], newVal.toString()]
     }
     console.log(object)
     let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
