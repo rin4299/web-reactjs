@@ -57,6 +57,8 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 	switch function {
 	case "queryProductDetail":
 		return s.queryProductDetail(APIstub, args)
+	case "initProductDetail":
+		return s.initProductDetail(APIstub, args)
 	case "initLedger":
 		return s.initLedger(APIstub)
 	case "createProductDetail":
