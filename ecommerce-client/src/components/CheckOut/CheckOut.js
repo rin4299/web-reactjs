@@ -157,8 +157,10 @@ class CheckOut extends Component {
         console.log(getStore);
         const feedback = await callApi("getstore", "POST", getStore, token);
         console.log(feedback);
-        //CLEAR CART AFTER CHECKOUT
-        this.props.reset_cart();
+        //CLEAR CART AFTER CHECKOUT IF input Available Address
+        if(feedback.status === 200 || feedback.data === "successful" ){
+          this.props.reset_cart();
+        }
       }
     });
   };

@@ -2,9 +2,9 @@
 const path = require('path');
 const CustomModel = require('./CustomModel');
 
-class Ownership extends CustomModel {
+class ProductDetails extends CustomModel {
   static get tableName() {
-    return 'ownership';
+    return 'productdetails';
   }
   $beforeInsert() {
     this.createdAt = new Date().toISOString();
@@ -18,11 +18,11 @@ class Ownership extends CustomModel {
   static get relationMappings() {
     return {
       ownership: {
-        relation: CustomModel.BelongsToOneRelation,
-        modelClass: path.join(__dirname, '/Product'),
+        relation: CustomModel.HasManyRelation,
+        modelClass: path.join(__dirname, '/Order'),
         join: {
-          from: 'product.id',
-          to: 'ownership.pId'
+          from: 'productdetails.orderId',
+          to: 'order.id'
         }
       }
     };
@@ -30,4 +30,4 @@ class Ownership extends CustomModel {
 
 }
 
-module.exports = Ownership;
+module.exports = ProductDetails;

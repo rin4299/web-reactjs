@@ -7,6 +7,7 @@ const _ = require('lodash');
 const PasswordUtils = require('../../services/password');
 const { default: Axios } = require('axios');
 const NodeGeocoder = require('node-geocoder');
+const OrderService = require('../order/service');
 // require('../../../../../../BasicNetwork-2.0/api-1.4/config.js');
 // var helper = require("../../../../../../BasicNetwork-2.0/api-1.4/app/helper");
 // var instantiate = require('../../../../../../BasicNetwork-2.0/api-1.4/app/instantiate-chaincode.js');
@@ -68,14 +69,12 @@ class ExchangeService extends BaseServiceCRUD {
     let returning = []
     let U = await Models.User.query().findOne({id: id})
     console.log(U.name)
-    console.log(recM[1])
-    console.log(recM[1][type])
     for(var i = 0; i < recM.length; i++){
       if((recM[i][type] === U.name && recM[i]["isActive"] === true) && !(recM[i]["isAccepted"] === true && recM[i]["isConfirm"] === true )){
         var temp = recM[i]["listofProduct"].split(",")
         // console.log("HAHA",temp.length)
         for(var j = 0; j < temp.length; j++){
-          console.log(temp[j][0])
+          // console.log(temp[j][0])
           var product = await Models.Product.query().findOne({id: parseInt(temp[j][0])})
           product.quantity = parseInt(temp[j][2]);
           reValue.push(product);
@@ -133,6 +132,10 @@ class ExchangeService extends BaseServiceCRUD {
         var lop = ""
         for(var i = 0; i < multiRequest.length; i++){
             var product = await Models.Product.query().findOne('nameProduct', multiRequest[i]['pName']);
+            var ownership = await Models.Ownership.query().findOne({pId: product.id}).where("storeName", recUserName);
+            if(multiRequest[i]['quantity'] > ownership.quantity){
+              throw Boom.badRequest(`Cannot create this Request because store ${recUserName} only has ${ownership.quantity} while ${multiRequest[i]['quantity']} is needed!`)
+            }
             lop = lop + String(product.id) + "-" + String(multiRequest[i]['quantity']) + ","
         }
         lop = lop.slice(0,-1)
@@ -169,14 +172,10 @@ class ExchangeService extends BaseServiceCRUD {
     }
   }
 
-  async updateAccept(id, lop, storeName) {
-    // await Models.Exchanged.query()
-    //   .update({ isAccepted: true })
-    //   .where('id', id);
-    // // return { message: 'Update isAccepted is successfully' };
-    // let data = await Models.Exchanged.query().where('id', id);
-    // return data[0];
-    
+  async updateAccept(payload) {
+    console.log(payload)
+    const {id, lop, storeName} = payload;
+    console.log(lop)
     var temp = lop.split(",");
     for(var i = 0; i < temp.length; i++){
       var infor = temp[i].split("-");
@@ -204,8 +203,8 @@ class ExchangeService extends BaseServiceCRUD {
   }
 
 
-  async updateConfirm(id, lop, storeName) {
-
+  async updateConfirm(payload) {
+    console.log(payload)
     // let exchange = await Models.Exchanged.query().where('id', id);
     // let e = exchange[0];
     // console.log(e.pName + "AAA")
@@ -223,7 +222,7 @@ class ExchangeService extends BaseServiceCRUD {
     // let data = await Models.Exchanged.query().where('id', id);
     // // return { message: 'Update isReceived is successfully' };
     // return data[0];
-
+    const {id, lop, storeName} = payload
     var temp = lop.split(",");
     for(var i = 0; i < temp.length; i++){
       var infor = temp[i].split("-");
@@ -412,6 +411,13 @@ class ExchangeService extends BaseServiceCRUD {
 
 
     geocoder.geocode({address: address}, async function(err,res){
+      //Check xem Address co hop le ko 
+      if(!res || err){
+        const oS = new OrderService();
+        const successfulMessage = await oS.deleteOrder(orderId);
+        console.log(successfulMessage);
+        throw Boom.badData(`Your current address ${address} is not available. Please try again with the available address!`)
+      }
       var lat = res[0]['latitude']
       var lng = res[0]['longitude']
       var listofStore = []
@@ -574,15 +580,63 @@ class ExchangeService extends BaseServiceCRUD {
             args:[listofStore[0]['storeName'], obj[m], candidates[obj[m]].slice(0, -1)]
           }
           console.log(object)
-          // let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
-          // console.log(res.data);
+          let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+          console.log(res.data);
         }
       }
       
     })
     return "successful"
   }
-  
+  async loadProductDetailinExchange(str){
+    var return_list = {}
+    var shell = [];
+    var listofProduct = str.split(",");
+    for(var l = 0; l < listofProduct.length; l++){
+        var split_data = listofProduct[l].split("-");
+        if(shell.includes(split_data[0])){
+          return_list[split_data[0]]['ids'] += "," + split_data[1];
+          return_list[split_data[0]]['quantity'] += 1;
+        } else{
+          shell.push(split_data[0]);
+          var product_infor = await Models.Product.query().findOne({id: parseInt(split_data[0])})
+          var obj = {
+            'ids': split_data[1],
+            'quantity': 1,
+            'product': product_infor
+          }
+          return_list[split_data[0]] = obj;
+        }
+    }
+    return return_list;
+  }
+
+
+  async initProductDetails(){
+    const products = await Models.Product.query().eager('[ownership]');
+    console.log(products.length)
+    for( var i = 0; i < products.length; i++){
+      console.log(products[i].ownership.length)
+      var str = "";
+      for(var j = 0; j < products[i].ownership.length; j++){
+        str += products[i].ownership[j].storeName + "-" + products[i].ownership[j].quantity.toString() + ",";
+      }
+      let object = {
+        fcn: "initProductDetail",
+        peers:["peer0.org1.example.com","peer0.org2.example.com"],
+        chaincodeName:"productdetail",
+        channelName:"mychannel",
+        args:[products[i].id.toString(), products[i].nameProduct, str.slice(0, -1)]
+      }
+      console.log(object)
+      let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+      if(!res){
+        return `This ${products[i].nameProduct} is failed!`
+      } 
+    }
+    return `successful`
+  }
+
 }
 
 module.exports = ExchangeService;

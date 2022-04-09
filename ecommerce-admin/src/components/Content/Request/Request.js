@@ -84,9 +84,14 @@ class Request extends Component {
   }
 /////////////////////////
 
-  updateAccept = (id) => {
+  updateAccept = (id, lop, storeName) => {
+    const payload = {
+      'id': id,
+      'lop': lop,
+      'storeName': storeName
+    }
     token = localStorage.getItem('_auth');
-    this.props.update_Accept(id,token).then(res => {
+    this.props.update_Accept(payload,token).then(res => {
       console.log(res)
     })
     toast.success('The request is updated');
@@ -152,7 +157,7 @@ class Request extends Component {
             </div>
             <div className="form-group">
               <button className="form-control btn btn-primary" type="button" onClick= {() => {
-                this.updateAccept(props.requests.indexExchange)
+                this.updateAccept(props.requests.indexExchange, props.requests.listofProduct, props.requests.to)
                 this.fetch_reload_data()
                 // window.location.reload()
               }}>
@@ -236,7 +241,7 @@ class Request extends Component {
                                     <this.MyVerticallyCenteredModal
                                       show={this.state.modalShow}
                                       onHide={() => this.setState({modalShow: false})}
-                                      requests ={{name: this.state.nameProduct,from :this.state.request.reqUserName, to:this.state.request.recUserName, Quantity:this.state.quantityRequest, indexExchange : this.state.id }}
+                                      requests ={{name: this.state.nameProduct,from :this.state.request.reqUserName, to:this.state.request.recUserName, Quantity:this.state.quantityRequest, indexExchange : this.state.id, listofProduct:this.state.request.listofProduct}}
                                     />
                                   </div>}
                                 </td>
@@ -289,8 +294,8 @@ const mapDispatchToProps = (dispatch) => {
     fetch_exchange_request: (id, token) => {
       return dispatch(actFetchExchangeRequest(id, token))
     },
-    update_Accept: (id, token) => {
-      return dispatch(actUpdateAccept(id, token))
+    update_Accept: (payload, token) => {
+      return dispatch(actUpdateAccept(payload, token))
     }
   }
 }

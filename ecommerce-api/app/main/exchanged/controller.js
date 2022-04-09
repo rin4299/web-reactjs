@@ -33,8 +33,8 @@ class ExchangeController extends BaseControllerCRUD {
 
   async updateAccept(request) {
     try {
-      const {id, listofProducts, storeName} = request.params;
-      return await this.service.updateAccept(id, listofProducts, storeName);
+      const {payload} = request;
+      return await this.service.updateAccept(payload);
     } catch (err) {
       throw err;
     }
@@ -43,9 +43,9 @@ class ExchangeController extends BaseControllerCRUD {
   async updateConfirm(request) {
     try {
       const {
-        id, listofProducts, storeName
-      } = request.params;
-      return await this.service.updateConfirm(id, listofProducts, storeName);
+        payload
+      } = request;
+      return await this.service.updateConfirm(payload);
     } catch (err) {
       throw err;
     }
@@ -113,6 +113,25 @@ class ExchangeController extends BaseControllerCRUD {
     }
   };
 
+  async loadProductDetailinExchange(request) {
+    try {
+      const {
+        str
+      } = request.params;
+      return await this.service.loadProductDetailinExchange(str);
+    } catch (err) {
+      throw err;
+    }
+  };
+
+
+  async initProductDetails(request) {
+    try {
+      return await this.service.initProductDetails();
+    } catch (err) {
+      throw err;
+    }
+  };
 
 }
 

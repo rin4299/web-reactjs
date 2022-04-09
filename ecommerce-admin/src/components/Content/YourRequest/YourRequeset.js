@@ -100,9 +100,14 @@ class YourRequest extends Component {
       // window.location.reload()
     })
   }
-  updateConfirm = (id) => {
+  updateConfirm = (id, lop, storeName ) => {
+    const payload = {
+      'id': id,
+      'lop': lop,
+      'storeName': storeName
+    }
     token = localStorage.getItem('_auth');
-    this.props.update_Confirm(id,token).then(res => {
+    this.props.update_Confirm(payload,token).then(res => {
       console.log(res)
     })
     this.setState({modalShow: false})
@@ -173,7 +178,7 @@ class YourRequest extends Component {
             <div className="form-group">
             {this.state.receive.isAccepted ?
               <button className="form-control btn btn-primary" type="button" onClick= {() => {
-                this.updateConfirm(props.receive.indexExchange)
+                this.updateConfirm(props.receive.indexExchange, props.receive.listofProduct, props.receive.from)
                 this.fetch_reload_data()
               }}>
                 Confirm
@@ -268,7 +273,7 @@ class YourRequest extends Component {
                                     <this.MyVerticallyCenteredModal
                                       show={this.state.modalShow}
                                       onHide={() => this.setState({modalShow: false})}
-                                      receive ={{name: this.state.nameProduct,from :this.state.receive.reqUserName, to:this.state.receive.recUserName, Quantity:this.state.quantityRequest, indexExchange : this.state.id  }}
+                                      receive ={{name: this.state.nameProduct,from :this.state.receive.reqUserName, to:this.state.receive.recUserName, Quantity:this.state.quantityRequest, indexExchange : this.state.id, listofProduct:this.state.receive.listofProduct }}
                                     />
                                   </div>
                                   :
@@ -277,7 +282,7 @@ class YourRequest extends Component {
                                     <this.MyVerticallyCenteredModal
                                       show={this.state.modalShow}
                                       onHide={() => this.setState({modalShow: false})}
-                                      receive ={{name: this.state.nameProduct,from :this.state.receive.reqUserName, to:this.state.receive.recUserName, Quantity:this.state.quantityRequest, indexExchange : this.state.id  }}
+                                      receive ={{name: this.state.nameProduct,from :this.state.receive.reqUserName, to:this.state.receive.recUserName, Quantity:this.state.quantityRequest, indexExchange : this.state.id , listofProduct:this.state.receive.listofProduct}}
                                     />
                                   </div>
                                   }
@@ -339,8 +344,8 @@ const mapDispatchToProps = (dispatch) => {
     fetch_exchange_receive : (id, token) => {
       return dispatch(actFetchExchangeReceive(id, token))
     },
-    update_Confirm : (id, token) => {
-      return dispatch(actUpdateConfirm(id, token))
+    update_Confirm : (payload, token) => {
+      return dispatch(actUpdateConfirm(payload, token))
     },
     delete_request : (id, token) => {
       return dispatch(actDeleteRequest(id,token))

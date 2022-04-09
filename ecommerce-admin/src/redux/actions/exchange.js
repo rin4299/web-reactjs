@@ -98,11 +98,11 @@ export const actCreateExchange = (token, payload) => {
     }
   }
 
-export const actUpdateAccept = (id, token) => {
+export const actUpdateAccept = (payload, token) => {
     return dispatch => {
       dispatch(actShowLoading());
       return new Promise((resolve, reject) => {
-        callApi(`exchange/accept/${id}`, 'PUT', null, token)
+        callApi(`exchange/accept`, 'POST', payload, token)
           .then(res => {
             if (res && res.status === 200) { 
               dispatch(actFetchExchangeReq(res.data));
@@ -126,11 +126,11 @@ export const actUpdateAccept = (id, token) => {
     }
   }
 
-  export const actUpdateConfirm = (id, token) => {
+  export const actUpdateConfirm = (payload, token) => {
       return dispatch => {
         dispatch(actShowLoading());
         return new Promise((resolve, reject) => {
-          callApi(`exchange/confirm/${id}`, 'GET', null, token)
+          callApi(`exchange/confirm`, 'POST', payload, token)
             .then(res => {
               if (res && res.status === 200) { 
                 dispatch(actFetchExchangeReq(res.data));

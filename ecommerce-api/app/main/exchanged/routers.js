@@ -14,13 +14,13 @@ const Routes = [
     config: handler.createExchange
   },
   {
-    method: 'PUT',
-    path: '/api/v1/exchange/accept/{id}',
+    method: 'POST',
+    path: '/api/v1/exchange/accept',
     config: handler.updateAccept
   },
   {
-    method: 'GET',
-    path: '/api/v1/exchange/confirm/{id}',
+    method: 'POST',
+    path: '/api/v1/exchange/confirm',
     config: handler.updateConfirm
   },
   {
@@ -52,6 +52,16 @@ const Routes = [
     method: 'GET',
     path: '/api/v1/getproductbyowner/{user}',
     config: handler.getProductbyOwner
+  },
+  {
+    method: 'GET',
+    path: '/api/v1/getproductdetaillist/{str}',
+    config: handler.loadProductDetailinExchange
+  },
+  {
+    method: 'GET',
+    path: '/api/v1/initProductDetails',
+    config: handler.initProductDetails
   },
 ];
 
