@@ -56,6 +56,8 @@ class HeaderMiddle extends Component {
   }
 
   render() {
+    console.log('state.cart',this.props)
+
     const { textSearch, redirectTo } = this.state;
     let count;
     const { countCart } = this.props;
@@ -133,6 +135,7 @@ class HeaderMiddle extends Component {
 }
 
 const mapStateToProps = (state) => {
+  // console.log('state.cart',state)
   return {
     countCart: state.cart,
     countFavorite: state.favorites

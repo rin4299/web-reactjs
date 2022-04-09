@@ -201,8 +201,10 @@ class Order extends Component {
                     className="form-inline md-form form-sm mt-0" style={{ justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20 }}>
                     <div>
                     <select  className="form-control mb-3" name="status" onChange={(event) => {
+                                                                                                // this.setState({
+                                                                                                //   filterStatus : event.target.value}
+                                                                                                // )
                                                                                                 this.state.filterStatus = event.target.value
-                                                                                                console.log(this.state.filterStatus)
                                                                                                 this.fetch_reload_data()
                                                                                               }} >
                       <option value='...'>...</option>
@@ -266,6 +268,10 @@ class Order extends Component {
                                 <td>
                                   <select  className="form-control mb-3" value={item.status} name="status" onChange={(event) => {
                                                                                                               item.status = event.target.value
+                                                                                                              const name = event.target.name
+                                                                                                              this.setState({
+                                                                                                                [name] : event.target.value
+                                                                                                              })
                                                                                                               this.handleChangeStatus({
                                                                                                                 orderId: item.id,
                                                                                                                 status: event.target.value,

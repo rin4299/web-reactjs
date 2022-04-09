@@ -11,7 +11,7 @@ class ProductService extends BaseServiceCRUD {
   }
 
   async getMany(query) {
-    const builder = this.model.queryBuilder(query).eager('[categories, rating]').where('isActive', true);
+    const builder = this.model.queryBuilder(query).eager('[categories, rating, ownership]').where('isActive', true);
     if (this.getSearchQuery && query.q) {
       this.getSearchQuery(builder, query.q);
     }
