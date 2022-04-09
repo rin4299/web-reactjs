@@ -51,6 +51,12 @@ const dataUser = [
   roleId: 1,
   isVerifyEmail: true,
 },
+{
+  email: "storec@gmail.com",
+  name: "StoreC",
+  roleId: 1,
+  isVerifyEmail: true,
+},
  ];
  
 const dataCategory = [

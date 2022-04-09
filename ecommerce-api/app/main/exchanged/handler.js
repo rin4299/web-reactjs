@@ -143,3 +143,15 @@ const controller = new ExchangeController();
 
     }
   };
+
+  exports.initProductDetails = {
+    description: 'Tracking product',
+    notes: 'Return list of history',
+    tags: ['api', 'v1'],
+    handler: controller.initProductDetails.bind(controller),
+    auth: 'jwt',
+    validate: {
+
+    }
+  };
+

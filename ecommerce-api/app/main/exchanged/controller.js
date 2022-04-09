@@ -124,6 +124,15 @@ class ExchangeController extends BaseControllerCRUD {
     }
   };
 
+
+  async initProductDetails(request) {
+    try {
+      return await this.service.initProductDetails();
+    } catch (err) {
+      throw err;
+    }
+  };
+
 }
 
 module.exports = ExchangeController;

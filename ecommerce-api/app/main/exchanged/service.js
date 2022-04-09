@@ -610,6 +610,33 @@ class ExchangeService extends BaseServiceCRUD {
     }
     return return_list;
   }
+
+
+  async initProductDetails(){
+    const products = await Models.Product.query().eager('[ownership]');
+    console.log(products.length)
+    for( var i = 0; i < products.length; i++){
+      console.log(products[i].ownership.length)
+      var str = "";
+      for(var j = 0; j < products[i].ownership.length; j++){
+        str += products[i].ownership[j].storeName + "-" + products[i].ownership[j].quantity.toString() + ",";
+      }
+      let object = {
+        fcn: "initProductDetail",
+        peers:["peer0.org1.example.com","peer0.org2.example.com"],
+        chaincodeName:"productdetail",
+        channelName:"mychannel",
+        args:[products[i].id.toString(), products[i].nameProduct, str.slice(0, -1)]
+      }
+      console.log(object)
+      let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+      if(!res){
+        return `This ${products[i].nameProduct} is failed!`
+      } 
+    }
+    return `successful`
+  }
+
 }
 
 module.exports = ExchangeService;

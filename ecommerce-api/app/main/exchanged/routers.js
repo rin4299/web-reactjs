@@ -58,6 +58,11 @@ const Routes = [
     path: '/api/v1/getproductdetaillist/{str}',
     config: handler.loadProductDetailinExchange
   },
+  {
+    method: 'GET',
+    path: '/api/v1/initProductDetails',
+    config: handler.initProductDetails
+  },
 ];
 
 module.exports = Routes;
