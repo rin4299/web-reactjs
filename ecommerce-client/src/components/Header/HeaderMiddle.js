@@ -56,7 +56,7 @@ class HeaderMiddle extends Component {
   }
 
   render() {
-    console.log('state.cart',this.props)
+    // console.log('state.cart',this.props)
 
     const { textSearch, redirectTo } = this.state;
     let count;

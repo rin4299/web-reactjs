@@ -58,7 +58,6 @@ export const actAddCartRequest = (item, quantity) => {
                     }
                     localStorage.setItem('_cart', JSON.stringify(cartData));
                     dispatch(actUpdateCart(cartData[index]));
-                    console.log('item quantity',cartData[index])
                     return toast.success('The product is added to cartRequest');
                 }
             }
