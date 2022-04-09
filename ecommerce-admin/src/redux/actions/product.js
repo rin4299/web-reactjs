@@ -10,7 +10,8 @@ export const actFetchProductsRequest = (token, offset, storename) => {
   return dispatch => {
     dispatch(actShowLoading());
     return new Promise((resolve, reject) => {
-      callApi(`getproductbyowner/${storename}?limit=${limit}&offset=${newOffset}&orderBy=-createdAt`, 'GET', null, token)
+      // callApi(`getproductbyowner/${storename}?limit=${limit}&offset=${newOffset}&orderBy=-createdAt`, 'GET', null, token)
+      callApi(`getproductbyowner/${storename}?&orderBy=-createdAt`, 'GET', null, token)
         .then(res => {
           if (res && res.status === 200) { 
             dispatch(actFetchProducts(res.data));

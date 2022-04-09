@@ -25,6 +25,7 @@ class Product extends Component {
     super(props);
     this.state = {
       total: 0,
+      total2: 0,
       currentPage: 1,
       searchText: '',
       modalShow: false,
@@ -52,13 +53,9 @@ class Product extends Component {
           this.setState({
             userdiff: res2.data
           })
-          // console.log("test" , this.state.userdiff)
           this.setState({
             recUser: this.state.userdiff[0] ? this.state.userdiff[0].name : null
           })
-          
-          
-          // console.log("recuser" , this.state.recUser)
         }
     } else {
       this.setState({
@@ -74,9 +71,9 @@ class Product extends Component {
     token = localStorage.getItem('_auth');
     // console.log('name', this.state.user[0].name)
     this.props.fetch_products(token,null, this.state.user[0].name).then(res => {
-      // console.log('res', res)
       this.setState({
-        total: res
+        total: res,
+        total2 : res.slice(0,10)
       });
     }).catch(err => {
       console.log(err);  
@@ -89,6 +86,7 @@ class Product extends Component {
     const offset = limit * (content - 1);
     this.props.fetch_products(token,offset, this.state.user[0].name);
     this.setState({
+      total2: this.state.total.slice(offset, offset + 10),
       currentPage: content
     })
     window.scrollTo(0, 0);
@@ -129,8 +127,9 @@ class Product extends Component {
     event.preventDefault();
     const { searchText } = this.state;
     this.props.find_products(token, searchText).then(res => {
+      // console.log(res)
       this.setState({
-        total: res.data
+        total: res.results
       })
     })
   }
@@ -221,8 +220,8 @@ class Product extends Component {
   }
 
   render() {
-    let {products} = this.props;
-    // console.log('props', this.props)
+    // let {products} = this.props;
+    let products = this.state.total2;
     const { searchText, total } = this.state;
     return (
       <div className="content-inner">
@@ -282,7 +281,7 @@ class Product extends Component {
                         </thead>
                         <tbody>
                           {products && products.length ? products.map((item, index) => {
-                            {/* console.log('ownership',item) */}
+                            console.log('ownership',item)
                             return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>

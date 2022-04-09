@@ -12,10 +12,15 @@ class Header extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      Countcart : 0,
+    }
   }
 
   componentDidMount() {
     token = localStorage.getItem('_auth');
+    // cart = JSON.parse(localStorage.getItem('_cart'))
+    // this.state.Countcart = cart.length
   }
 
   logOut = async () => {
@@ -28,18 +33,26 @@ class Header extends Component {
     doneLoading();
   }
   render() {
-    // let count;
+    let count;
     // const { cart } = fetch_items();
     // console.log('header', cart)
     
     // console.log('localStorage',JSON.parse(localStorage.getItem('_cart')))
+    // this.setState({
+    //   cart : JSON.parse(localStorage.getItem('_cart'))
+    // })
     cart = JSON.parse(localStorage.getItem('_cart'))
-    // console.log('cart header',cart)
-    // if (cart.length > 0) {
-    //   count = countCart.reduce((sum, item) => {
-    //     return sum += item.quantity
-    //   }, 0)
-    // }
+    console.log(this.state.Countcart)
+    // console.log('header',this.state)
+    if (cart.length > 0) {
+      count = cart.reduce((sum, item) => {
+        return sum += item.quantity
+      }, 0)
+    }
+    // this.setState({
+    //   ['cart']: count
+    // })
+    
     return (
       <header className="header">
         <nav className="navbar">
@@ -85,7 +98,7 @@ class Header extends Component {
                       <div className="nav-link logout">
                         <span className="item-icon" />
                         <span className="item-text">
-                          <span className="cart-item-count">{cart.length ? cart.length : 0}<i className="fas fa-shopping-cart" /></span> 
+                          <span className="cart-item-count">{count ? count : 0}<i className="fas fa-shopping-cart" /></span> 
                         </span>
                       </div>
                     </Link>
@@ -101,6 +114,14 @@ class Header extends Component {
     )
   }
 }
+
+// const mapStateToProps = (state) => {
+//   console.log('state.cart',state)
+//   return {
+//     countCart: state.cart,
+//     countFavorite: state.favorites
+//   }
+// }
 
 
 const mapDispatchToProps = (dispatch) => {
