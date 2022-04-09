@@ -372,7 +372,7 @@ class ExchangeService extends BaseServiceCRUD {
 
 
   async getProductbyOwner(query, user){
-    const products = Models.Ownership.queryBuilder(query).eager('[ownership]').where('storeName', user);
+    const products = Models.Product.queryBuilder(query).eager('[ownership]');
     console.log(products);
     if (this.getSearchQuery && query.q) {
       this.getSearchQuery(products, query.q);
@@ -382,7 +382,7 @@ class ExchangeService extends BaseServiceCRUD {
 
   getSearchQuery(builder, q) {
     builder.andWhere(function () {
-      this.whereRaw('LOWER("fullName") LIKE \'%\' || LOWER(?) || \'%\' ', q);
+      this.whereRaw('LOWER("nameProduct") LIKE \'%\' || LOWER(?) || \'%\' ', q);
     });
   }
 

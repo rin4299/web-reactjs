@@ -18,7 +18,7 @@ class Ownership extends CustomModel {
   static get relationMappings() {
     return {
       ownership: {
-        relation: CustomModel.HasManyRelation,
+        relation: CustomModel.BelongsToOneRelation,
         modelClass: path.join(__dirname, '/Product'),
         join: {
           from: 'product.id',
