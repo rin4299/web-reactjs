@@ -180,7 +180,7 @@ class ExchangeService extends BaseServiceCRUD {
     for(var i = 0; i < temp.length; i++){
       var infor = temp[i].split("-");
       var productQ = await Models.Ownership.query().where('storeName', storeName).findOne({pId: parseInt(infor[0])});
-      if(productQ.quantity > parseInt(infor[1])){
+      if(productQ.quantity >= parseInt(infor[1])){
         await Models.Ownership.query().update({quantity: productQ.quantity - parseInt(infor[1])} ).where('storeName', storeName).where('pId', productQ.pId);
       } else {
         throw Boom.badRequest(`The number of product which has ID = ${productQ.pId} is lower than requested (${parseInt(infor[1])} > ${productQ.quantity})`);
