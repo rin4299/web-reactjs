@@ -224,3 +224,31 @@ export const actUpdateAccept = (payload, token) => {
       id
     };
   };
+
+  export const actFetchProductDetail = (str, token) => {
+    return dispatch => {
+      dispatch(actShowLoading());
+      return new Promise((resolve, reject) => {
+        callApi(`getproductdetaillist/${str}`, "GET", null, token)
+          .then(res => {
+            if (res && res.status === 200) {
+              dispatch(actFetchProductDetailRequest(res.data.results));
+              resolve(res.data);
+              setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            reject(err);
+            setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+          });
+      });
+    };
+  };
+  
+  export const actFetchProductDetailRequest = data => {
+    return {
+      type: Types.PRODUCT_DETAILS_LIST,
+      data
+    };
+  };

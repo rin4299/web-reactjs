@@ -172,7 +172,7 @@ class Order extends Component {
   }
 
   fetch_product_details_Order(id){
-    console.log('fetch thanh cong', id)
+    // console.log('fetch thanh cong', id)
     token = localStorage.getItem('_auth');
     this.props.find_order_product_detail(token, id).then(res => {
       this.setState({
@@ -180,7 +180,7 @@ class Order extends Component {
         modalShow : true,
       })
     })
-    console.log('key',this.state.productDetails)
+    // console.log('key',this.state.productDetails)
   }
 
   MyVerticallyCenteredModal = (props) => {
