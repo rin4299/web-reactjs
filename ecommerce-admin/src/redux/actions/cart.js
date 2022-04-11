@@ -46,6 +46,7 @@ export const actAddCartRequest = (item, quantity) => {
                     cartData.push(item);
                     localStorage.setItem('_cart', JSON.stringify(cartData));
                     dispatch(actAddCart(item));
+                    // console.log(localStorage.getItem('_cart'))
                     return toast.success('The product is added to cartRequest');
                 } else {
                     cartData[index].quantity = cartData[index].quantity + item.quantity;
@@ -58,6 +59,7 @@ export const actAddCartRequest = (item, quantity) => {
                     }
                     localStorage.setItem('_cart', JSON.stringify(cartData));
                     dispatch(actUpdateCart(cartData[index]));
+                    // console.log(localStorage.getItem('_cart'))
                     return toast.success('The product is added to cartRequest');
                 }
             }

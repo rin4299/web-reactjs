@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { actFetchOrdersRequest, actDeleteOrderRequest, actFindOrdersRequest } from '../../../redux/actions/order';
+import { actFetchOrdersRequest, actDeleteOrderRequest, actFindOrdersRequest, actFindOrderProductDetail } from '../../../redux/actions/order';
 import Swal from 'sweetalert2'
 import Moment from 'react-moment';
 import withReactContent from 'sweetalert2-react-content'
@@ -11,6 +11,7 @@ import Paginator from 'react-js-paginator';
 import {exportExcel} from '../../../utils/exportExcel'
 import callApi from '../../../utils/apiCaller';
 import { toast } from "react-toastify";
+import Modal from 'react-bootstrap/Modal'
 
 const MySwal = withReactContent(Swal)
 
@@ -25,6 +26,8 @@ class Order extends Component {
       currentPage: 1,
       user: [],
       filterStatus: '...',
+      productDetails: 0,
+      modalShow: false,
     }
   }
 
@@ -168,6 +171,84 @@ class Order extends Component {
     this.fetch_reload_data()
   }
 
+  fetch_product_details_Order(id){
+    console.log('fetch thanh cong', id)
+    token = localStorage.getItem('_auth');
+    this.props.find_order_product_detail(token, id).then(res => {
+      this.setState({
+        productDetails : res,
+        modalShow : true,
+      })
+    })
+    console.log('key',this.state.productDetails)
+  }
+
+  MyVerticallyCenteredModal = (props) => {
+    let temp = Object.keys(this.state.productDetails)
+    let detail;
+    // console.log('key',temp)
+    return (
+      <Modal
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            History Detail
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{overflow: 'auto'}}>
+          
+          {console.log('test',this.state.productDetails)}
+          <div >
+            <form >
+              <div className="table-responsive">
+                <table className="table table-hover" style={{ textAlign: "center" }}>
+                  <thead>
+                    <tr>
+                      {/* <th style={{width:'30%'}}>Number</th> */}
+                      <th>Id-product</th>
+                      <th>Name Product</th>
+                      <th>Image</th>
+                      <th>Quantity</th>
+                      <th>ids</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {temp ? temp.map((item,index)=>{
+                      {/* console.log(this.state.productDetails[item]) */}
+                      detail = this.state.productDetails[item]
+                      console.log('detail',detail)
+                      return (
+                        <tr key = {index}>
+                          {/* <td scope="row">{index + 1}</td> */}
+                          <td><span className="text-truncate" >{detail.product.id}</span></td>
+                          <td><span className="text-truncate" >{detail.product.nameProduct}</span></td>
+                          <td>
+                              <div className="fix-cart">
+                                <img src={detail.product.image ? detail.product.image : null} className="fix-img" alt="not found" />
+                              </div>
+                            </td>
+                          <td><span className="text-truncate" >{detail.quantity}</span></td>
+                          <td><span className="text-truncate" >{detail.ids}</span></td>
+                        </tr>)
+                    }): null}
+                  </tbody>
+                </table>
+              </div>
+            </form>
+          </div>
+          
+        </Modal.Body>
+        <Modal.Footer>
+          <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
+
   render() {
     const { orders } = this.props;
     const { searchText, total } = this.state;
@@ -249,6 +330,10 @@ class Order extends Component {
                           </tr>
                         </thead>
                         <tbody>
+                          <this.MyVerticallyCenteredModal
+                                  show={this.state.modalShow}
+                                  onHide={() => this.setState({modalShow: false})}
+                                />
                           {orders && orders.length ? orders
                           .filter((item,index) => {
                             if(this.state.filterStatus === '...'){
@@ -259,7 +344,8 @@ class Order extends Component {
                           .map((item, index) => {
                             {/* console.log('order',item) */}
                             return (
-                              <tr key={index}>
+                              <tr key={index} onClick={()=>{ this.fetch_product_details_Order(item.id)}}
+                              >
                                 <th scope="row">{index + 1}</th>
                                 <td>{item.fullName}</td>
                                 {/* <td>{item.address}</td> */}
@@ -369,6 +455,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     find_order: (token, searchText) => {
       return dispatch(actFindOrdersRequest(token, searchText))
+    },
+    find_order_product_detail:(token, id) => {
+      return dispatch(actFindOrderProductDetail(token, id))
     }
   }
 }

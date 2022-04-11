@@ -160,3 +160,31 @@ export const actEditOrder = data => {
     data
   };
 };
+
+export const actFindOrderProductDetail = (token, id) => {
+  return dispatch => {
+    dispatch(actShowLoading());
+    return new Promise((resolve, reject) => {
+      callApi(`orders/productdetails/${id}`, "GET", null, token)
+        .then(res => {
+          if (res && res.status === 200) {
+            dispatch(actFindOrderProductDetails(res.data.results));
+            resolve(res.data);
+            setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          reject(err);
+          setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+        });
+    });
+  };
+};
+
+export const actFindOrderProductDetails = orders => {
+  return {
+    type: Types.FIND_ORDER_PRODUCT_DETAILS,
+    orders
+  };
+};
