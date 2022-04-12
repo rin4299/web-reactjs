@@ -126,7 +126,7 @@ class Product extends Component {
   handleSubmit = (event) => {
     event.preventDefault();
     const { searchText } = this.state;
-    console.log('test',searchText)
+    // console.log('test',searchText)
     searchText === "" ? this.fetch_reload_data() : 
     this.props.find_products(token, searchText).then(res => {
       this.setState({

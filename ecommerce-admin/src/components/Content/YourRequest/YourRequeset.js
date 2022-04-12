@@ -157,6 +157,7 @@ class YourRequest extends Component {
                   </thead>
                   <tbody>
                     {this.state.receive.products && this.state.receive.products.length ? this.state.receive.products.map((item, index) => {
+                        {/* console.log('item',item) */}
                         return (
                           <tr key = {index}>
                             {/* <td scope="row">{index + 1}</td> */}
@@ -246,7 +247,7 @@ class YourRequest extends Component {
                         </thead>
                         <tbody>
                           {total2 && total2.length ? total2.map((item, index) => {
-                            console.log('item',item)
+                            {/* console.log('item',item) */}
                             if(item.isReceived){
                               return null;
                             }

@@ -75,8 +75,10 @@ class ExchangeService extends BaseServiceCRUD {
         // console.log("HAHA",temp.length)
         for(var j = 0; j < temp.length; j++){
           // console.log(temp[j][0])
-          var product = await Models.Product.query().findOne({id: parseInt(temp[j][0])})
-          product.quantity = parseInt(temp[j][2]);
+          var infor = temp[j].split("-")
+          var product = await Models.Product.query().findOne({id: parseInt(infor[0])})
+          product.quantity = parseInt(infor[1]);
+          console.log(product, infor[1])
           reValue.push(product);
         }
         recM[i]["products"] = reValue;

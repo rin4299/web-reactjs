@@ -22,12 +22,6 @@ const dataRole = [
 
 const dataUser = [
  {
-   email: "admin@gmail.com",
-   name: "admin",
-   roleId: 1,
-   isVerifyEmail: true,
- },
- {
    email: "staff@gmail.com",
    name: "staff",
    roleId: 2,
@@ -858,6 +852,13 @@ const OwnershipData = [
     createdAt: "2019-12-05T15:03:11.311Z",
     updatedAt: "2019-12-05T15:08:15.904Z",
   },
+  {
+    storeName: "StoreC",
+    pId: 4,
+    quantity: 0,
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
 //========================== Burco Cygnet 10L Electric Water Boiler - Stainless Steel ====================================
   {
     storeName: "StoreA",
@@ -873,6 +874,13 @@ const OwnershipData = [
     createdAt: "2019-12-05T15:03:11.311Z",
     updatedAt: "2019-12-05T15:08:15.904Z",
   },
+  {
+    storeName: "StoreC",
+    pId: 5,
+    quantity: 0,
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
 //========================== Tagu PowerFlame 23 Inch Electric Fire ====================================
   {
     storeName: "StoreA",
@@ -885,6 +893,13 @@ const OwnershipData = [
     storeName: "StoreB",
     pId: 6,
     quantity: 4,
+    createdAt: "2019-12-05T15:03:11.311Z",
+    updatedAt: "2019-12-05T15:08:15.904Z",
+  },
+  {
+    storeName: "StoreC",
+    pId: 6,
+    quantity: 0,
     createdAt: "2019-12-05T15:03:11.311Z",
     updatedAt: "2019-12-05T15:08:15.904Z",
   },
