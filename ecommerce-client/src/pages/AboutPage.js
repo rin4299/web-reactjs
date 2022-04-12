@@ -32,7 +32,7 @@ export default class AboutPage extends Component {
         {/* About Image Start */}
         <div className="col-lg-5 col-md-10">
           <div className="about-image-wrap">
-            <img className="img-full" src="https://i.ibb.co/mtWXXkq/13.jpg" alt="About Us" />
+            <img className="img-full" src="https://i.ibb.co/KrdbSH2/logoBK.png" alt="About Us" />
           </div>
         </div>
         {/* About Image End */}
@@ -119,7 +119,7 @@ export default class AboutPage extends Component {
   </div>
   {/* Counterup Area End Here */}
   {/* team area wrapper start */}
-  <div className="team-area pt-60 pt-sm-44">
+  {/* <div className="team-area pt-60 pt-sm-44">
     <div className="container">
       <div className="row">
         <div className="col-12">
@@ -127,7 +127,7 @@ export default class AboutPage extends Component {
             <h2><span>our team</span></h2>
           </div>
         </div>
-      </div> {/* section title end */}
+      </div> 
       <div className="row">
         <div className="col-lg-3 col-md-6 col-sm-6">
           <div className="team-member mb-60 mb-sm-30 mb-xs-30">
@@ -146,7 +146,7 @@ export default class AboutPage extends Component {
               </div>
             </div>
           </div>
-        </div> {/* end single team member */}
+        </div> 
         <div className="col-lg-3 col-md-6 col-sm-6">
           <div className="team-member mb-60 mb-sm-30 mb-xs-30">
             <div className="team-thumb">
@@ -164,7 +164,7 @@ export default class AboutPage extends Component {
               </div>
             </div>
           </div>
-        </div> {/* end single team member */}
+        </div> 
         <div className="col-lg-3 col-md-6 col-sm-6">
           <div className="team-member mb-30 mb-sm-60">
             <div className="team-thumb">
@@ -182,7 +182,7 @@ export default class AboutPage extends Component {
               </div>
             </div>
           </div>
-        </div> {/* end single team member */}
+        </div> 
         <div className="col-lg-3 col-md-6 col-sm-6">
           <div className="team-member mb-30 mb-sm-60 mb-xs-60">
             <div className="team-thumb">
@@ -200,10 +200,10 @@ export default class AboutPage extends Component {
               </div>
             </div>
           </div>
-        </div> {/* end single team member */}
+        </div> 
       </div>
     </div>
-  </div>
+  </div> */}
 </div>
 
     )

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import callApi from '../../utils/apiCaller';
-
+let token;
 export default class BillDetail extends Component {
 
   constructor(props) {
@@ -12,6 +12,7 @@ export default class BillDetail extends Component {
       address: '',
       phone: '',
       note: '',
+      email:'',
       provinceData: '01',
       stateData: '001',
     }
@@ -25,6 +26,15 @@ export default class BillDetail extends Component {
         provinces: myProvinces.data,
         states:myStates.data
       })
+      token = localStorage.getItem('_auth');
+      const res = await callApi('users/me', 'GET', null, token);
+      this.setState({
+        name: res.data.results[0].name,
+        email: res.data.results[0].email,
+        phone: res.data.results[0].phone,
+        address: res.data.results[0].address,
+      })
+      console.log(res.data.results[0])
     } catch (err) {
       console.log(err);
     }
@@ -59,7 +69,7 @@ export default class BillDetail extends Component {
   } // get value of state
 
   render() {
-    const { provinces, states, provinceData, stateData, name, address, phone, note  } = this.state;
+    const { provinces, states, provinceData, stateData, name, address, phone, note, email  } = this.state;
     return (
       <div className="col-lg-10 col-12" style={{margin: 'auto'}}>
          <form>
@@ -109,6 +119,12 @@ export default class BillDetail extends Component {
                <div className="checkout-form-list">
                  <label>Phone  <span className="required">*</span></label>
                  <input onChange={this.handleChange} type="text" name="phone" value={phone} />
+               </div>
+             </div>
+             <div className="col-md-12">
+               <div className="checkout-form-list">
+                 <label>Email <span className="required">*</span></label>
+                 <input onChange={this.handleChange} placeholder="Email" type="text" name="email" value={email} />
                </div>
              </div>
              <div className="col-md-12">
