@@ -7,7 +7,7 @@ const { COMPLETE } = require('../../config/type')
 
 exports.countDashboard = async (query) => {
   const { startTime, endTime } = query;
-  let countCustomer = Models.User.query().count();
+  let countCustomer = Models.User.query().where("roleId","3").count();
   let countOrder = Models.Order.query().count();
   let sumRevenue = Models.Order.query().sum('totalAmount as total').where('isPaid', true);
   if (startTime && endTime) {

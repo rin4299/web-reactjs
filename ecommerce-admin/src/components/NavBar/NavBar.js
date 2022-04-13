@@ -57,7 +57,7 @@ class NavBar extends Component {
             <li><Link to="/tracking"> <i className="icon icon-list-1" />Tracking</Link></li>
             <li><Link to="/ratings">  <i className="icon icon-check" />Rating</Link></li>
             <li><Link to="/users"> <i className="icon icon-user" />Users</Link></li>
-            <li><Link to="/roles"> <i className="icon icon-bars" />Roles</Link></li>
+            {/* <li><Link to="/roles"> <i className="icon icon-bars" />Roles</Link></li> */}
             <li> <Link to="/contacts"> <i className="icon-mail" />Contacts </Link></li>
           </ul>
       

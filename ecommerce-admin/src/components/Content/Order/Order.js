@@ -171,15 +171,18 @@ class Order extends Component {
     this.fetch_reload_data()
   }
 
-  fetch_product_details_Order(id){
+  fetch_product_details_Order(item){
     // console.log('fetch thanh cong', id)
     token = localStorage.getItem('_auth');
-    this.props.find_order_product_detail(token, id).then(res => {
-      this.setState({
-        productDetails : res,
-        modalShow : true,
+    if (item.status === 'Complete'){
+      this.props.find_order_product_detail(token, item.id).then(res => {
+        this.setState({
+          productDetails : res,
+          modalShow : true,
+        })
       })
-    })
+    }
+    
     // console.log('key',this.state.productDetails)
   }
 
@@ -201,7 +204,7 @@ class Order extends Component {
         </Modal.Header>
         <Modal.Body style={{overflow: 'auto'}}>
           
-          {console.log('test',this.state.productDetails)}
+          {/* {console.log('test',this.state.productDetails)} */}
           <div >
             <form >
               <div className="table-responsive">
@@ -305,7 +308,7 @@ class Order extends Component {
                         className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
                         aria-label="Search" />
                     </div>
-                    <Link to="/orders/add" className="btn btn-primary" > Create</Link>
+                    {/* <Link to="/orders/add" className="btn btn-primary" > Create</Link> */}
                   </form>
                   <div className="card-body">
                     <div className="table-responsive">
@@ -318,7 +321,7 @@ class Order extends Component {
                             <th>Phone</th>
                             <th>Status</th>
                             <th>Paid</th>
-                            <th style={{ textAlign: "center" }}>Payment Online</th>
+                            {/* <th style={{ textAlign: "center" }}>Payment Online</th> */}
                             <th>Item Amount</th>
                             <th>Shipping Total</th>
                             <th>Promo Total </th>
@@ -344,7 +347,7 @@ class Order extends Component {
                           .map((item, index) => {
                             {/* console.log('order',item) */}
                             return (
-                              <tr key={index} onClick={()=>{ this.fetch_product_details_Order(item.id)}}
+                              <tr key={index} onClick={()=>{ this.fetch_product_details_Order(item)}}
                               >
                                 <th scope="row">{index + 1}</th>
                                 <td>{item.fullName}</td>
@@ -382,7 +385,7 @@ class Order extends Component {
                                     <input type="checkbox" onChange={()=>{}} checked={false} className="checkbox-template" />
                                   </div>}
                                 </td>
-                                <td style={{ textAlign: "center" }}>{item.isPaymentOnline ?
+                                {/* <td style={{ textAlign: "center" }}>{item.isPaymentOnline ?
                                   <div className="i-checks">
                                     <input type="checkbox" onChange={()=>{}} checked={true} className="checkbox-template" />
                                   </div>
@@ -390,7 +393,7 @@ class Order extends Component {
                                   <div className="i-checks">
                                     <input type="checkbox" onChange={()=>{}} checked={false} className="checkbox-template" />
                                   </div>}
-                                </td>
+                                </td> */}
                                 <td>{item.itemAmount}</td>
                                 <td>{item.shippingTotal}</td>
                                 <td>{item.promoTotal}</td>

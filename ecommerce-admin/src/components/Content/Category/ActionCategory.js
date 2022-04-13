@@ -7,6 +7,7 @@ import callApi from '../../../utils/apiCaller';
 import { uploadImage } from '../../../utils/upload'
 import { css } from '@emotion/core';
 import ClipLoader from 'react-spinners/ClipLoader';
+import { Link } from 'react-router-dom'
 let token;
 let id;
 
@@ -189,7 +190,7 @@ class ActionCategory extends Component {
                       <div className="line" />
                       <div className="form-group row">
                         <div className="col-sm-4 offset-sm-3">
-                          <button type="reset" className="btn btn-secondary" style={{ marginRight: 2 }}>Cancel</button>
+                          <Link to="/categories"><button type="reset" className="btn btn-secondary" style={{ marginRight: 2 }}>Cancel</button></Link>
                           <button type="submit" className="btn btn-primary">Save changes</button>
                         </div>
                       </div>

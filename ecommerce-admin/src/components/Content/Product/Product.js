@@ -13,6 +13,8 @@ import callApi from '../../../utils/apiCaller';
 import Modal from 'react-bootstrap/Modal'
 import { startLoading, doneLoading } from '../../../utils/loading'
 import { actAddCartRequest, actFetchCartRequest } from '../../../redux/actions/cart';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const MySwal = withReactContent(Swal)
 
@@ -146,6 +148,7 @@ class Product extends Component {
     this.props.create_exchange(token, payload).then(res => {
       console.log(res)
     })
+    toast.success('The request is created');
     this.setState({modalShow: false})
   }
 
@@ -262,7 +265,7 @@ class Product extends Component {
                         className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
                         aria-label="Search" />
                     </div>
-                    <Link to='/products/add' className="btn btn-primary" > Create</Link>
+                    {/* <Link to='/products/add' className="btn btn-primary" > Create</Link> */}
                   </form>
                   <div className="card-body">
                     <div className="table-responsive">
