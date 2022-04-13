@@ -22,12 +22,6 @@ const dataRole = [
 
 const dataUser = [
  {
-   email: "admin@gmail.com",
-   name: "admin",
-   roleId: 1,
-   isVerifyEmail: true,
- },
- {
    email: "staff@gmail.com",
    name: "staff",
    roleId: 2,

@@ -412,19 +412,19 @@ class ExchangeService extends BaseServiceCRUD {
 
     geocoder.geocode({address: address}, async function(err,res){
       //Check xem Address co hop le ko 
-      if(!res || err){
-        const oS = new OrderService();
-        const successfulMessage = await oS.deleteOrder(orderId);
-        console.log(successfulMessage);
-        throw Boom.badData(`Your current address ${address} is not available. Please try again with the available address!`)
-      }
+      // if(!res || err){
+      //   const oS = new OrderService();
+      //   const successfulMessage = await oS.deleteOrder(orderId);
+      //   console.log(successfulMessage);
+      //   throw Boom.badData(`Your current address ${address} is not available. Please try again with the available address!`)
+      // }
       var lat = res[0]['latitude']
       var lng = res[0]['longitude']
       var listofStore = []
       var strongestFlag = true;
-      console.log("1111111111111")
+      // console.log("1111111111111")
       const stores = await Models.Store.query();
-      console.log(stores);
+      // console.log(stores);
       for(var i = 0; i < stores.length; i++){
         listofStore.push({'distance': disCalculate(stores[i]['lat'],stores[i]['lng'],lat,lng),'storeName': stores[i]['storeName']})
       }
@@ -439,7 +439,7 @@ class ExchangeService extends BaseServiceCRUD {
       var flag1 = true
       var memoryShell = [];
       
-      console.log("ARRPQ", arrPQ)
+      // console.log("ARRPQ", arrPQ)
 
       // var firstStore = await Models.Ownership.query().where('storeName', listofStore[0]['storeName']);
       // for(var p = 0; p < arrPQ.length; p++){
@@ -472,15 +472,15 @@ class ExchangeService extends BaseServiceCRUD {
                   shortageShell.push({'pId': arrPQ[x]['pId'], 'lostQ': arrPQ[x]['quantity'] - productInStore[y].quantity})
                   // shortageShell[arrPQ[x]['pId']] = arrPQ[x]['quantity'] - productInStore[y].quantity
                 }
-                console.log("3333333333333", shortageShell)
+                // console.log("3333333333333", shortageShell)
               } 
             }
           }
         }
-        console.log(productMatch)
+        // console.log(productMatch)
         if(flag1 === true){
           await Models.Order.query().update({atStore: listofStore[j]['storeName']} ).where('id', orderId);
-          console.log(listofStore[j]['storeName']);
+          // console.log(listofStore[j]['storeName']);
           strongestFlag = false;
           break;
         } else {
@@ -496,43 +496,46 @@ class ExchangeService extends BaseServiceCRUD {
       // memoryShell chua thong tin hang tai tung store 
       // shortageShell chua so luong thieu neu ko co store nao dap du
       if(strongestFlag){
+        console.log('sShell',shortageShell);
         console.log('memoryShell',memoryShell);
 
         await Models.Order.query().update({atStore: listofStore[0]['storeName']} ).where('id', orderId);
         var candidates = {};
+        var flagForOneStoreEnough = true;
         var flag2 = true;
-        for(var n = 0; n < shortageShell.length; n++){
-
-          for(var z = 1; z < memoryShell.length; z++){
-            if(shortageShell[n]['lostQ'] > 0 && memoryShell[z]['products'][shortageShell[n]['pId']] >= shortageShell[n]['lostQ']){
-              if(candidates[memoryShell[z]['storeName']] !== undefined){
-                candidates[memoryShell[z]['storeName']] += shortageShell[n]['pId'].toString() + "-" +  shortageShell[n]['lostQ'].toString() + ",";
-                shortageShell[n]['lostQ'] = shortageShell[n]['lostQ']  - memoryShell[z]['products'][shortageShell[n]['pId']];
-                flag2 = false;
-              } else {
-                candidates[memoryShell[z]['storeName']] = shortageShell[n]['pId'].toString() + "-" +  shortageShell[n]['lostQ'].toString() + ",";
-                shortageShell[n]['lostQ'] = shortageShell[n]['lostQ']  - memoryShell[z]['products'][shortageShell[n]['pId']];
-                flag2 = false;
-              }
+        for(var n = 1; n < memoryShell.length; n++){
+          var checker = true;
+          var inputSTRForOneStoreEnough = ""
+          for(var z = 0; z < shortageShell.length; z++){
+            if(memoryShell[n]['products'][shortageShell[z]['pId']] < shortageShell[z]['lostQ']){
+              checker =  false;
+            } else {
+              inputSTRForOneStoreEnough += shortageShell[z]['pId'] + "-" + shortageShell[z]['lostQ'] + ",";
             }
           }
+          if(checker){
+            console.log(`One Store ${memoryShell[n]['storeName']} is enough with String: ${inputSTRForOneStoreEnough}`);
+            flagForOneStoreEnough = false;
+            // let object = {
+            //     fcn: "createExchange",
+            //     peers:["peer0.org1.example.com","peer0.org2.example.com"],
+            //     chaincodeName:"productdetail",
+            //     channelName:"mychannel",
+            //     args:[listofStore[0]['storeName'], memoryShell[n]['storeName], inputSTRForOneStoreEnough.slice(0, -1)]
+            //   }
+            //   console.log(object)
+            //   let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+            // console.log(res.data);
+          }
+        }
+        if(flagForOneStoreEnough) {
+          for(var n = 0; n < shortageShell.length; n++){
 
-          if(flag2){
             for(var z = 1; z < memoryShell.length; z++){
-              if(shortageShell[n]['lostQ'] > 0 && shortageShell[n]['lostQ'] >= memoryShell[z]['products'][shortageShell[n]['pId']]){
-                if(candidates[memoryShell[z]['storeName']] !== undefined){
-                  candidates[memoryShell[z]['storeName']] += shortageShell[n]['pId'].toString() + "-" +  memoryShell[z]['products'][shortageShell[n]['pId']].toString() + ",";
-                  shortageShell[n]['lostQ'] = shortageShell[n]['lostQ'] - memoryShell[z]['products'][shortageShell[n]['pId']];
-                  flag2 = false;
-                } else {
-                  candidates[memoryShell[z]['storeName']] = shortageShell[n]['pId'].toString() + "-" +  memoryShell[z]['products'][shortageShell[n]['pId']].toString() + ",";
-                  shortageShell[n]['lostQ'] = shortageShell[n]['lostQ']  - memoryShell[z]['products'][shortageShell[n]['pId']];
-                  flag2 = false;
-                }
-              } else {
+              if(shortageShell[n]['lostQ'] > 0 && memoryShell[z]['products'][shortageShell[n]['pId']] >= shortageShell[n]['lostQ']){
                 if(candidates[memoryShell[z]['storeName']] !== undefined){
                   candidates[memoryShell[z]['storeName']] += shortageShell[n]['pId'].toString() + "-" +  shortageShell[n]['lostQ'].toString() + ",";
-                  shortageShell[n]['lostQ'] = shortageShell[n]['lostQ'] - memoryShell[z]['products'][shortageShell[n]['pId']];
+                  shortageShell[n]['lostQ'] = shortageShell[n]['lostQ']  - memoryShell[z]['products'][shortageShell[n]['pId']];
                   flag2 = false;
                 } else {
                   candidates[memoryShell[z]['storeName']] = shortageShell[n]['pId'].toString() + "-" +  shortageShell[n]['lostQ'].toString() + ",";
@@ -541,10 +544,53 @@ class ExchangeService extends BaseServiceCRUD {
                 }
               }
             }
-          } else {
-            flag2 = true;
+  
+            if(flag2){
+              for(var z = 1; z < memoryShell.length; z++){
+                if(shortageShell[n]['lostQ'] > 0 && shortageShell[n]['lostQ'] >= memoryShell[z]['products'][shortageShell[n]['pId']]){
+                  if(candidates[memoryShell[z]['storeName']] !== undefined){
+                    candidates[memoryShell[z]['storeName']] += shortageShell[n]['pId'].toString() + "-" +  memoryShell[z]['products'][shortageShell[n]['pId']].toString() + ",";
+                    shortageShell[n]['lostQ'] = shortageShell[n]['lostQ'] - memoryShell[z]['products'][shortageShell[n]['pId']];
+                    flag2 = false;
+                  } else {
+                    candidates[memoryShell[z]['storeName']] = shortageShell[n]['pId'].toString() + "-" +  memoryShell[z]['products'][shortageShell[n]['pId']].toString() + ",";
+                    shortageShell[n]['lostQ'] = shortageShell[n]['lostQ']  - memoryShell[z]['products'][shortageShell[n]['pId']];
+                    flag2 = false;
+                  }
+                } else {
+                  if(candidates[memoryShell[z]['storeName']] !== undefined){
+                    candidates[memoryShell[z]['storeName']] += shortageShell[n]['pId'].toString() + "-" +  shortageShell[n]['lostQ'].toString() + ",";
+                    shortageShell[n]['lostQ'] = shortageShell[n]['lostQ'] - memoryShell[z]['products'][shortageShell[n]['pId']];
+                    flag2 = false;
+                  } else {
+                    candidates[memoryShell[z]['storeName']] = shortageShell[n]['pId'].toString() + "-" +  shortageShell[n]['lostQ'].toString() + ",";
+                    shortageShell[n]['lostQ'] = shortageShell[n]['lostQ']  - memoryShell[z]['products'][shortageShell[n]['pId']];
+                    flag2 = false;
+                  }
+                }
+              }
+            } else {
+              flag2 = true;
+            }
           }
+
+          console.log("Finally We have a list of candidates like this one: ",candidates);
+          let obj = Object.keys(candidates);
+          // for(var m = 0; m < obj.length; m++){
+          //   let object = {
+          //     fcn: "createExchange",
+          //     peers:["peer0.org1.example.com","peer0.org2.example.com"],
+          //     chaincodeName:"productdetail",
+          //     channelName:"mychannel",
+          //     args:[listofStore[0]['storeName'], obj[m], candidates[obj[m]].slice(0, -1)]
+          //   }
+          //   console.log(object)
+          //   let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+          //   console.log(res.data);
+          // }
         }
+
+        
         
 
         // candidates[memoryShell[z]['storeName']] = "";
@@ -569,25 +615,14 @@ class ExchangeService extends BaseServiceCRUD {
         //     // }
 
 
-        console.log(candidates);
-        let obj = Object.keys(candidates);
-        for(var m = 0; m < obj.length; m++){
-          let object = {
-            fcn: "createExchange",
-            peers:["peer0.org1.example.com","peer0.org2.example.com"],
-            chaincodeName:"productdetail",
-            channelName:"mychannel",
-            args:[listofStore[0]['storeName'], obj[m], candidates[obj[m]].slice(0, -1)]
-          }
-          console.log(object)
-          let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
-          console.log(res.data);
-        }
+        
       }
       
     })
     return "successful"
   }
+
+
   async loadProductDetailinExchange(str){
     var return_list = {}
     var shell = [];

@@ -16,8 +16,17 @@ class ContactService extends BaseServiceCRUD {
     if(!result){
       throw Boom.badRequest('Error')
     }
-    MailUtils.sendEmailContactEmail(payload.email)
+    // MailUtils.sendEmailContactEmail(payload.email)
     return result;
+  }
+
+  async getManyContacts(query) {
+    const { atStore } = query
+    const builder = Models.Contact.queryBuilder(query).where('atStore', atStore);
+    if (this.getSearchQuery && query.q) {
+      this.getSearchQuery(builder, query.q);
+    }
+    return builder;
   }
 
   getSearchQuery(builder, q) {

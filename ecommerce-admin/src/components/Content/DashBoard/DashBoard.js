@@ -37,15 +37,21 @@ class DashBoard extends Component {
       November1: 0,
       December1: 0,
       labelsPie: [],
-      dataShowPie: []
-      
+      dataShowPie: [],
+      user: []
     }
   }
 
   async componentDidMount() {
     token = localStorage.getItem('_auth');
     if (token) {
-      this.props.fetch_dashboard(token);
+      const res = await callApi('users/me', 'GET', null, token);
+      if(!res){
+        console.log("CANNOT FIND ANY USER!")
+      }
+      const Uname = res.data.results[0].name
+      console.log(Uname)
+      this.props.fetch_dashboard(token, Uname);
       const category =  callApi('reports/products', 'GET', null, token);
       const income =  callApi('reports/income', 'GET', null, token);
       const contact =  callApi('reports/contacts', 'GET', null, token);
@@ -346,8 +352,8 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetch_dashboard: (token) => {
-      dispatch(actFetchDashboardRequest(token))
+    fetch_dashboard: (token, name) => {
+      dispatch(actFetchDashboardRequest(token, name))
     },
     add_token_redux: token => {
       dispatch(actTokenRequest(token));

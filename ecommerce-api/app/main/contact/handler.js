@@ -20,6 +20,21 @@ exports.getMany = {
   }
 };
 
+exports.getManyContacts = {
+  description: 'Get Contact list',
+  notes: 'Return Contact items',
+  tags: ['api', 'v1'],
+  handler: controller.getMany.bind(controller),
+  auth: {
+    strategy: 'jwt',
+    scope: ['admin', 'superadmin']
+  },
+  validate: {
+    headers: validator.checkToken,
+  }
+};
+
+
 exports.count = {
   description: 'Count Contact list',
   notes: 'Return a count result of Contact items',

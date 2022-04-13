@@ -10,6 +10,11 @@ const Routes = [
   },
   {
     method: 'GET',
+    path: '/api/v1/contact/contacts',
+    config: handler.getManyContacts
+  },
+  {
+    method: 'GET',
     path: '/api/v1/contacts/{id}',
     config: handler.getOne
   },
