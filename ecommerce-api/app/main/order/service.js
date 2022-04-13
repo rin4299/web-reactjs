@@ -73,10 +73,10 @@ class OrderService extends BaseServiceCRUD {
 
   async changeStatus(payload) {
     const {orderId, status, atStore, fullName} = payload;
+    console.log(orderId, status, atStore, fullName)
     const order = await Models.Order.query().findOne({id: orderId});
-
     if(status === "Confirm"){ // CONFIRM
-      if(order.status === "Shipping" || order.status === "Complete" || order.status === "Cancel"){
+      if(order.status === "Shipping" || order.status === "Complete" || order.status === "Canceled"){
         throw Boom.badRequest(`Can not change the ${order.status} order!`)
       }
       var temp = 0;
@@ -95,7 +95,7 @@ class OrderService extends BaseServiceCRUD {
       return `Successfully change the status of Order ${orderId} from ${order.status} to ${status}!`
     } else if (status === "Shipping"){ // SHIPPING
       // 1 đơn chỉ được chuyển qua Shipping khi status đang là Confirm	
-      if(order.status === "Complete" || order.status === "Cancel" || order.status !== "Confirm"){
+      if(order.status === "Complete" || order.status === "Canceled" || order.status !== "Confirm"){
         throw Boom.badRequest(`Can not change the ${order.status} order!`)
       }
       // 1 đơn chuyển từ Confirm -> Shipping thì ko cập nhật gì thêm trừ Status
@@ -103,7 +103,7 @@ class OrderService extends BaseServiceCRUD {
       return `Successfully change the status of Order ${orderId} from ${order.status} to ${status}!`
     } else if (status === "Complete"){ // COMPLETE
       // 1 đơn chỉ được chuyển qua Complete khi status khác Shipping
-      if(order.status === "Cancel" || order.status !== "Shipping"){
+      if(order.status === "Canceled" || order.status !== "Shipping"){
         throw Boom.badRequest(`Can not change the ${order.status} order!`)
       }
       // Blockchain Update
@@ -139,7 +139,7 @@ class OrderService extends BaseServiceCRUD {
       }
       await Models.Order.query().update({status: status} ).where('id', orderId);
       return `Successfully change the status of Order ${orderId} from ${order.status} to ${status}!`
-    } else if (status === "Cancel") { // CANCEL
+    } else if (status === "Canceled") { // CANCEL
       //1 đơn chuyển sang Canceled thì:
       if(order.status === "Complete"){ //1 đơn chỉ được chuyển qua Canceled khi status khác Complete
         throw Boom.badRequest(`Can not cancel the ${order.status} order!`)
@@ -147,7 +147,7 @@ class OrderService extends BaseServiceCRUD {
       // nếu đang Confirm hoặc Shipping: thì cập nhật cộng lại Ownership và cả NumberAvailable
       if(order.status === "Confirm" || order.status === "Shipping" ){
         var newVal = 0;
-        const orderDetails = await Models.OrderDetail.query().where("orderId", id);
+        const orderDetails = await Models.OrderDetail.query().where("orderId", orderId);
         console.log("OD",orderDetails)
         for(var i = 0; i < orderDetails.length; i++){
           var product = await Models.Product.query().findOne({id: orderDetails[i].productId})
@@ -162,7 +162,7 @@ class OrderService extends BaseServiceCRUD {
       // nếu đang Unconfirm: thì cập nhật cộng lại NumberAvailable
       if(order.status === "Unconfirm"){
         var newVal = 0;
-        const orderDetails = await Models.OrderDetail.query().where("orderId", id);
+        const orderDetails = await Models.OrderDetail.query().where("orderId", orderId);
         console.log("OD",orderDetails)
         for(var i = 0; i < orderDetails.length; i++){
           var product = await Models.Product.query().findOne({id: orderDetails[i].productId})

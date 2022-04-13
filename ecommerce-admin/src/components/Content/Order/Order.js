@@ -162,7 +162,6 @@ class Order extends Component {
   }
 
   async handleChangeStatus(payload){
-    console.log(payload)
     token = localStorage.getItem('_auth');
     const res = await callApi('order/changestatus',"POST", payload, token)
     if (res && res.status === 200) {
@@ -223,7 +222,7 @@ class Order extends Component {
                     {temp ? temp.map((item,index)=>{
                       {/* console.log(this.state.productDetails[item]) */}
                       detail = this.state.productDetails[item]
-                      console.log('detail',detail)
+                      {/* console.log('detail',detail) */}
                       return (
                         <tr key = {index}>
                           {/* <td scope="row">{index + 1}</td> */}
