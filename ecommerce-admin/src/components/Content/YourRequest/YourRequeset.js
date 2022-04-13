@@ -9,7 +9,8 @@ import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
 import Paginator from 'react-js-paginator';
 import callApi from '../../../utils/apiCaller';
-
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Modal from 'react-bootstrap/Modal'
 
 
@@ -109,6 +110,8 @@ class YourRequest extends Component {
     token = localStorage.getItem('_auth');
     this.props.update_Confirm(payload,token).then(res => {
       console.log(res)
+      toast.success('The request is updated');
+      this.fetch_reload_data();
     })
     this.setState({modalShow: false})
     // window.location.reload()
@@ -180,7 +183,6 @@ class YourRequest extends Component {
             {this.state.receive.isAccepted ?
               <button className="form-control btn btn-primary" type="button" onClick= {() => {
                 this.updateConfirm(props.receive.indexExchange, props.receive.listofProduct, props.receive.from)
-                this.fetch_reload_data()
               }}>
                 Confirm
               </button>

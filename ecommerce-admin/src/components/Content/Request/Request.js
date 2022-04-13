@@ -84,7 +84,7 @@ class Request extends Component {
   }
 /////////////////////////
 
-  updateAccept = (id, lop, storeName) => {
+  async updateAccept(id, lop, storeName){
     const payload = {
       'id': id,
       'lop': lop,
@@ -93,8 +93,9 @@ class Request extends Component {
     token = localStorage.getItem('_auth');
     this.props.update_Accept(payload,token).then(res => {
       console.log(res)
+      toast.success('The request is updated');
+      this.fetch_reload_data();
     })
-    toast.success('The request is updated');
     this.setState({modalShow: false})
   }
 
@@ -158,7 +159,7 @@ class Request extends Component {
             <div className="form-group">
               <button className="form-control btn btn-primary" type="button" onClick= {() => {
                 this.updateAccept(props.requests.indexExchange, props.requests.listofProduct, props.requests.to)
-                this.fetch_reload_data()
+                // this.fetch_reload_data()
                 // window.location.reload()
               }}>
                 Confirm
@@ -282,15 +283,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetch_products: (token, offset) => {
-       return dispatch(actFetchProductsRequest(token, offset))
-    },
-    delete_product: (id, token) => {
-      dispatch(actDeleteProductRequest(id, token))
-    },
-    find_products: (token, searchText) => {
-      return dispatch(actFindProductsRequest(token, searchText))
-    },
     fetch_exchange_request: (id, token) => {
       return dispatch(actFetchExchangeRequest(id, token))
     },

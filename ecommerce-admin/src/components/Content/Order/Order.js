@@ -162,7 +162,7 @@ class Order extends Component {
   }
 
   async handleChangeStatus(payload){
-    // console.log(payload)
+    console.log(payload)
     token = localStorage.getItem('_auth');
     const res = await callApi('order/changestatus',"POST", payload, token)
     if (res && res.status === 200) {
