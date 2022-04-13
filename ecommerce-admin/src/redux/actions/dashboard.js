@@ -1,10 +1,10 @@
 import * as Types from '../../constants/ActionType';
 import callApi from '../../utils/apiCaller';
 import { actShowLoading, actHiddenLoading } from './loading'
-export const actFetchDashboardRequest = (token) => {
+export const actFetchDashboardRequest = (token, name) => {
   return async dispatch => {
     dispatch(actShowLoading());
-      const res = await callApi('dashboards', 'GET', null, token);
+      const res = await callApi(`dashboards?name=${name}`, 'GET', null, token);
       if (res && res.status === 200) {
         dispatch(actFetchDashboard(res.data));
       }
