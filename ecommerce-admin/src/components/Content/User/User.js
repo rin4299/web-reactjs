@@ -139,52 +139,23 @@ class User extends Component {
                             <th>Number</th>
                             <th>Email</th>
                             <th>Name</th>
-                            <th style={{textAlign: "center"}}>Supper Admin</th>
+                            {/* <th style={{textAlign: "center"}}>Supper Admin</th>
                             <th style={{textAlign: "center"}}>Admin</th>
-                            <th style={{textAlign: "center"}}>Staff</th>
+                            <th style={{textAlign: "center"}}>Staff</th> */}
                             <th style={{textAlign: "center"}}>User</th>
                             <th style={{textAlign: "center"}}>Active</th>
                             <th style={{textAlign: "center"}}>Action</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {users && users.length ? users.map((item, index) => {
+                          {users && users.length ? users.filter((item, index) => {
+                            return item.role.nameRole === 'user';
+                          }).map((item,index)=> {
                             return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
                                 <td>{item.email}</td>
                                 <td>{item.name}</td>
-                                <td style={{textAlign: "center"}}>
-                                {/* <td>{console.log("2",item.role)}</td> */}
-                                  <div class="i-checks">
-                                    {
-                                      item.role && item.role.nameRole === 'superadmin' ? 
-                                      <input type="radio" checked={true} onChange={() => this.handleChangeRadio} class="radio-template" />
-                                      :
-                                      <input type="radio" checked={false} onChange={() => this.handleChangeRadio} class="radio-template" />
-                                    }                                 
-                                  </div>
-                                </td>
-                                <td style={{textAlign: "center"}}>
-                                  <div class="i-checks">
-                                    {
-                                      item.role && item.role.nameRole === 'admin' ? 
-                                      <input type="radio" checked={true} onChange={() => this.handleChangeRadio} class="radio-template" />
-                                      :
-                                      <input type="radio" checked={false} onChange={() => this.handleChangeRadio} class="radio-template" />
-                                    }                                 
-                                  </div>
-                                </td>
-                                <td style={{textAlign: "center"}}>
-                                  <div class="i-checks">
-                                    {
-                                      item.role && item.role.nameRole === 'staff' ? 
-                                      <input type="radio" checked={true} onChange={() => this.handleChangeRadio} class="radio-template" />
-                                      :
-                                      <input type="radio" checked={false} onChange={() => this.handleChangeRadio} class="radio-template" />
-                                    }                                 
-                                  </div>
-                                </td>
                                 <td style={{textAlign: "center"}}>
                                   <div class="i-checks">
                                     {
@@ -212,7 +183,8 @@ class User extends Component {
                                 </td>
                               </tr>
                             )
-                          }) : null}
+                          }) 
+                          :null}
                         </tbody>
                       </table>
                     </div>

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { actFetchOrdersRequest, actDeleteOrderRequest, actFindOrdersRequest } from '../../../redux/actions/order';
+import { actFetchOrdersRequest, actDeleteOrderRequest, actFindOrdersRequest, actFindOrderProductDetail } from '../../../redux/actions/order';
 import Swal from 'sweetalert2'
 import Moment from 'react-moment';
 import withReactContent from 'sweetalert2-react-content'
@@ -11,6 +11,7 @@ import Paginator from 'react-js-paginator';
 import {exportExcel} from '../../../utils/exportExcel'
 import callApi from '../../../utils/apiCaller';
 import { toast } from "react-toastify";
+import Modal from 'react-bootstrap/Modal'
 
 const MySwal = withReactContent(Swal)
 
@@ -25,6 +26,8 @@ class Order extends Component {
       currentPage: 1,
       user: [],
       filterStatus: '...',
+      productDetails: 0,
+      modalShow: false,
     }
   }
 
@@ -159,13 +162,94 @@ class Order extends Component {
   }
 
   async handleChangeStatus(payload){
-    // console.log(payload)
+    console.log(payload)
     token = localStorage.getItem('_auth');
     const res = await callApi('order/changestatus',"POST", payload, token)
     if (res && res.status === 200) {
       return toast.success(res.data);
     }
     this.fetch_reload_data()
+  }
+
+  fetch_product_details_Order(item){
+    // console.log('fetch thanh cong', id)
+    token = localStorage.getItem('_auth');
+    if (item.status === 'Complete'){
+      this.props.find_order_product_detail(token, item.id).then(res => {
+        this.setState({
+          productDetails : res,
+          modalShow : true,
+        })
+      })
+    }
+    
+    // console.log('key',this.state.productDetails)
+  }
+
+  MyVerticallyCenteredModal = (props) => {
+    let temp = Object.keys(this.state.productDetails)
+    let detail;
+    // console.log('key',temp)
+    return (
+      <Modal
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            History Detail
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{overflow: 'auto'}}>
+          
+          {/* {console.log('test',this.state.productDetails)} */}
+          <div >
+            <form >
+              <div className="table-responsive">
+                <table className="table table-hover" style={{ textAlign: "center" }}>
+                  <thead>
+                    <tr>
+                      {/* <th style={{width:'30%'}}>Number</th> */}
+                      <th>Id-product</th>
+                      <th>Name Product</th>
+                      <th>Image</th>
+                      <th>Quantity</th>
+                      <th>ids</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {temp ? temp.map((item,index)=>{
+                      {/* console.log(this.state.productDetails[item]) */}
+                      detail = this.state.productDetails[item]
+                      console.log('detail',detail)
+                      return (
+                        <tr key = {index}>
+                          {/* <td scope="row">{index + 1}</td> */}
+                          <td><span className="text-truncate" >{detail.product.id}</span></td>
+                          <td><span className="text-truncate" >{detail.product.nameProduct}</span></td>
+                          <td>
+                              <div className="fix-cart">
+                                <img src={detail.product.image ? detail.product.image : null} className="fix-img" alt="not found" />
+                              </div>
+                            </td>
+                          <td><span className="text-truncate" >{detail.quantity}</span></td>
+                          <td><span className="text-truncate" >{detail.ids}</span></td>
+                        </tr>)
+                    }): null}
+                  </tbody>
+                </table>
+              </div>
+            </form>
+          </div>
+          
+        </Modal.Body>
+        <Modal.Footer>
+          <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
+        </Modal.Footer>
+      </Modal>
+    );
   }
 
   render() {
@@ -224,7 +308,7 @@ class Order extends Component {
                         className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
                         aria-label="Search" />
                     </div>
-                    <Link to="/orders/add" className="btn btn-primary" > Create</Link>
+                    {/* <Link to="/orders/add" className="btn btn-primary" > Create</Link> */}
                   </form>
                   <div className="card-body">
                     <div className="table-responsive">
@@ -237,7 +321,7 @@ class Order extends Component {
                             <th>Phone</th>
                             <th>Status</th>
                             <th>Paid</th>
-                            <th style={{ textAlign: "center" }}>Payment Online</th>
+                            {/* <th style={{ textAlign: "center" }}>Payment Online</th> */}
                             <th>Item Amount</th>
                             <th>Shipping Total</th>
                             <th>Promo Total </th>
@@ -249,6 +333,10 @@ class Order extends Component {
                           </tr>
                         </thead>
                         <tbody>
+                          <this.MyVerticallyCenteredModal
+                                  show={this.state.modalShow}
+                                  onHide={() => this.setState({modalShow: false})}
+                                />
                           {orders && orders.length ? orders
                           .filter((item,index) => {
                             if(this.state.filterStatus === '...'){
@@ -259,7 +347,8 @@ class Order extends Component {
                           .map((item, index) => {
                             {/* console.log('order',item) */}
                             return (
-                              <tr key={index}>
+                              <tr key={index} onClick={()=>{ this.fetch_product_details_Order(item)}}
+                              >
                                 <th scope="row">{index + 1}</th>
                                 <td>{item.fullName}</td>
                                 {/* <td>{item.address}</td> */}
@@ -296,7 +385,7 @@ class Order extends Component {
                                     <input type="checkbox" onChange={()=>{}} checked={false} className="checkbox-template" />
                                   </div>}
                                 </td>
-                                <td style={{ textAlign: "center" }}>{item.isPaymentOnline ?
+                                {/* <td style={{ textAlign: "center" }}>{item.isPaymentOnline ?
                                   <div className="i-checks">
                                     <input type="checkbox" onChange={()=>{}} checked={true} className="checkbox-template" />
                                   </div>
@@ -304,7 +393,7 @@ class Order extends Component {
                                   <div className="i-checks">
                                     <input type="checkbox" onChange={()=>{}} checked={false} className="checkbox-template" />
                                   </div>}
-                                </td>
+                                </td> */}
                                 <td>{item.itemAmount}</td>
                                 <td>{item.shippingTotal}</td>
                                 <td>{item.promoTotal}</td>
@@ -369,6 +458,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     find_order: (token, searchText) => {
       return dispatch(actFindOrdersRequest(token, searchText))
+    },
+    find_order_product_detail:(token, id) => {
+      return dispatch(actFindOrderProductDetail(token, id))
     }
   }
 }

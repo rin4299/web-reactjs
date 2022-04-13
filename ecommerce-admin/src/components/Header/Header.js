@@ -43,15 +43,11 @@ class Header extends Component {
     // })
     cart = JSON.parse(localStorage.getItem('_cart'))
     console.log(this.state.Countcart)
-    // console.log('header',this.state)
     if (cart.length > 0) {
       count = cart.reduce((sum, item) => {
         return sum += item.quantity
       }, 0)
     }
-    // this.setState({
-    //   ['cart']: count
-    // })
     
     return (
       <header className="header">

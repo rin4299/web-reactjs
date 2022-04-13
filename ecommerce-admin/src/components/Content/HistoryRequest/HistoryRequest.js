@@ -3,7 +3,7 @@ import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { actFetchProductsRequest, actDeleteProductRequest, actFindProductsRequest } from '../../../redux/actions/product';
-import { actHistoryRequest,actUpdateAccept} from '../../../redux/actions/exchange';
+import { actHistoryRequest,actUpdateAccept, actFetchProductDetail} from '../../../redux/actions/exchange';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
@@ -30,6 +30,7 @@ class HistoryRequest extends Component {
       id:0,
       history:'',
       total2:0,
+      productDetails:0,
     }
   }
 
@@ -110,7 +111,21 @@ class HistoryRequest extends Component {
     window.location.reload()
   }
 
+  find_product_detail (str){
+    token = localStorage.getItem('_auth');
+    // console.log('fetch thanh cong', str)
+    this.props.fetchProductDetail(str, token).then(res => {
+      // console.log('result',res)
+      this.setState({
+        productDetails : res
+      })
+    })
+
+  }
+
   MyVerticallyCenteredModal = (props) => {
+    let temp = Object.keys(this.state.productDetails)
+    let detail;
     return (
       <Modal
         {...props}
@@ -124,6 +139,7 @@ class HistoryRequest extends Component {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{overflow: 'auto'}}>
+          {/* {console.log('test his', this.find_product_detail(this.state.history.listofProductDetail))} */}
           <div >
             {this.state.history.id ? 
             <form >
@@ -151,15 +167,34 @@ class HistoryRequest extends Component {
                 <table className="table table-hover" style={{ textAlign: "center" }}>
                   <thead>
                     <tr>
-                      <th style={{width:'30%'}}>Number</th>
+                      {/* <th style={{width:'30%'}}>Number</th> */}
                       <th>Id-product</th>
                       <th>Name Product</th>
                       <th>Image</th>
                       <th>Quantity</th>
+                      <th>ids</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {this.state.history.products && this.state.history.products.length ? this.state.history.products.map((item, index) => {
+                    {temp ? temp.map((item,index)=>{
+                      detail = this.state.productDetails[item]
+                      {/* console.log('detail',detail) */}
+                      return(
+                        <tr key = {index}>
+                          {/* <td scope="row">{index + 1}</td> */}
+                          <td><span className="text-truncate" >{detail.product.id}</span></td>
+                          <td><span className="text-truncate" >{detail.product.nameProduct}</span></td>
+                          <td>
+                              <div className="fix-cart">
+                                <img src={detail.product.image ? detail.product.image : null} className="fix-img" alt="not found" />
+                              </div>
+                            </td>
+                          <td><span className="text-truncate" >{detail.quantity}</span></td>
+                          <td><span className="text-truncate" >{detail.ids}</span></td>
+                        </tr>
+                      )
+                    }) : null}
+                    {/* {this.state.history.products && this.state.history.products.length ? this.state.history.products.map((item, index) => {
                         return (
                           <tr key = {index}>
                             <td scope="row">{index + 1}</td>
@@ -174,7 +209,7 @@ class HistoryRequest extends Component {
                           </tr>
                         )
 
-                    }) : null}
+                    }) : null} */}
                   </tbody>
                 </table>
               </div>
@@ -258,7 +293,9 @@ class HistoryRequest extends Component {
                                 <td><p style={{width:'210px'}}>{item.latestUpdate}</p></td>
                                 <td>
                                   <div>
-                                    <button class="btn btn-info" onClick={() => this.setState({modalShow: true, history : item })}>View More</button>
+                                    <button class="btn btn-info" onClick={() => {this.setState({modalShow: true, history : item })
+                                                                                this.find_product_detail(item.listofProductDetail)}
+                                    }>View More</button>
                                     <this.MyVerticallyCenteredModal
                                         show={this.state.modalShow}
                                         onHide={() => this.setState({modalShow: false})}
@@ -317,6 +354,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     update_Accept: (id, token) => {
       return dispatch(actUpdateAccept(id, token))
+    },
+    fetchProductDetail: (str , token) => {
+      return dispatch(actFetchProductDetail(str, token))
     }
   }
 }

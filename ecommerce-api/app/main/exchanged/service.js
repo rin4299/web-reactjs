@@ -75,8 +75,10 @@ class ExchangeService extends BaseServiceCRUD {
         // console.log("HAHA",temp.length)
         for(var j = 0; j < temp.length; j++){
           // console.log(temp[j][0])
-          var product = await Models.Product.query().findOne({id: parseInt(temp[j][0])})
-          product.quantity = parseInt(temp[j][2]);
+          var infor = temp[j].split("-")
+          var product = await Models.Product.query().findOne({id: parseInt(infor[0])})
+          product.quantity = parseInt(infor[1]);
+          console.log(product, infor[1])
           reValue.push(product);
         }
         recM[i]["products"] = reValue;
@@ -180,7 +182,7 @@ class ExchangeService extends BaseServiceCRUD {
     for(var i = 0; i < temp.length; i++){
       var infor = temp[i].split("-");
       var productQ = await Models.Ownership.query().where('storeName', storeName).findOne({pId: parseInt(infor[0])});
-      if(productQ.quantity > parseInt(infor[1])){
+      if(productQ.quantity >= parseInt(infor[1])){
         await Models.Ownership.query().update({quantity: productQ.quantity - parseInt(infor[1])} ).where('storeName', storeName).where('pId', productQ.pId);
       } else {
         throw Boom.badRequest(`The number of product which has ID = ${productQ.pId} is lower than requested (${parseInt(infor[1])} > ${productQ.quantity})`);

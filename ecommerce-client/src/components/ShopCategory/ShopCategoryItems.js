@@ -34,9 +34,9 @@ class ShopCategoryItems extends Component {
     doneLoading();
   }
 
-  upItem = (quantity) => {
-    if (quantity >= 5) {
-      toast.error('You can only purchase up to 5 products')
+  upItem = (quantity, getProduct) => {
+    if (quantity >= getProduct.numberAvailable) {
+      toast.error('Quantity products exceeds the limit we have')
       return
     }
     this.setState({
@@ -181,11 +181,15 @@ class ShopCategoryItems extends Component {
                                   onChange={this.handleChange}
                                 />
                                 <div onClick={() => this.downItem(quantity)} className="dec qtybutton"><i className="fa fa-angle-down" /></div>
-                                <div onClick={() => this.upItem(quantity)} className="inc qtybutton"><i className="fa fa-angle-up" /></div>
+                                <div onClick={() => this.upItem(quantity,getProduct)} className="inc qtybutton"><i className="fa fa-angle-up" /></div>
                               </div>
                             </div>
                             <button className="add-to-cart" type="submit">Add to cart</button>
                           </form>
+                          <span>
+                            (We have {getProduct.numberAvailable ? getProduct.numberAvailable : 0} products
+                            available)
+                          </span>
                         </div>
                         <div className="product-additional-info pt-25">
                         <li><Link onClick={(id) => this.addItemToFavorite(product.id)} className="links-details" to="#"><i className="fa fa-heart-o" /> Add to wishlist</Link></li>

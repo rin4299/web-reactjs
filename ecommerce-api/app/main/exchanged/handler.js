@@ -149,7 +149,7 @@ const controller = new ExchangeController();
     notes: 'Return list of history',
     tags: ['api', 'v1'],
     handler: controller.initProductDetails.bind(controller),
-    auth: 'jwt',
+    // auth: 'jwt',
     validate: {
 
     }

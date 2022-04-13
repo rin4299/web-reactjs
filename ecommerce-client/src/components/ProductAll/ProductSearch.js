@@ -4,6 +4,15 @@ import { connect } from 'react-redux'
 import { actFetchProductsRequest } from '../../redux/actions/products';
 
 class ProductSearch extends Component {
+
+  handleChangeSelectSort = event => {
+    const value =
+      event.target.type === "checkbox"
+        ? event.target.checked
+        : event.target.value;
+    console.log(value)
+    this.props.fetch_products(value);
+  };
   render() {
     let { products } = this.props;
     return (
@@ -34,7 +43,7 @@ class ProductSearch extends Component {
                   </div>
                 </div>
                 {/* product-select-box start */}
-                <div className="product-select-box">
+                {/* <div className="product-select-box">
                   <div className="product-short">
                     <p>Sort By:</p>
                     <select className="nice-select" onChange={this.handleChangeSelectSort} >
@@ -45,7 +54,7 @@ class ProductSearch extends Component {
                       <option value="-price">Price (High &gt; Low)</option>
                     </select>
                   </div>
-                </div>
+                </div> */}
                 {/* product-select-box end */}
               </div>
               {/* shop-top-bar end */}

@@ -70,6 +70,7 @@ class LeftOptions extends Component {
               <form action="/">
                 <ul>
                   {producers && producers.length ? producers.map((item, index) => {
+                    {/* console.log('item', item) */}
                     return (
                       <li key={index} >
                         <div className="fix-img-div2" onClick={(id) => this.handleProductsProducer(item.id)}>

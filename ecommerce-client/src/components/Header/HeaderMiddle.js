@@ -56,7 +56,7 @@ class HeaderMiddle extends Component {
   }
 
   render() {
-    console.log('state.cart',this.props)
+    // console.log('state.cart',this.props)
 
     const { textSearch, redirectTo } = this.state;
     let count;
@@ -85,7 +85,10 @@ class HeaderMiddle extends Component {
             <div className="col-lg-3">
               <div className="logo pb-sm-30 pb-xs-30">
                 <Link onClick={() => this.loadingPage()} to="/">
-                  {/* <img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fdownloadlogomienphi.com%2Flogo%2Fdownload-logo-vector-dai-hoc-bach-khoa-tp-ho-chi-minh-mien-phi&psig=AOvVaw3IyO7qbC5wKYfYLg5n7Euf&ust=1647510085951000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCOCZ972ryvYCFQAAAAAdAAAAABAI" alt="" /> */}
+                <div className="col-lg-5 col-md-10">
+                    <img className="img-full" src="https://i.ibb.co/KrdbSH2/logoBK.png" alt="" />
+                </div>
+                  {/* <img src="https://i.ibb.co/KrdbSH2/logoBK.png" alt="" /> */}
                 </Link>
               </div>
             </div>

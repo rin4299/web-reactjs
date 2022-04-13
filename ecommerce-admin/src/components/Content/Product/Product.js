@@ -13,6 +13,8 @@ import callApi from '../../../utils/apiCaller';
 import Modal from 'react-bootstrap/Modal'
 import { startLoading, doneLoading } from '../../../utils/loading'
 import { actAddCartRequest, actFetchCartRequest } from '../../../redux/actions/cart';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const MySwal = withReactContent(Swal)
 
@@ -126,10 +128,12 @@ class Product extends Component {
   handleSubmit = (event) => {
     event.preventDefault();
     const { searchText } = this.state;
+    // console.log('test',searchText)
+    searchText === "" ? this.fetch_reload_data() : 
     this.props.find_products(token, searchText).then(res => {
-      // console.log(res)
       this.setState({
-        total: res.results
+        total2: res.results,
+        total : res.results
       })
     })
   }
@@ -144,6 +148,7 @@ class Product extends Component {
     this.props.create_exchange(token, payload).then(res => {
       console.log(res)
     })
+    toast.success('The request is created');
     this.setState({modalShow: false})
   }
 
@@ -260,7 +265,7 @@ class Product extends Component {
                         className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
                         aria-label="Search" />
                     </div>
-                    <Link to='/products/add' className="btn btn-primary" > Create</Link>
+                    {/* <Link to='/products/add' className="btn btn-primary" > Create</Link> */}
                   </form>
                   <div className="card-body">
                     <div className="table-responsive">
@@ -281,21 +286,28 @@ class Product extends Component {
                         </thead>
                         <tbody>
                           {products && products.length ? products.map((item, index) => {
-                            console.log('ownership',item)
+                            {/* console.log('ownership',item) */}
                             return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
-                                <td>{item.ownership[0].nameProduct}</td>
-                                <td><span className="text-truncate" style={{ width: 300 }}>{item.ownership[0].description}</span></td>
-                                <td>{item.ownership[0].price}</td>
-                                <td>{item.quantity}</td>
+                                <td>{item.nameProduct}</td>
+                                <td><span className="text-truncate" style={{ width: 300 }}>{item.description}</span></td>
+                                <td>{item.price}</td>
+                                <td>{item.ownership && item.ownership.length ? 
+                                  item.ownership.map((item2,index)=>{
+                                    if (item2.storeName === this.state.user[0].name){
+                                      return (item2.quantity)
+                                    }                                  
+                                  }) :
+                                  'Error1'
+                                }</td>
                                 {/* <td>{item.properties}</td> */}
                                 <td style={{ textAlign: "center" }}>
                                   <div className="fix-cart">
-                                    <img src={item.ownership && item.ownership[0].image ? item.ownership[0].image : null} className="fix-img" alt="not found" />
+                                    <img src={item && item.image ? item.image : null} className="fix-img" alt="not found" />
                                   </div>
                                 </td>
-                                <td style={{ textAlign: "center" }}>{item.ownership[0].isActive ?
+                                <td style={{ textAlign: "center" }}>{item.isActive ?
                                   <div className="i-checks">
                                     <input type="checkbox" checked={true} className="checkbox-template" />
                                   </div>
@@ -306,12 +318,12 @@ class Product extends Component {
                                 </td>
                                 <td style={{ textAlign: "center" }}>
                                   <div>
-                                    <span title='Edit' className="fix-action"><Link to={`/products/edit/${item.ownership[0].id}`}> <i className="fa fa-edit"></i></Link></span>
-                                    <span title='Delete' onClick={() => this.handleRemove(item.ownership[0].id)} className="fix-action"><Link to="#"> <i className="fa fa-trash" style={{ color: '#ff00008f' }}></i></Link></span>
+                                    <span title='Edit' className="fix-action"><Link to={`/products/edit/${item.id}`}> <i className="fa fa-edit"></i></Link></span>
+                                    <span title='Delete' onClick={() => this.handleRemove(item.id)} className="fix-action"><Link to="#"> <i className="fa fa-trash" style={{ color: '#ff00008f' }}></i></Link></span>
                                   </div>
                                 </td>
                                 <td>
-                                  <button class="btn btn-info" onClick={() => this.setState({modalShow: true, productName : item.ownership[0].nameProduct})}>Request</button>
+                                  <button class="btn btn-info" onClick={() => this.setState({modalShow: true, productName : item.nameProduct})}>Request</button>
                                   <this.MyVerticallyCenteredModal
                                     show={this.state.modalShow}
                                     onHide={() => this.setState({modalShow: false})}
@@ -319,7 +331,7 @@ class Product extends Component {
                                   />
                                 </td>
                                 <td>
-                                  <button className="add-cart active"><Link to="#" onClick={() => this.addItemToCart(item.ownership[0])} >Add</Link></button>
+                                  <button className="add-cart active"><Link to="#" onClick={() => this.addItemToCart(item)} >Add</Link></button>
 
                                   {/* <button>Add</button> */}
                                 </td>

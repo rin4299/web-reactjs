@@ -109,6 +109,7 @@ class OrderService extends BaseServiceCRUD {
       // Blockchain Update
       const lopd = await Models.OrderDetail.query().where("orderId", orderId);
       var buffer = "";
+      console.log(lopd)
       for(var p = 0; p < lopd.length; p++){
         buffer += lopd[p].productId + "-" + lopd[p].quantity + ",";
       }

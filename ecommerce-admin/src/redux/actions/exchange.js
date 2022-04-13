@@ -1,6 +1,6 @@
 import * as Types from '../../constants/ActionType';
 import callApi from '../../utils/apiCaller';
-// import { toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { actShowLoading, actHiddenLoading } from './loading'
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -105,6 +105,7 @@ export const actUpdateAccept = (payload, token) => {
         callApi(`exchange/accept`, 'POST', payload, token)
           .then(res => {
             if (res && res.status === 200) { 
+              console.log(res.data)
               dispatch(actFetchExchangeReq(res.data));
               resolve(res.data);
               setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
@@ -222,5 +223,33 @@ export const actUpdateAccept = (payload, token) => {
     return {
       type: Types.REMOVE_REQUEST,
       id
+    };
+  };
+
+  export const actFetchProductDetail = (str, token) => {
+    return dispatch => {
+      dispatch(actShowLoading());
+      return new Promise((resolve, reject) => {
+        callApi(`getproductdetaillist/${str}`, "GET", null, token)
+          .then(res => {
+            if (res && res.status === 200) {
+              dispatch(actFetchProductDetailRequest(res.data.results));
+              resolve(res.data);
+              setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            reject(err);
+            setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+          });
+      });
+    };
+  };
+  
+  export const actFetchProductDetailRequest = data => {
+    return {
+      type: Types.PRODUCT_DETAILS_LIST,
+      data
     };
   };
