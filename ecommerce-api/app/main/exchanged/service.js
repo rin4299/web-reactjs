@@ -518,16 +518,17 @@ class ExchangeService extends BaseServiceCRUD {
           if(checker){
             console.log(`One Store ${memoryShell[n]['storeName']} is enough with String: ${inputSTRForOneStoreEnough}`);
             flagForOneStoreEnough = false;
-            // let object = {
-            //     fcn: "createExchange",
-            //     peers:["peer0.org1.example.com","peer0.org2.example.com"],
-            //     chaincodeName:"productdetail",
-            //     channelName:"mychannel",
-            //     args:[listofStore[0]['storeName'], memoryShell[n]['storeName], inputSTRForOneStoreEnough.slice(0, -1)]
-            //   }
-            //   console.log(object)
-            //   let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
-            // console.log(res.data);
+            let object = {
+                fcn: "createExchange",
+                peers:["peer0.org1.example.com","peer0.org2.example.com"],
+                chaincodeName:"productdetail",
+                channelName:"mychannel",
+                args:[listofStore[0]['storeName'], memoryShell[n]['storeName'], inputSTRForOneStoreEnough.slice(0, -1)]
+              }
+              console.log(object)
+              let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+            console.log(res.data);
+            break;
           }
         }
         if(flagForOneStoreEnough) {
@@ -578,18 +579,18 @@ class ExchangeService extends BaseServiceCRUD {
 
           console.log("Finally We have a list of candidates like this one: ",candidates);
           let obj = Object.keys(candidates);
-          // for(var m = 0; m < obj.length; m++){
-          //   let object = {
-          //     fcn: "createExchange",
-          //     peers:["peer0.org1.example.com","peer0.org2.example.com"],
-          //     chaincodeName:"productdetail",
-          //     channelName:"mychannel",
-          //     args:[listofStore[0]['storeName'], obj[m], candidates[obj[m]].slice(0, -1)]
-          //   }
-          //   console.log(object)
-          //   let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
-          //   console.log(res.data);
-          // }
+          for(var m = 0; m < obj.length; m++){
+            let object = {
+              fcn: "createExchange",
+              peers:["peer0.org1.example.com","peer0.org2.example.com"],
+              chaincodeName:"productdetail",
+              channelName:"mychannel",
+              args:[listofStore[0]['storeName'], obj[m], candidates[obj[m]].slice(0, -1)]
+            }
+            console.log(object)
+            let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+            console.log(res.data);
+          }
         }
 
         

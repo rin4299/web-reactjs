@@ -136,6 +136,7 @@ class ProductItem extends Component {
               <ul className="add-actions-link">
                 <li className="add-cart active"><Link to="#" onClick={() => this.addItemToCart(product)} >Add to cart</Link></li>
                 <li><Link onClick={(id) => this.getInfoProduct(product.id)} to={`/products/${product.id}`} title="quick view" className="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i className="fa fa-eye" /></Link></li>
+                {/* <li><Link onClick={(id) => this.getInfoProduct(product.id)} to={`/products/${product.id}`} title="quick view" className="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter5"><i className="fa fa-eye" /></Link></li> */}
                 <li><Link onClick={(id) => this.addItemToFavorite(product.id)} className="links-details" to="#" title="favorite" ><i className="fa fa-heart-o" /></Link></li>
               </ul>
             </div>

@@ -98,10 +98,10 @@ class ProductViewDetail extends Component {
     });
   };
 
-  upItem = () => {
+  upItem = (product) => {
     let quantity = this.state.quantity;
-    if (quantity >= 5) {
-      return toast.error("You can only purchase up to 5 products");
+    if (quantity >= product.numberAvailable) {
+      return toast.error("Quantity products exceeds the limit we have");
     }
     this.setState({
       quantity: ++quantity
@@ -298,7 +298,7 @@ class ProductViewDetail extends Component {
                           <div onClick={() => this.downItem()} className="dec qtybutton">
                             <i className="fa fa-angle-down" />
                           </div>
-                          <div onClick={() => this.upItem()} className="inc qtybutton">
+                          <div onClick={() => this.upItem(product)} className="inc qtybutton">
                             <i className="fa fa-angle-up" />
                           </div>
                         </div>
