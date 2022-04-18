@@ -22,7 +22,7 @@ class Order extends Component {
     super(props);
     this.state = {
       searchText: '',
-      total: 0,
+      total: '',
       currentPage: 1,
       user: [],
       filterStatus: '...',
@@ -53,8 +53,9 @@ class Order extends Component {
   fetch_reload_data(){
     token = localStorage.getItem('_auth');
     this.props.fetch_orders(token, null, this.state.user[0].name).then(res => {
+      console.log('result',res.results)
       this.setState({
-        total: res.total
+        total: res.results
       });
     }).catch(err => {
       console.log(err);  
@@ -102,24 +103,34 @@ class Order extends Component {
     });
   }
 
-  handleChange2 = (event) => {
-    const target = event.target;
-    const value = target.value;
-    const name = target.name;
-    console.log(event)
-    // this.setState({
-    //   [name]: value
-    // });
-  }
+  // handleSubmit = (event) => {
+  //   event.preventDefault();
+  //   const { searchText } = this.state;
+  //   this.props.find_order(token, searchText).then(res => {
+  //     this.setState({
+  //       total: res.total
+  //     }) 
+  //   })
+  // }
 
-  handleSubmit = (event) => {
-    event.preventDefault();
-    const { searchText } = this.state;
-    this.props.find_order(token, searchText).then(res => {
+  filter = (event) => {
+    const keyword = event.target.value
+    this.setState({
+      searchText: keyword
+    });
+    if(keyword !== ''){
+      // console.log(this.state.total)
+      const result = this.state.total.filter((item)=> {
+        return item.fullName.toLowerCase().startsWith(keyword.toLowerCase());
+      })
       this.setState({
-        total: res.total
-      }) 
-    })
+        total: result,
+        // total2: result.slice(0,10)
+      })
+    }
+    else{
+      this.fetch_reload_data()
+    }
   }
 
   downloadExcel = () => {
@@ -156,9 +167,6 @@ class Order extends Component {
       )
      
     }
-  }
-  testfunction(){
-    return toast.success('test tahnh cong')
   }
 
   async handleChangeStatus(payload){
@@ -252,7 +260,7 @@ class Order extends Component {
   }
 
   render() {
-    const { orders } = this.props;
+    const  orders = this.state.total;
     const { searchText, total } = this.state;
     return (
       <div className="content-inner">
@@ -279,11 +287,11 @@ class Order extends Component {
                     <button onClick={()=>this.downloadExcel()} style={{ border: 0, background: "white" }}> <i className="fa fa-file-excel-o"
                         style={{fontSize: 18, color: '#1d7044'}}> Excel</i></button>
                   </div>
-                  <form
-                    onSubmit={(event) => this.handleSubmit(event)}
-                    className="form-inline md-form form-sm mt-0" style={{ justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20 }}>
-                    <div>
-                    <select  className="form-control mb-3" name="status" onChange={(event) => {
+                  <div>
+                    
+                    </div>
+                  <div style={{witdh:"30px", justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20, marginLeft:"auto" }}>    
+                  <select  className="form-control mb-3" name="status" onChange={(event) => {
                                                                                                 // this.setState({
                                                                                                 //   filterStatus : event.target.value}
                                                                                                 // )
@@ -296,19 +304,14 @@ class Order extends Component {
                       <option value='Shipping' >Shipping</option>
                       <option value='Complete' >Complete</option>
                       <option value='Canceled' >Cancel</option>
-                    </select>
-                    </div>
-                    <div>
-                      <button style={{ border: 0, background: 'white' }}><i className="fa fa-search" aria-hidden="true"></i></button>
+                    </select>      
                       <input
                         name="searchText"
-                        onChange={this.handleChange}
+                        onChange={this.filter}
                         value={searchText}
                         className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
                         aria-label="Search" />
-                    </div>
-                    {/* <Link to="/orders/add" className="btn btn-primary" > Create</Link> */}
-                  </form>
+                  </div>
                   <div className="card-body">
                     <div className="table-responsive">
                       <table className="table table-hover">
@@ -425,7 +428,7 @@ class Order extends Component {
                   <ul className="pagination">
                   <Paginator
                         pageSize={10}
-                        totalElements={total}
+                        totalElements={total.length}
                         onPageChangeCallback={(e) => {this.pageChange(e)}}
                       />
                   </ul>

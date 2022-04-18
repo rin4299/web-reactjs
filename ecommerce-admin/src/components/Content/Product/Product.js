@@ -124,6 +124,24 @@ class Product extends Component {
       [name]: value
     });
   }
+  filter = (event) => {
+    const keyword = event.target.value
+    this.setState({
+      searchText: keyword
+    });
+    if(keyword !== ''){
+      const result = this.state.total.filter((item)=> {
+        return item.nameProduct.toLowerCase().startsWith(keyword.toLowerCase());
+      })
+      this.setState({
+        total: result,
+        total2: result.slice(0,10)
+      })
+    }
+    else{
+      this.fetch_reload_data()
+    }
+  }
 
   handleSubmit = (event) => {
     event.preventDefault();
@@ -254,19 +272,14 @@ class Product extends Component {
                     <button onClick={()=>this.downloadExcel()} style={{ border: 0, background: "white" }}> <i className="fa fa-file-excel-o"
                         style={{fontSize: 18, color: '#1d7044'}}> Excel</i></button>
                   </div>
-                  <form onSubmit={(event) => this.handleSubmit(event)}
-                    className="form-inline md-form form-sm mt-0" style={{ justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20 }}>
-                    <div>
-                      <button style={{border: 0, background: 'white'}}> <i className="fa fa-search" aria-hidden="true"></i></button>                  
+                  <div style={{witdh:"30px", justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20, marginLeft:"auto" }}>          
                       <input
                         name="searchText"
-                        onChange={this.handleChange}
+                        onChange={this.filter}
                         value={searchText}
                         className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
                         aria-label="Search" />
-                    </div>
-                    {/* <Link to='/products/add' className="btn btn-primary" > Create</Link> */}
-                  </form>
+                  </div>
                   <div className="card-body">
                     <div className="table-responsive">
                       <table className="table table-hover" style={{ textAlign: "center" }}>
