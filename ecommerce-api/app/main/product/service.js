@@ -63,11 +63,29 @@ class ProductService extends BaseServiceCRUD {
   }
 
   async createOne(payload) {
-    return this.model
-      .query()
-      .insert(payload)
-      .returning('*')
-      .eager('categories');
+    //Create new product
+    const newProduct = await this.model
+    .query()
+    .insert(payload)
+    .returning('*')
+    .eager('categories');
+    console.log(newProduct);
+    if(newProduct.id) { 
+      //Get all stores
+      const stores = await Models.Store.query();
+      for(var i =0 ; i < stores.length; i++){
+        var obj = {
+          'storeName': stores[i].storeName,
+          'pId': newProduct.id,
+          'quantity': 0
+        }
+        //Add new Ownership
+        await Models.Ownership.query().insert(obj);
+      }
+    } else {
+      throw Boom('Cannot create the new product!')
+    }
+    return newProduct
   }
 
   async updateOne(id, payload) {

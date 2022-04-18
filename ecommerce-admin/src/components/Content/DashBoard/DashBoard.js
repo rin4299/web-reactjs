@@ -37,8 +37,8 @@ class DashBoard extends Component {
       November1: 0,
       December1: 0,
       labelsPie: [],
-      dataShowPie: []
-      
+      dataShowPie: [],
+      user: []
     }
   }
 

@@ -624,6 +624,8 @@ class ExchangeService extends BaseServiceCRUD {
     })
     return "successful"
   }
+
+
   async loadProductDetailinExchange(str){
     var return_list = {}
     var shell = [];

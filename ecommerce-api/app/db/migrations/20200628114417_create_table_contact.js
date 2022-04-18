@@ -7,6 +7,7 @@ exports.up = function(knex) {
     table.string('email');
     table.string('subject');
     table.string('message');
+    table.string('atStore');
 
     table.timestamp('createdAt');
     table.timestamp('updatedAt');
