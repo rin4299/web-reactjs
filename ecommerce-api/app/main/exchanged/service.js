@@ -505,7 +505,6 @@ class ExchangeService extends BaseServiceCRUD {
         var candidates = {};
         var flagForOneStoreEnough = true;
         var flag2 = true;
-
         for(var n = 1; n < memoryShell.length; n++){
           var checker = true;
           var inputSTRForOneStoreEnough = ""
@@ -532,7 +531,6 @@ class ExchangeService extends BaseServiceCRUD {
             break;
           }
         }
-
         if(flagForOneStoreEnough) {
           for(var n = 0; n < shortageShell.length; n++){
 

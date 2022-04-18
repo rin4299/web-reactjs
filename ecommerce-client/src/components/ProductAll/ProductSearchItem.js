@@ -31,15 +31,15 @@ class ProductSearchItem extends Component {
     token = localStorage.getItem("_auth");
   }
 
-  upItem = quantity => {
-    if (quantity >= 5) {
-      toast.error("You can only purchase up to 5 products");
-      return;
+  upItem = (quantity, getProduct) => {
+    if (quantity >= getProduct.numberAvailable) {
+      toast.error('Quantity products exceeds the limit we have')
+      return
     }
     this.setState({
       quantity: quantity + 1
-    });
-  };
+    })
+  }
   downItem = quantity => {
     if (quantity <= 1) {
       return;
@@ -248,7 +248,7 @@ class ProductSearchItem extends Component {
                                   <i className="fa fa-angle-down" />
                                 </div>
                                 <div
-                                  onClick={() => this.upItem(quantity)}
+                                  onClick={() => this.upItem(quantity,getProduct)}
                                   className="inc qtybutton"
                                 >
                                   <i className="fa fa-angle-up" />
@@ -259,6 +259,10 @@ class ProductSearchItem extends Component {
                               Add to cart
                             </button>
                           </form>
+                          <span>
+                            (We have {getProduct.numberAvailable ? getProduct.numberAvailable : 0} products
+                            available)
+                          </span>
                         </div>
                         <div className="product-additional-info pt-25">
                         <li><Link onClick={(id) => this.addItemToFavorite(product.id)} className="links-details" to="#"><i className="fa fa-heart-o" /> Add to wishlist</Link></li>

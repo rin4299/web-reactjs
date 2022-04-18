@@ -13,5 +13,6 @@ exports.countDashboard = {
   },
   validate: {
     headers: validator.checkToken,
+    // query: validator.validateCount
   }
 };

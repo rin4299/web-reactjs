@@ -17,6 +17,14 @@ class ProducerController extends BaseControllerCRUD {
     }
   };
 
+  async initProducer(request) {
+    try {
+      return await this.service.initProducer();
+    } catch (err) {
+      throw err;
+    }
+  };
+
 }
 
 module.exports = ProducerController;

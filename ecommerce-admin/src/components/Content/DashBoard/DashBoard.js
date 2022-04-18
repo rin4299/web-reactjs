@@ -50,8 +50,7 @@ class DashBoard extends Component {
         console.log("CANNOT FIND ANY USER!")
       }
       const Uname = res.data.results[0].name
-      console.log(Uname)
-      this.props.fetch_dashboard(token, Uname);
+      this.props.fetch_dashboard(token,Uname);
       const category =  callApi('reports/products', 'GET', null, token);
       const income =  callApi('reports/income', 'GET', null, token);
       const contact =  callApi('reports/contacts', 'GET', null, token);
@@ -352,8 +351,8 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetch_dashboard: (token, name) => {
-      dispatch(actFetchDashboardRequest(token, name))
+    fetch_dashboard: (token, Uname) => {
+      dispatch(actFetchDashboardRequest(token, Uname))
     },
     add_token_redux: token => {
       dispatch(actTokenRequest(token));

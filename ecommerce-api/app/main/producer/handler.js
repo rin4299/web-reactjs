@@ -17,6 +17,17 @@ exports.getMany = {
   }
 };
 
+exports.initProducer = {
+  description: 'Get Producer list',
+  notes: 'Return Producer items',
+  tags: ['api', 'v1'],
+  handler: controller.initProducer.bind(controller),
+  auth: false,
+  validate: {
+    
+  }
+};
+
 exports.count = {
   description: 'Count Producer list',
   notes: 'Return a count result of Producer items',

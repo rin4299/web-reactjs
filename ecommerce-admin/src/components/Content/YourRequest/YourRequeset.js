@@ -98,6 +98,7 @@ class YourRequest extends Component {
           'success'
         )
       }
+      this.fetch_reload_data()
       // window.location.reload()
     })
   }

@@ -42,6 +42,11 @@ const Routes = [
     method: 'GET',
     path: '/api/v1/producers/exportExcel',
     config: handler.exportExcel
+  },
+  {
+    method: 'GET',
+    path: '/api/v1/initProducer',
+    config: handler.initProducer
   }
 ];
 
