@@ -12,13 +12,32 @@ class OrderService extends BaseServiceCRUD {
   }
 
   async createOne(payload) {
-    const result = await this.model
-      .query()
-      .insert(payload)
-      .returning('*');
-    if(!result){
+    console.log("PAYLOAD", payload)
+    var keys = Object.keys(payload)
+    for(var z = 0; z < keys.length; z++){
+      if(!payload[keys[z]]){
+        payload[keys[z]] = ""
+      }
+    }
+    console.log(payload)
+    const {fullName, note, phone, shippingTotal, itemAmount, promoTotal, userId, totalAmount} = payload
+    var address = ""
+    var atStore = "StoreA"
+    let object = {
+      fcn: "createOrder",
+      peers:["peer0.org1.example.com","peer0.org2.example.com"],
+      chaincodeName:"productdetail",
+      channelName:"mychannel",
+      args:[fullName, address, note.toString(), phone, atStore, shippingTotal.toString(), itemAmount.toString(), promoTotal.toString(), totalAmount.toString(), userId.toString()]
+    }
+    const res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+    if(!res){
       throw Boom.badRequest('Error')
     }
+    var data = res.data.result.data;
+    var listofP = Buffer.from(JSON.parse(JSON.stringify(data))).toString();
+    var result = JSON.parse(listofP)
+    console.log("CREATE ORDER RESULT: ", result);
     const id = payload.userId;
     const user = await Models.User.query().findById(id);
     if (!user) {
@@ -29,6 +48,7 @@ class OrderService extends BaseServiceCRUD {
   }
 
   async getMany(query) {
+    
     const builder = this.model.queryBuilder(query).eager('orderDetails');
     if (this.getSearchQuery && query.q) {
       this.getSearchQuery(builder, query.q);
@@ -38,35 +58,73 @@ class OrderService extends BaseServiceCRUD {
 
   // load order with owner
   async getManyS(query, user) {
-    const builder = this.model.queryBuilder(query).where('atStore', user).eager('orderDetails');
-    if (this.getSearchQuery && query.q) {
-      this.getSearchQuery(builder, query.q);
+    let res = await Axios.get("http://localhost:4000/channels/mychannel/chaincodes/productdetail?args=['1']&peer=peer0.org1.example.com&fcn=queryAllOrders");
+    var recMessage = res.data
+    var returnArr = []
+    for(var i =0 ; i < recMessage.length; i++){
+      if(recMessage[i].atStore === user && recMessage[i].isActive){
+        var orderDetail = await Models.OrderDetail.query().where('orderId', parseInt(recMessage[i].id));
+        recMessage[i]['shippingTotal'] = parseFloat(recMessage[i]['shippingTotal'])
+        recMessage[i]['itemAmount'] = parseFloat(recMessage[i]['itemAmount'])
+        recMessage[i]['promoTotal'] = parseFloat(recMessage[i]['promoTotal'])
+        recMessage[i]['totalAmount'] = parseFloat(recMessage[i]['totalAmount'])
+        recMessage[i]['orderDetail'] = orderDetail;
+        returnArr.push(recMessage[i]);
+      }
+    }
+    const builder = {
+      "results": returnArr,
+      "quantity": returnArr.length
     }
     return builder;
   }
 
   async getOne(id) {
-    const result = await this.model.query().findById(id).eager('orderDetails');
-    if (!result) {
-      throw Boom.notFound(`${this.modelName} not found`);
+    let object = {
+      fcn: "queryOrder",
+      peers:["peer0.org1.example.com","peer0.org2.example.com"],
+      chaincodeName:"productdetail",
+      channelName:"mychannel",
+      args:[id.toString()]
     }
+    const res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+    if(!res){
+      throw Boom.badRequest('Error')
+    }
+    var data = res.data.result.data;
+    var listofP = Buffer.from(JSON.parse(JSON.stringify(data))).toString();
+    var result = JSON.parse(listofP)
+    console.log("CREATE ORDER RESULT: ", result);
     return result;
   }
 
   async updateOne(id, payload) {
-    const result = await this.model.query().patchAndFetchById(id, payload);
-    if (!result) {
-      throw Boom.notFound(`${this.modelName} not found`);
+    
+    console.log("PAYLOAD", payload)
+    var keys = Object.keys(payload)
+    for(var z = 0; z < keys.length; z++){
+      if(!payload[keys[z]]){
+        payload[keys[z]] = ""
+      }
     }
-    if (payload.status === 'Confirm') {
-       MailUtils.sendEmailConfirmOrderEmail(id)
+    console.log(payload)
+    const {fullName, note, phone, shippingTotal, itemAmount, promoTotal, totalAmount, isPaid, isPaymentOnline} = payload
+    var address = ""
+    let object = {
+      fcn: "changeOrderInfor",
+      peers:["peer0.org1.example.com","peer0.org2.example.com"],
+      chaincodeName:"productdetail",
+      channelName:"mychannel",
+      args:[id.toString(), "Modify" ,fullName, address, note.toString(), phone, shippingTotal.toString(), itemAmount.toString(), promoTotal.toString(), totalAmount.toString(), isPaid.toString(), isPaymentOnline.toString()]
     }
-    if (payload.status === 'Shipping') {
-      MailUtils.sendEmailShippedOrder(id)
+    const res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+    if(!res){
+      throw Boom.badRequest('Error')
     }
-    if (payload.status === 'Complete') {
-      MailUtils.sendEmailCompleteOrderEmail(id);
-    }
+    var data = res.data.result.data;
+    var listofP = Buffer.from(JSON.parse(JSON.stringify(data))).toString();
+    var result = JSON.parse(listofP)
+    console.log("CREATE ORDER RESULT: ", result);
     return result;
   }
 
@@ -74,7 +132,21 @@ class OrderService extends BaseServiceCRUD {
   async changeStatus(payload) {
     const {orderId, status, atStore, fullName} = payload;
     console.log(orderId, status, atStore, fullName)
-    const order = await Models.Order.query().findOne({id: orderId});
+    let objectO = {
+      fcn: "queryOrder",
+      peers:["peer0.org1.example.com","peer0.org2.example.com"],
+      chaincodeName:"productdetail",
+      channelName:"mychannel",
+      args:[orderId.toString()]
+    }
+    const res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", objectO);
+    if(!res){
+      throw Boom.badRequest('Error in BC!')
+    }
+    var data = res.data.result.data;
+    var listofP = Buffer.from(JSON.parse(JSON.stringify(data))).toString();
+    var order = JSON.parse(listofP)
+    console.log("ORDER FROM BC: ", order)
     if(status === "Confirm"){ // CONFIRM
       if(order.status === "Shipping" || order.status === "Complete" || order.status === "Canceled"){
         throw Boom.badRequest(`Can not change the ${order.status} order!`)
@@ -91,7 +163,15 @@ class OrderService extends BaseServiceCRUD {
         console.log("CHANGE", temp, productinOrder[i].productId)
         await Models.Ownership.query().update({quantity: temp} ).where('pId', productinOrder[i].productId).where("storeName", atStore);
       }
-      await Models.Order.query().update({status: status} ).where('id', orderId);
+      // await Models.Order.query().update({status: status} ).where('id', orderId);
+      let object = {
+        fcn: "changeOrderInfor",
+        peers:["peer0.org1.example.com","peer0.org2.example.com"],
+        chaincodeName:"productdetail",
+        channelName:"mychannel",
+        args:[orderId.toString(), "Status", status]
+      }
+      await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
       return `Successfully change the status of Order ${orderId} from ${order.status} to ${status}!`
     } else if (status === "Shipping"){ // SHIPPING
       // 1 đơn chỉ được chuyển qua Shipping khi status đang là Confirm	
@@ -99,7 +179,15 @@ class OrderService extends BaseServiceCRUD {
         throw Boom.badRequest(`Can not change the ${order.status} order!`)
       }
       // 1 đơn chuyển từ Confirm -> Shipping thì ko cập nhật gì thêm trừ Status
-      await Models.Order.query().update({status: status} ).where('id', orderId);
+      // await Models.Order.query().update({status: status} ).where('id', orderId);
+      let object = {
+        fcn: "changeOrderInfor",
+        peers:["peer0.org1.example.com","peer0.org2.example.com"],
+        chaincodeName:"productdetail",
+        channelName:"mychannel",
+        args:[orderId.toString(), "Status", status]
+      }
+      await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
       return `Successfully change the status of Order ${orderId} from ${order.status} to ${status}!`
     } else if (status === "Complete"){ // COMPLETE
       // 1 đơn chỉ được chuyển qua Complete khi status khác Shipping
@@ -137,7 +225,15 @@ class OrderService extends BaseServiceCRUD {
         }
 
       }
-      await Models.Order.query().update({status: status} ).where('id', orderId);
+      // await Models.Order.query().update({status: status} ).where('id', orderId);
+      let objectChangeStatus = {
+        fcn: "changeOrderInfor",
+        peers:["peer0.org1.example.com","peer0.org2.example.com"],
+        chaincodeName:"productdetail",
+        channelName:"mychannel",
+        args:[orderId.toString(), "Status", status]
+      }
+      await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", objectChangeStatus);
       return `Successfully change the status of Order ${orderId} from ${order.status} to ${status}!`
     } else if (status === "Canceled") { // CANCEL
       //1 đơn chuyển sang Canceled thì:
@@ -171,7 +267,15 @@ class OrderService extends BaseServiceCRUD {
           await Models.Product.query().update({numberAvailable: newVal}).where("id", product.id);
         }
       }
-      await Models.Order.query().update({status: status} ).where('id', orderId);
+      // await Models.Order.query().update({status: status} ).where('id', orderId);
+      let object = {
+        fcn: "changeOrderInfor",
+        peers:["peer0.org1.example.com","peer0.org2.example.com"],
+        chaincodeName:"productdetail",
+        channelName:"mychannel",
+        args:[orderId.toString(), "Status", status]
+      }
+      await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
       return `Successfully change the status of Order ${orderId} from ${order.status} to ${status}!`
     } else { // UNCONFIRM
       throw Boom.badRequest("Can not change any current status to Unconfirm!")
@@ -180,13 +284,36 @@ class OrderService extends BaseServiceCRUD {
 
   async deleteOrder(id){
     // Neu la 1 Canceled order thi xoa luon do da tru roi
-    const order = await Models.Order.query().findOne({id:id});
+    // const order = await Models.Order.query().findOne({id:id});
+    let objectO = {
+      fcn: "queryOrder",
+      peers:["peer0.org1.example.com","peer0.org2.example.com"],
+      chaincodeName:"productdetail",
+      channelName:"mychannel",
+      args:[id.toString()]
+    }
+    const res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", objectO);
+    if(!res){
+      throw Boom.badRequest('Error in BC!')
+    }
+    var data = res.data.result.data;
+    var listofP = Buffer.from(JSON.parse(JSON.stringify(data))).toString();
+    var order = JSON.parse(listofP)
+    console.log("ORDER FROM BC: ", order)
     console.log('order', order, id)
     if(order.status === "Complete"){
       throw Boom.badRequest("Can not delete a Complete Order!");
     }
     if(order.status === "Canceled"){
-      await Models.Order.query().delete().where('id', id);
+      // await Models.Order.query().delete().where('id', id);
+      let object = {
+        fcn: "changeOrderInfor",
+        peers:["peer0.org1.example.com","peer0.org2.example.com"],
+        chaincodeName:"productdetail",
+        channelName:"mychannel",
+        args:[id.toString(), "Delete"]
+      }
+      await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
       await Models.OrderDetail.query().delete().where("orderId", id);
       return `Delete Successfully Order of ${order.fullName}!`;
     }
@@ -209,7 +336,14 @@ class OrderService extends BaseServiceCRUD {
       newVal = product.numberAvailable + orderDetails[i].quantity;
       await Models.Product.query().update({numberAvailable: newVal}).where("id", product.id);
     }
-    await Models.Order.query().delete().where('id', id);
+    let object = {
+      fcn: "changeOrderInfor",
+      peers:["peer0.org1.example.com","peer0.org2.example.com"],
+      chaincodeName:"productdetail",
+      channelName:"mychannel",
+      args:[id.toString(), "Delete"]
+    }
+    await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
     await Models.OrderDetail.query().delete().where('orderId', id);
     return `Delete Successfully Order of ${order.fullName}!`;
 
@@ -237,6 +371,50 @@ class OrderService extends BaseServiceCRUD {
         }
     }
     return return_list;
+  }
+
+  async LoadOrderInformation(id){
+    let req = `http://localhost:4000/channels/mychannel/chaincodes/productdetail?args=`
+    req = req + '["' + id.toString() + '"]' + `&peer=peer0.org1.example.com&fcn=getHistoryForOrder`;
+    let resp = await Axios.get(req);
+    let res = resp['data']
+    var returnArray = []
+    var unConfirm = []
+    var confirm = []
+    var shipping = []
+    var complete = []
+    
+    console.log("A: ", res[0]['Value'])
+    var resL = res.length
+    for(var i = 0; i < resL; i++){
+      res[i]['Value']['createdAt'] = new Date(parseInt(res[i]['Value']['createdAt'].split(" ")[0].slice(8)) * 1000)
+      res[i]['Value']['updatedAt'] = new Date(parseInt(res[i]['Value']['updatedAt'].split(" ")[0].slice(8)) * 1000)
+      if(res[i]['Value'].status === "Unconfirm"){
+        unConfirm.push(res[i]['Value'])
+      } else if (res[i]['Value'].status === "Confirm"){
+        confirm.push(res[i]['Value'])
+      } else if (res[i]['Value'].status === "Shipping"){
+        shipping.push(res[i]['Value'])
+      } else if (res[i]['Value'].status === "Complete"){
+        complete.push(res[i]['Value'])
+      }
+    }
+    if(unConfirm.length > 0){
+      returnArray.push(unConfirm[0])
+    }
+    if(confirm.length > 0){
+      returnArray.push(confirm[0])
+    }
+    if(shipping.length > 0){
+      returnArray.push(shipping[0])
+    }
+    if(complete.length > 0){
+      returnArray.push(complete[0])
+    }
+    console.log("RES:" , res)
+    return returnArray;
+    
+
   }
 
   getSearchQuery(builder, q) {

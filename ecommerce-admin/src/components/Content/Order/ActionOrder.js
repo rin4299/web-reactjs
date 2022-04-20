@@ -121,9 +121,8 @@ class ActionOrder extends Component {
     const newNote = note === '' ? null : note;
     const newItemAmount = parseFloat(itemAmount);
     const newShippingTotal = parseFloat(shippingTotal);
-    const newPromoTotal = parseFloat(promoTotal);
+    const newPromoTotal = promoTotal ? parseFloat(promoTotal) : 0;
     const newTotalAmount = newItemAmount + newShippingTotal - newPromoTotal;
-
 
     if (!id) {
       const newOrder = {

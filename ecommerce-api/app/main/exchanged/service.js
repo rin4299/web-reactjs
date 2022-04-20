@@ -432,6 +432,9 @@ class ExchangeService extends BaseServiceCRUD {
       }
       listofStore.sort((a,b) => (a.distance > b.distance) ? 1 : (b.distance > a.distance) ? -1 : 0);
       console.log(listofStore)
+
+
+      ///////////////////////////////////////////////////////////////////
       const arrPQ = []
       var proQ  = lop.split(",");
       for(var i = 0; i < proQ.length; i++){
@@ -440,22 +443,6 @@ class ExchangeService extends BaseServiceCRUD {
       }
       var flag1 = true
       var memoryShell = [];
-      
-      // console.log("ARRPQ", arrPQ)
-
-      // var firstStore = await Models.Ownership.query().where('storeName', listofStore[0]['storeName']);
-      // for(var p = 0; p < arrPQ.length; p++){
-      //   for(var q = 0; q < productInStore.length; q++){
-      //     if(arrPQ[p]['pId'] === productInStore[q].pId){
-      //       productMatch.push({'pId': arrPQ[p]['pId'], 'currentQ': productInStore[q].quantity}); //Luu thong tin cac product matching cua moi store
-      //       if(arrPQ[p]['quantity'] > productInStore[q].quantity){ //quantity yeu cau > quantity co thi store do ko dap ung duoc
-      //         flag1 = false;
-      //         shortageShell.push({'pId': arrPQ[p]['pId'], 'lostQ': arrPQ[p]['quantity'] - productInStore[q].quantity})
-      //         console.log("3333333333333", shortageShell)
-      //       } 
-      //     }
-      //   }
-      // }
       var productMatch = {};
       var shortageShell = [];
       for(var j = 0;j < listofStore.length; j++){
@@ -592,32 +579,6 @@ class ExchangeService extends BaseServiceCRUD {
             console.log(res.data);
           }
         }
-
-        
-        
-
-        // candidates[memoryShell[z]['storeName']] = "";
-         
-        //     for(var o = 0; o < memoryShell[z]['products'].length; o++){
-        //       if(shortageShell[memoryShell[z]['products'][o]['pId']] !== undefined && shortageShell[memoryShell[z]['products'][o]['pId']] > 0 && shortageShell[memoryShell[z]['products'][o]['pId']] <= memoryShell[z]['products'][o]['currentQ']){
-        //         candidates[memoryShell[z]['storeName']] += memoryShell[z]['products'][o]['pId'].toString() + "-" + shortageShell[memoryShell[z]['products'][o]['pId']].toString() + ",";
-        //         shortageShell[memoryShell[z]['products'][o]['pId']] = shortageShell[memoryShell[z]['products'][o]['pId']] - memoryShell[z]['products'][o]['currentQ'];
-        //         flag2 = false;
-        //       }
-        //     }
-  
-        //     // if(flag2){
-        //     //   for(var o = 0; o < memoryShell[z]['products'].length; o++){
-        //     //     if(shortageShell[memoryShell[z]['products'][o]['pId']] !== undefined){
-        //     //       shortageShell[memoryShell[z]['products'][o]['pId']] = shortageShell[memoryShell[z]['products'][o]['pId']]  - memoryShell[z]['products'][o]['currentQ']
-        //     //       candidates[memoryShell[z]['storeName']] += memoryShell[z]['products'][o]['pId'].toString() + "-" + memoryShell[z]['products'][o]['currentQ'].toString() + ",";
-        //     //     }
-        //     //   }
-        //     // } else{
-        //     //   flag2 = true;
-        //     // }
-
-
         
       }
       

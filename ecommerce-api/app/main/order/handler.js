@@ -74,7 +74,6 @@ exports.updateOne = {
   handler: controller.updateOne.bind(controller),
   auth: {
     strategy: 'jwt',
-    scope: ['admin', 'superadmin', 'staff']
   },
   validate: {
     headers: validator.checkToken,
@@ -137,6 +136,17 @@ exports.loadProductDetailinOrder = {
   notes: 'Return',
   tags: ['api', 'v1'],
   handler: controller.loadProductDetailinOrder.bind(controller),
+  auth: 'jwt',
+  validate: {
+    
+  }
+};
+
+exports.LoadOrderInformation = {
+  description: 'change status of a Order',
+  notes: 'Return',
+  tags: ['api', 'v1'],
+  handler: controller.LoadOrderInformation.bind(controller),
   auth: 'jwt',
   validate: {
     

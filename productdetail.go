@@ -29,6 +29,28 @@ type ProductDetail struct {
 	LatestUpdate string `json:"latestUpdate"`
 } 
 
+
+type Order struct {
+	Id string `json:"id"`
+	FullName string `json:"fullName"`
+	Address string `json:"address"`
+	Note string `json:"note"`
+	Phone string `json:"phone"`
+	Status string `json:"status"`
+	AtStore string `json:"atStore"`
+	PaypalCode string `json:"paypalCode"`
+	IsPaymentOnline bool `json:"isPaymentOnline"`
+	IsPaid bool `json:"isPaid"`
+	ShippingTotal string `json:"shippingTotal"`
+	ItemAmount string `json:"itemAmount"`
+	PromoTotal string `json:"promoTotal"`
+	TotalAmount string `json:"totalAmount"`
+	UserId string `json:"userId"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+	IsActive bool `json:"isActive"`
+}
+
 type Exchange struct {
 	Id string `json:"id"`
 	ReqUserName string `json:"reqUserName"`
@@ -81,6 +103,16 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 		return s.queryAllExchanges(APIstub)
 	case "changeExchangeInfor":
 		return s.changeExchangeInfor(APIstub, args)
+	case "createOrder":
+		return s.createOrder(APIstub, args)
+	case "queryOrder":
+		return s.queryOrder(APIstub, args)
+	case "queryAllOrders":
+		return s.queryAllOrders(APIstub)
+	case "changeOrderInfor":
+		return s.changeOrderInfor(APIstub, args)
+	case "getHistoryForOrder":
+		return s.getHistoryForOrder(APIstub, args)
 	default:
 		return shim.Error("Invalid Smart Contract function name.")
 	}
@@ -121,6 +153,17 @@ func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Respo
 		exchangeAsBytes, _ := json.Marshal(exchanges[j])
 		APIstub.PutState("Exchange-" + exchanges[j].Id, exchangeAsBytes)
 		j = j + 1
+	}
+
+	orders := []Order{
+		Order{Id: "0", FullName: "", Address:"" , Note: "", Phone:"", Status: "", AtStore:"", PaypalCode:"", IsPaymentOnline: false, IsPaid: false, ShippingTotal:"", ItemAmount:"", PromoTotal:"", TotalAmount:"",UserId:"", CreatedAt:"",UpdatedAt:"", IsActive: false},
+	}
+
+	k := 0 
+	for j < len(orders) {
+		orderAsBytes, _ := json.Marshal(orders[j])
+		APIstub.PutState("Order-" + orders[j].Id, orderAsBytes)
+		k = k + 1
 	}
 
 	return shim.Success(nil)
@@ -540,7 +583,7 @@ func (s *SmartContract) createExchange(APIstub shim.ChaincodeStubInterface, args
 
 func (s *SmartContract) queryAllExchanges(APIstub shim.ChaincodeStubInterface) sc.Response {
 
-	resultsIterator, err := APIstub.GetStateByRange("Exchange-1", "Exchange-99")
+	resultsIterator, err := APIstub.GetStateByRange("Exchange-1", "Exchange-999")
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -597,6 +640,168 @@ func (s *SmartContract) changeExchangeInfor(APIstub shim.ChaincodeStubInterface,
 	
 	// fmt.Println(t)
 	return shim.Success(exchangeAsBytes)
+}
+
+
+// ====================For Order====================
+
+func (s *SmartContract) createOrder(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+
+	id := strconv.Itoa(getLast(APIstub,"Order-") + 1)
+	t, _ := APIstub.GetTxTimestamp()
+	subT := t.String()
+	var order = Order{ Id: id, FullName: args[0], Address: args[1] , Note: args[2], Phone:args[3], Status: "Unconfirm", AtStore: args[4], PaypalCode:"", IsPaymentOnline: false, IsPaid: false, ShippingTotal: args[5], ItemAmount: args[6], PromoTotal: args[7], TotalAmount: args[8], UserId: args[9], CreatedAt: subT, UpdatedAt:subT, IsActive: true }
+
+	orderAsBytes, _ := json.Marshal(order)
+	APIstub.PutState("Order-" + order.Id, orderAsBytes)
+
+	return shim.Success(orderAsBytes)
+}
+
+func (s *SmartContract) queryOrder(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+
+	orderAsBytes, _ := APIstub.GetState("Order-" + args[0])
+	return shim.Success(orderAsBytes)
+}
+
+func (s *SmartContract) queryAllOrders(APIstub shim.ChaincodeStubInterface) sc.Response {
+
+	resultsIterator, err := APIstub.GetStateByRange("Order-1", "Order-999")
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	defer resultsIterator.Close()
+
+	var result Order
+	// buffer is a JSON array containing QueryResults
+	var buffer bytes.Buffer
+	buffer.WriteString("[")
+
+	bArrayMemberAlreadyWritten := false
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+		json.Unmarshal(queryResponse.Value, &result)
+		if result.IsActive {
+			// Add a comma before array members, suppress it for the first array member
+			if bArrayMemberAlreadyWritten == true {
+				buffer.WriteString(",")
+			}
+			// Record is a JSON object, so we write as-is
+			buffer.WriteString(string(queryResponse.Value))
+			bArrayMemberAlreadyWritten = true
+		}
+		
+	}
+	buffer.WriteString("]")
+
+	fmt.Printf("- queryAllOrder:\n%s\n", buffer.String())
+
+	return shim.Success(buffer.Bytes())
+}
+
+func (s *SmartContract) changeOrderInfor(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+
+	// if len(args) > 3 {
+		
+	// } else {
+
+	// }
+	t, _ := APIstub.GetTxTimestamp()
+	orderAsBytes, _ := APIstub.GetState("Order-" + args[0])
+	order := Order{}
+
+	json.Unmarshal(orderAsBytes, &order)
+
+	if args[1] == "Status"{
+		order.Status = args[2]
+		order.UpdatedAt = t.String()
+	} else if args[1] == "Delete" {
+		order.IsActive = false
+		order.UpdatedAt = t.String()
+	} else if args[1] == "Modify"{
+		order.FullName = args[2]
+		order.Address = args[3]
+		order.Note = args[4]
+		order.Phone = args[5]
+		order.ShippingTotal = args[6]
+		order.ItemAmount = args[7]
+		order.PromoTotal = args[8]
+		order.TotalAmount = args[9]
+		isPaid, _ := strconv.ParseBool(args[10])
+		order.IsPaid = isPaid
+		isPaymentOnline, _ := strconv.ParseBool(args[11])
+		order.IsPaymentOnline = isPaymentOnline
+	} else {
+		return shim.Error("args[2] is wrong!")
+	}
+	
+	orderAsBytes, _ = json.Marshal(order)
+	APIstub.PutState("Order-" + order.Id, orderAsBytes)
+	
+	// fmt.Println(t)
+	return shim.Success(orderAsBytes)
+}
+
+func (t *SmartContract) getHistoryForOrder(stub shim.ChaincodeStubInterface, args []string) sc.Response {
+
+	orderId := "Order-" + args[0]
+
+	resultsIterator, err := stub.GetHistoryForKey(orderId)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	defer resultsIterator.Close()
+
+	// buffer is a JSON array containing historic values for the marble
+	var buffer bytes.Buffer
+	buffer.WriteString("[")
+
+	bArrayMemberAlreadyWritten := false
+	for resultsIterator.HasNext() {
+		response, err := resultsIterator.Next()
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+		// Add a comma before array members, suppress it for the first array member
+		if bArrayMemberAlreadyWritten == true {
+			buffer.WriteString(",")
+		}
+		buffer.WriteString("{\"TxId\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(response.TxId)
+		buffer.WriteString("\"")
+
+		buffer.WriteString(", \"Value\":")
+		// if it was a delete operation on given key, then we need to set the
+		//corresponding value null. Else, we will write the response.Value
+		//as-is (as the Value itself a JSON marble)
+		if response.IsDelete {
+			buffer.WriteString("null")
+		} else {
+			buffer.WriteString(string(response.Value))
+		}
+
+		buffer.WriteString(", \"Timestamp\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(time.Unix(response.Timestamp.Seconds, int64(response.Timestamp.Nanos)).String())
+		buffer.WriteString("\"")
+
+		buffer.WriteString(", \"IsDelete\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(strconv.FormatBool(response.IsDelete))
+		buffer.WriteString("\"")
+
+		buffer.WriteString("}")
+		bArrayMemberAlreadyWritten = true
+	}
+	buffer.WriteString("]")
+
+	fmt.Printf("- getHistoryForOrder returning:\n%s\n", buffer.String())
+
+	return shim.Success(buffer.Bytes())
 }
 
 
