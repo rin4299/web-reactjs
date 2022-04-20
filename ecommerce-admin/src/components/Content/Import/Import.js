@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
-import './style.css'
+// import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { actFetchProductsRequest, actDeleteProductRequest, actFindProductsRequest } from '../../../redux/actions/product';
-import { actHistoryRequest,actUpdateAccept, actFetchProductDetail} from '../../../redux/actions/exchange';
+import { actFetchProductDetail} from '../../../redux/actions/exchange'
+import {actFetchImportRequest} from '../../../redux/actions/import'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
@@ -16,7 +16,7 @@ const MySwal = withReactContent(Swal)
 let token;
 
 
-class HistoryRequest extends Component {
+class Import extends Component {
 
   constructor(props) {
     super(props);
@@ -29,11 +29,12 @@ class HistoryRequest extends Component {
       id:0,
       history:'',
       total2:0,
-      productDetails:0,
+      ImportDetail:'',
       // startDate: new Date(),
       // endDate : '',
       dateRange: [null,null],
       isOldest: true,
+      modalShow : false,
     }
   }
 
@@ -59,14 +60,21 @@ class HistoryRequest extends Component {
   }
 
   fetch_reload_data(){
+    let storeName
     token = localStorage.getItem('_auth');
-    // console.log("id", this.state.user[0].id);
-    this.props.fetch_history_request(this.state.user[0].id, token).then(res => {
+    if( this.state.user[0].name){
+        storeName = this.state.user[0].name
+    }
+    
+    console.log("id", storeName);
+    // this.props.fetchImport(this.state.user[0].name,token)
+    this.props.fetchImport(storeName,token).then(res => {
       this.setState({
         total: res,
-        total2: res.slice(0,10).sort((a,b)=> {
-          return new Date(a.latestUpdate) < new Date(b.latestUpdate)
-        })
+        total2: res.slice(0,10)
+        // .sort((a,b)=> {
+        //   return new Date(a.latestUpdate) < new Date(b.latestUpdate)
+        // })
       })
     }).catch(err => {
       console.log(err)
@@ -76,7 +84,6 @@ class HistoryRequest extends Component {
   pageChange(content){
     const limit = 10;
     const offset = limit * (content - 1);
-    // this.props.fetch_products(token, offset);
     this.setState({
       currentPage: content,
       total2: this.state.total.slice(offset, offset + 10),
@@ -92,24 +99,23 @@ class HistoryRequest extends Component {
     this.setState({
       [name]: value
     });
-    console.log('test',this.state.total)
-    if(value !== ''){
-      const result = this.state.total.filter((item)=> {
-        return item.id.startsWith(value);
-      }).sort((a,b)=> {
-        return new Date(a.latestUpdate) < new Date(b.latestUpdate)
-      })
-      // .filter((item)=>{
-        
-      // })
-      this.setState({
-        total: result,
-        total2: result.slice(0,10)
-      })
-    }
-    else{
-      this.fetch_reload_data()
-    }
+    console.log('test',this.state.total,value)
+    // if(value !== ''){
+    //   const result = this.state.total.filter((item)=> {
+    //     return item.id.toLowerCase().startsWith(value.toLowerCase());
+    //   })
+    // //   .sort((a,b)=> {
+    // //     return new Date(a.createdAt) < new Date(b.createdAt)
+    // //   })
+
+    //   this.setState({
+    //     total: result,
+    //     total2: result.slice(0,10)
+    //   })
+    // }
+    // else{
+    //   this.fetch_reload_data()
+    // }
   }
 
   handleRemove = (id) => {
@@ -123,7 +129,7 @@ class HistoryRequest extends Component {
       confirmButtonText: 'Yes'
     }).then(async (result) => {
       if (result.value) {
-        await this.props.delete_product(id, token);
+        // await this.props.delete_product(id, token);
         Swal.fire(
           'Deleted!',
           'Your file has been deleted.',
@@ -133,24 +139,25 @@ class HistoryRequest extends Component {
     })
   }
 
-  updateAccept = (id) => {
+  async find_import_detail (id){
     token = localStorage.getItem('_auth');
-    this.props.update_Accept(id,token).then(res => {
-      console.log(res)
-    })
-    this.setState({modalShow: false})
-    window.location.reload()
-  }
-
-  find_product_detail (str){
-    token = localStorage.getItem('_auth');
-    // console.log('fetch thanh cong', str)
-    this.props.fetchProductDetail(str, token).then(res => {
-      // console.log('result',res)
-      this.setState({
-        productDetails : res
-      })
-    })
+    console.log('find thanh cong', id)
+    if (token) {
+        const res = await callApi(`import/getInformation?id=${id}`, "GET", null, token);
+        if (res && res.status === 200) {
+            console.log(res.data)
+          this.setState({
+            ImportDetail: res.data,
+            modalShow : true,
+          })
+          // console.log("user",this.state.user)
+        }
+      } else {
+        this.setState({
+          redirect: true
+        })    
+      }
+    
 
   }
 
@@ -167,10 +174,10 @@ class HistoryRequest extends Component {
   }
 
   MyVerticallyCenteredModal = (props) => {
-    let temp = Object.keys(this.state.productDetails)
+    // let temp = Object.keys(this.state.ImportDetail)
     // let date = new Date(props.history.times)
     // date = date.toDateString()
-    let detail;
+    let detail = this.state.ImportDetail 
     return (
       <Modal
         {...props}
@@ -180,16 +187,16 @@ class HistoryRequest extends Component {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            History Detail
+            Import Detail
           </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{overflow: 'auto'}}>
-          {/* {console.log('test his', this.find_product_detail(this.state.history.listofProductDetail))} */}
+          {/* {console.log('test importDEtail', this.state.ImportDetail)} */}
           
           <div >
-            {this.state.history.id ? 
+            {this.state.ImportDetail ? 
             <form >
-              <div className="form-group">
+              {/* <div className="form-group">
                 <label htmlFor="from">Id-request </label>
                 <input className="form-control" disabled defaultValue={this.state.history.id}/>  
               </div>
@@ -210,12 +217,11 @@ class HistoryRequest extends Component {
                 <input className="form-control" disabled defaultValue={
                     props.history.times
                   }/>  
-              </div>
+              </div> */}
               <div className="table-responsive">
                 <table className="table table-hover" style={{ textAlign: "center" }}>
                   <thead>
                     <tr>
-                      {/* <th style={{width:'30%'}}>Number</th> */}
                       <th>Id-product</th>
                       <th>Name Product</th>
                       <th>Image</th>
@@ -224,21 +230,20 @@ class HistoryRequest extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {temp ? temp.map((item,index)=>{
-                      detail = this.state.productDetails[item]
-                      {/* console.log('detail',detail) */}
+                    
+                    {detail ? detail.map((item,index)=>{
+                      {/* detail = this.state.ImportDetail[item] */}
                       return(
                         <tr key = {index}>
-                          {/* <td scope="row">{index + 1}</td> */}
-                          <td><span className="text-truncate" >{detail.product.id}</span></td>
-                          <td><span className="text-truncate" >{detail.product.nameProduct}</span></td>
+                          <td><span className="text-truncate" >{item.pId}</span></td>
+                          <td><span  >{item.product.nameProduct}</span></td>
                           <td>
                               <div className="fix-cart">
-                                <img src={detail.product.image ? detail.product.image : null} className="fix-img" alt="not found" />
+                                <img src={item.product.image ? item.product.image : null} className="fix-img" alt="not found" />
                               </div>
                             </td>
-                          <td><span className="text-truncate" >{detail.quantity}</span></td>
-                          <td><span className="text-truncate" >{detail.ids}</span></td>
+                          <td><span className="text-truncate" >{item.quantity}</span></td>
+                          <td><span className="text-truncate" >{item.ids}</span></td>
                         </tr>
                       )
                     }) : null}
@@ -270,19 +275,19 @@ class HistoryRequest extends Component {
         {/* Page Header*/}
         <header className="page-header">
           <div className="container-fluid">
-            <h2 className="no-margin-bottom">History Requests</h2>
-            <div class="btn-group">
+            <h2 className="no-margin-bottom">Import</h2>
+            {/* <div class="btn-group">
                 <button class="button"><Link to="/requests"> <i style ={{}}/>Requests</Link></button>
                 <button class="button"><Link to="/yourrequests"> <i style ={{}}/>Your Requests</Link></button>
                 <button class="button"><Link to="/historyrequest"> <i style ={{}}/>History</Link></button>
-            </div>
+            </div> */}
           </div>
         </header>
         {/* Breadcrumb*/}
         <div className="breadcrumb-holder container-fluid">
           <ul className="breadcrumb">
             <li className="breadcrumb-item"><Link to="/">Home</Link></li>
-            <li className="breadcrumb-item active">History Requests</li>
+            <li className="breadcrumb-item active">Import</li>
           </ul>
         </div>
         <section className="tables pt-3">
@@ -291,28 +296,24 @@ class HistoryRequest extends Component {
               <div className="col-lg-12">
                 <div className="card">
                   <div className="card-header d-flex align-items-center">
-                    <h3 className="h4">History Requests</h3>
+                    <h3 className="h4">Import Table</h3>
                   </div>
                     
                     <div style={{justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20, marginLeft:"auto" }} class="btn-group">
-                    <DatePicker
+                    {/* <DatePicker
                       style={{width:''}}
                       // selected={startDate}
                       selectsRange={true}
                       startDate={startDate}
                       endDate={endDate}
                       onChange={(date)=> {
-                        // const [start, end] = dates;
                         console.log(date)
-                        // this.setState({
-                        //   dateRange: date,
-                        // })
                       }}
 
                       dateFormat='dd/MM/yyyy'
                       isClearable={true}
                       placeholderText='Date ...'
-                    />
+                    /> */}
                     <select name="sorting" onChange={(event) => {this.setState({ total2 : total2.reverse()})}} >
                       <option value='Newest'>Newest</option>
                       <option value='Oldest'>Oldest</option>
@@ -323,6 +324,8 @@ class HistoryRequest extends Component {
                         value={searchText}
                         className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
                         aria-label="Search" />
+                        <Link to='import/add' className='btn btn-primary' style={{marginLeft:'20px'}}>Create</Link>
+                        {/* <button onClick={this.myFunction()}>add row</button> */}
                     </div>
                   <div className="card-body">
                     <div className="table-responsive">
@@ -330,31 +333,31 @@ class HistoryRequest extends Component {
                         <thead>
                           <tr>
                             <th>Number</th>
-                            <th>Id-request</th>
-                            <th>From</th>
-                            <th>To</th>
-                            <th>Type</th>
-                            <th>Time</th>
-                            <th></th>
+                            <th>Id</th>
+                            <th>Storename</th>
+                            <th>CreatedBy</th>
+                            <th>List_of_products</th>
+                            <th>CreatedAt</th>
+                            <th>UpdateAt</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {total2 && total2.length ? total2.map((item, index) => {
-                            var time = new Date(item.latestUpdate).toDateString() ;
-                            {/* console.log('time',time) */}
+                            <this.MyVerticallyCenteredModal
+                                show={this.state.modalShow}
+                                onHide={() => this.setState({modalShow: false})}
+                            />
+                            {total2 && total2.length ? total2.map((item, index) => {
+                            {/* console.log('item',item) */}
                               return (
-                              <tr key={index}>
+                              <tr key={index} id="myrow" onClick={()=>{ this.find_import_detail(item.id)}}>
                                 <th scope="row">{index + 1}</th>
                                 <td><span className="text-truncate" >{item.id}</span></td>
-                                <td><span className="text-truncate" >{item.reqUserName}</span></td>
-                                <td><span className="text-truncate" >{item.recUserName}</span></td>
-                                <td style={{ textAlign: "center" }}> {item.reqUserName == this.state.user[0].name ?
-                                <span>REQUEST</span> 
-                                :
-                                <span>RECEIVE</span> 
-                                }
-                                </td>
-                                <td ><span style={{width:"auto"}}>{time}</span></td>
+                                <td><span className="text-truncate" >{item.storeName}</span></td>
+                                <td><span className="text-truncate" >{item.createdBy}</span></td>
+                                <td><span className="text-truncate" ><p>{item.listOfProductDetails}</p></span></td>
+                                <td><span className="text-truncate" >{new Date(item.createdAt).toDateString()}</span></td>
+                                <td><span className="text-truncate" >{new Date(item.updatedAt).toDateString()}</span></td>
+                                {/* <td ><span style={{width:"auto"}}>{time}</span></td>
                                 <td>
                                   <div>
                                     <button class="btn btn-info" onClick={() => {this.setState({modalShow: true, history : item })
@@ -366,7 +369,7 @@ class HistoryRequest extends Component {
                                         history ={{times : time}}
                                       />
                                   </div>
-                                </td>
+                                </td> */}
                               </tr>
                               )
                             {/* }                            */}
@@ -404,27 +407,12 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetch_products: (token, offset) => {
-       return dispatch(actFetchProductsRequest(token, offset))
+    fetchImport: (storename, token) => {
+        return dispatch(actFetchImportRequest(storename, token))
     },
-    delete_product: (id, token) => {
-      dispatch(actDeleteProductRequest(id, token))
-    },
-    find_products: (token, searchText) => {
-      return dispatch(actFindProductsRequest(token, searchText))
-    },
-    fetch_history_request: (id, token) => {
-      return dispatch(actHistoryRequest(id, token))
-    },
-    update_Accept: (id, token) => {
-      return dispatch(actUpdateAccept(id, token))
-    },
-    fetchProductDetail: (str , token) => {
-      return dispatch(actFetchProductDetail(str, token))
-    }
   }
 }
 
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(HistoryRequest)
+export default connect(mapStateToProps, mapDispatchToProps)(Import)

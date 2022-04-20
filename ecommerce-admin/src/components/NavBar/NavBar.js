@@ -52,7 +52,8 @@ class NavBar extends Component {
             <li><Link to="/categories"> <i className="icon-interface-windows" />Categories</Link></li>
             <li><Link to="/products"> <i className="icon icon-website" />Products</Link></li>
             <li><Link to="/producers"> <i className="icon icon-list-1" />Producer</Link></li>
-            {/* <li><Link to="/discounts"> <i className="icon icon-check" />Discount</Link></li> */}
+            <li><Link to="/import"> <i className="icon icon-check" />Import</Link></li>
+            <li><Link to="/productreport"> <i className="icon icon-check" />Report Product</Link></li>
             <li><Link to="/requests"> <i className="icon icon-list" />Request</Link></li>
             <li><Link to="/tracking"> <i className="icon icon-list-1" />Tracking</Link></li>
             <li><Link to="/ratings">  <i className="icon icon-check" />Rating</Link></li>
