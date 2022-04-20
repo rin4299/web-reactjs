@@ -227,9 +227,9 @@ class Profile extends Component {
                   <li className="nav-item">
                     <a className="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Change Password</a>
                   </li>
-                  <li className="nav-item">
+                  {/* <li className="nav-item">
                     <a className="nav-link" id="history-tab" data-toggle="tab" href="#history" role="tab" aria-controls="history" aria-selected="false">History Order</a>
-                  </li>
+                  </li> */}
                 </ul>
               </div>
             </div>
@@ -317,7 +317,7 @@ class Profile extends Component {
                     </div>
                   </form>
                 </div>
-                <div className="tab-pane fade" id="history" aria-labelledby="history-tab">
+                {/* <div className="tab-pane fade" id="history" aria-labelledby="history-tab">
                   <div className="row">        
                     <div className="col-md-1"><b>Code Order</b></div>
                     <div className="col-md-2"><b>View</b></div>
@@ -328,7 +328,6 @@ class Profile extends Component {
                   </div>
                   {
                     historyBooking && historyBooking.length ? historyBooking.map((item, index) => {
-                      {/* console.log('item',item.orderDetails) */}
                       return (
                         <div key={index} className="row">
                           <div className="col-md-1">  <Link to="/orders/history/item">#{item.id}</Link></div>
@@ -374,7 +373,7 @@ class Profile extends Component {
                       )
                     }) : null                   
                   }
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
