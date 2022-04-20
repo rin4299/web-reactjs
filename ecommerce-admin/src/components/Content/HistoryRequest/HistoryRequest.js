@@ -9,7 +9,7 @@ import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
 import Paginator from 'react-js-paginator';
 import callApi from '../../../utils/apiCaller';
-
+import  DatePicker  from 'react-datepicker';
 import Modal from 'react-bootstrap/Modal'
 
 const MySwal = withReactContent(Swal)
@@ -31,6 +31,7 @@ class HistoryRequest extends Component {
       history:'',
       total2:0,
       productDetails:0,
+      startDate:''
     }
   }
 
@@ -52,7 +53,9 @@ class HistoryRequest extends Component {
         redirect: true
       })    
     }
-
+    this.setState({
+      startDate: new Date()
+    })
     await this.fetch_reload_data(); 
   }
 
@@ -80,6 +83,31 @@ class HistoryRequest extends Component {
     window.scrollTo(0, 0);
   }
 /////////////////////////
+  filter = (event) => {
+
+    const value = event.target.value;
+    const name = event.target.name;
+    console.log(value)
+    this.setState({
+      [name]: value
+    });
+    console.log('test',this.state.total)
+    if(value !== ''){
+      const result = this.state.total.filter((item)=> {
+        return item.id.startsWith(value);
+      })
+      // .filter((item)=>{
+        
+      // })
+      this.setState({
+        total: result,
+        total2: result.slice(0,10)
+      })
+    }
+    else{
+      this.fetch_reload_data()
+    }
+  }
 
   handleRemove = (id) => {
     MySwal.fire({
@@ -125,6 +153,8 @@ class HistoryRequest extends Component {
 
   MyVerticallyCenteredModal = (props) => {
     let temp = Object.keys(this.state.productDetails)
+    let date = new Date(props.history.times)
+    date = date.toDateString()
     let detail;
     return (
       <Modal
@@ -140,6 +170,7 @@ class HistoryRequest extends Component {
         </Modal.Header>
         <Modal.Body style={{overflow: 'auto'}}>
           {/* {console.log('test his', this.find_product_detail(this.state.history.listofProductDetail))} */}
+          
           <div >
             {this.state.history.id ? 
             <form >
@@ -161,7 +192,9 @@ class HistoryRequest extends Component {
               </div>
               <div className="form-group">
                 <label htmlFor="from">Time </label>
-                <input className="form-control" disabled defaultValue={props.history.times}/>  
+                <input className="form-control" disabled defaultValue={
+                    date
+                  }/>  
               </div>
               <div className="table-responsive">
                 <table className="table table-hover" style={{ textAlign: "center" }}>
@@ -194,22 +227,6 @@ class HistoryRequest extends Component {
                         </tr>
                       )
                     }) : null}
-                    {/* {this.state.history.products && this.state.history.products.length ? this.state.history.products.map((item, index) => {
-                        return (
-                          <tr key = {index}>
-                            <td scope="row">{index + 1}</td>
-                            <td><span className="text-truncate" >{item.id}</span></td>
-                            <td><span className="text-truncate" style={{width:'100%'}} >{item.nameProduct}</span></td>
-                            <td>
-                              <div className="fix-cart">
-                                <img src={item && item.image ? item.image : null} className="fix-img" alt="not found" />
-                              </div>
-                            </td>
-                            <td>{item.quantity}</td>
-                          </tr>
-                        )
-
-                    }) : null} */}
                   </tbody>
                 </table>
               </div>
@@ -229,6 +246,7 @@ class HistoryRequest extends Component {
   render() {
     // let { requests } = this.props;
     const {total, total2} = this.state;
+    const { searchText, startDate } = this.state;
     return (
       <div className="content-inner">
         {/* Page Header*/}
@@ -236,10 +254,10 @@ class HistoryRequest extends Component {
           <div className="container-fluid">
             <h2 className="no-margin-bottom">History Requests</h2>
             <div class="btn-group">
-                    <button class="button"><Link to="/requests"> <i style ={{}}/>Requests</Link></button>
-                    <button class="button"><Link to="/yourrequests"> <i style ={{}}/>Your Requests</Link></button>
-                    <button class="button"><Link to="/historyrequest"> <i style ={{}}/>History</Link></button>
-                  </div>
+                <button class="button"><Link to="/requests"> <i style ={{}}/>Requests</Link></button>
+                <button class="button"><Link to="/yourrequests"> <i style ={{}}/>Your Requests</Link></button>
+                <button class="button"><Link to="/historyrequest"> <i style ={{}}/>History</Link></button>
+            </div>
           </div>
         </header>
         {/* Breadcrumb*/}
@@ -257,7 +275,30 @@ class HistoryRequest extends Component {
                   <div className="card-header d-flex align-items-center">
                     <h3 className="h4">History Requests</h3>
                   </div>
-                  
+                    
+                    <div style={{witdh:"30px", justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20, marginLeft:"auto" }} class="btn-group">
+                    <DatePicker
+                      style={{width:'auto'}}
+                      selected={startDate}
+                      // onSelect={startDate}
+                      onChange={(date)=> {
+                        this.setState({
+                          startDate: date
+                        })
+                        var temp = date.toDateString();
+                        console.log(temp,date)
+                      }}
+                      dateFormat='dd/MM/yyyy'
+                      isClearable
+                      placeholderText='Date ...'
+                    />      
+                      <input
+                        name="searchText"
+                        onChange={this.filter}
+                        value={searchText}
+                        className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
+                        aria-label="Search" />
+                    </div>
                   <div className="card-body">
                     <div className="table-responsive">
                       <table className="table table-hover" style={{ textAlign: "center" }}>
@@ -278,6 +319,8 @@ class HistoryRequest extends Component {
                             {/* console.log('item', item) */}
                             {/* var date = new Date(item.latestUpdate.slice(8,18) * 1000); */}
                             {/* console.log(item.latestUpdate) */}
+                            var time = item.latestUpdate.split("T");
+                            {/* console.log('time',time) */}
                               return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
@@ -290,7 +333,7 @@ class HistoryRequest extends Component {
                                 <span>RECEIVE</span> 
                                 }
                                 </td>
-                                <td><p style={{width:'210px'}}>{item.latestUpdate}</p></td>
+                                <td ><span style={{width:"auto"}}>{time[0]}</span></td>
                                 <td>
                                   <div>
                                     <button class="btn btn-info" onClick={() => {this.setState({modalShow: true, history : item })
