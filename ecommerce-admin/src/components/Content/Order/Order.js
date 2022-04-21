@@ -85,12 +85,14 @@ class Order extends Component {
       confirmButtonText: 'Yes'
     }).then(async (result) => {
       if (result.value) {
-        await this.props.delete_order(id, token);
-        Swal.fire(
-          'Deleted!',
-          'Your file has been deleted.',
-          'success'
-        )
+        const res = await this.props.delete_order(id, token);
+        if(res && res.status == 200){
+          Swal.fire(
+            'Deleted!',
+            'Your file has been deleted.',
+            'success'
+          )
+        }
       }
     })
   }
@@ -180,11 +182,12 @@ class Order extends Component {
     this.fetch_reload_data()
   }
 
-  fetch_product_details_Order(item){
+  async fetch_product_details_Order(item){
     // console.log('fetch thanh cong', id)
     token = localStorage.getItem('_auth');
+
     if (item.status === 'Complete'){
-      this.props.find_order_product_detail(token, item.id).then(res => {
+      await this.props.find_order_product_detail(token, item.id).then(res => {
         this.setState({
           productDetails : res,
           modalShow : true,
@@ -360,7 +363,10 @@ class Order extends Component {
                           .map((item, index) => {
                             {/* console.log('order',item) */}
                             return (
-                              <tr key={index} onClick={()=>{ this.fetch_product_details_Order(item)}}
+                              <tr key={index} onClick={()=>{ 
+                                // this.fetch_product_details_Order(item)
+                                console.log('onclick')
+                                }}
                               >
                                 <th scope="row">{index + 1}</th>
                                 <td>{item.fullName}</td>

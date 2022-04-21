@@ -12,6 +12,7 @@ import Paginator from 'react-js-paginator';
 import callApi from '../../../utils/apiCaller';
 import Modal from 'react-bootstrap/Modal'
 import {Steps} from 'antd'
+import { ArrowUpOutlined } from '@ant-design/icons' ;
 // import "antd/dist/antd.css"
 
 const MySwal = withReactContent(Swal)
@@ -238,7 +239,7 @@ class Tracking extends Component {
         <section className="tables pt-3">
           <div className="container-fluid">
             <div className="row">
-              <div className="col-lg-12">
+              <div className="col-lg-12" style={{ textAlign: "center" }}>
                 <div className="card">
                   <div className="card-header d-flex align-items-center">
                     <h3 className="h4">Tracking Sequences</h3>
@@ -260,6 +261,18 @@ class Tracking extends Component {
                   </form>
                   <div className="card-body">
                     <div className="table-responsive">
+                      {/* <table className="table table-hover">
+                      <thead>
+                          <tr>
+                            <th>Number</th>
+                            <th>TxId</th>
+                            <th>Product Name</th>
+                            <th>Id Product</th>
+                            <th>Owner Name</th>
+                            <th style={{ textAlign: "center" }}>Time</th>
+                          </tr>                          
+                        </thead>
+                      </table> */}
                       <table className="table table-hover">
                         <thead>
                           <tr>
@@ -270,6 +283,7 @@ class Tracking extends Component {
                             <th>Owner Name</th>
                             <th style={{ textAlign: "center" }}>Time</th>
                           </tr>
+                          
                         </thead>
                         <tbody>
                           {total && total.length ? total.map((item, index) => {
@@ -298,10 +312,19 @@ class Tracking extends Component {
                       />
                   </ul>
                 </nav>
-                {/* <Steps direction='vertical' current={0}>
-                  <Step title="Finished" description={"somethings"}/>
-                  <Step title="Finished" description={"somethings"}/>
+                <ArrowUpOutlined style={{fontsize :'400%'}}/>
+                {/* <Steps 
+                  direction='vertical' 
+                  current={3}
+                  className="site-navigation-steps"
+                  type='navigation'
+                >
+                  <Step title="Finished" description={"somethings"} subTitle="03/02/2022"/>
+                  <Step title="Finished" description={"somethings"} subTitle="03/02/2022"/>
+                  <Step title="Finished" description={"somethings"} subTitle="03/02/2022"/>
+                  <Step title="process" description={"somethings"} subTitle="03/02/2022"/>
                 </Steps> */}
+                <ArrowUpOutlined style={{fontsize :'400%'}}/>
               </div>
             </div>
           </div>

@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import BillDetail from "./BillDetail";
 import YourOrder from "./YourOrder";
 import { connect } from "react-redux";
+import { Link, Redirect } from 'react-router-dom'
 import callApi from "../../utils/apiCaller";
-import { Redirect } from "react-router-dom";
 import { actClearRequest } from "../../redux/actions/cart";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -11,6 +11,8 @@ import { startLoading, doneLoading } from "../../utils/loading";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import "./style.css";
+import Modal from 'react-bootstrap/Modal'
+
 const MySwal = withReactContent(Swal);
 
 toast.configure();
@@ -25,6 +27,7 @@ class CheckOut extends Component {
       shippingAddress: false,
       checkout: false,
       result: false,
+      modalShow: false,
     };
     this.billing = React.createRef();
   }
@@ -262,6 +265,106 @@ class CheckOut extends Component {
     this.props.reset_cart();
   }
 
+  testFunction = async () => {
+    // const auth = localStorage.getItem("_auth");
+    
+    token = localStorage.getItem("_auth");
+    if (!token) {
+      return toast.error("Missing authentication!");
+    }
+    // console.log('Next Step',payload)
+    const resData = await callApi("users/me", "GET", null, token);
+    const userId = resData.data.results[0].id;
+    // output user id
+    const builder = localStorage.getItem("_cart");
+    const dataCart = JSON.parse(builder);
+    console.log(dataCart)
+    // if (res.name === "" || res.address === "" || res.phone === "") {
+    //   return toast.error("Please complete form before checkout");
+    // }
+    const payload1 = {
+      address:"268 Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Việt Nam",
+      userId: userId
+    }
+    let getstore
+    await callApi("getstore", "POST", payload1, token).then(res => {
+      getstore = res.data
+    });
+    console.log(getstore)
+
+    let dataItems = [];
+    let lop='';
+    dataCart.forEach((item) => {
+      dataItems.push({
+        sku: item.id,
+        name: item.nameProduct,
+        description: item.description,
+        quantity: item.quantity,
+        price: item.price,
+        currency: "USD",
+      });
+      if(lop == '') lop = item.id.toString() + '-' + item.quantity.toString()
+      else {
+        lop = lop + ',' + item.id.toString() + '-' + item.quantity.toString()   
+      }
+    });
+    console.log(lop)
+    const payload2 = {
+      "lop": lop,
+      "userId":userId
+    }
+    let getsuggestion;
+    await callApi("getsuggestion", "POST", payload2, token).then(res =>{
+      getsuggestion = res.data
+    });
+    // let storeSuggestion = resData3.data
+    console.log('getsuggestion', getsuggestion)
+    if(getsuggestion.length !== 1){
+        this.setState({modalShow: true});
+      // MySwal.fire({
+      //   title: "Notification",
+      //   text: "Your quantity is more than any one of our particular stores has. We have recommend for you. Let take a quick view ?",
+      //   icon: "warning",
+      //   showCancelButton: true,
+      //   confirmButtonColor: "#3085d6",
+      //   cancelButtonColor: "#d33",
+      //   confirmButtonText: "Yes, Let's see!",
+      // }).then(async (result) => {
+      //   if(result.isConfirmed){
+      //     console.log('ressult',result)
+      //     return <Redirect to="/cart"></Redirect>
+      //   }
+      // })
+    }
+  }
+
+  MyVerticallyCenteredModal = (props) => {
+    return (
+      <Modal
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Notification
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Your quantity is more than any one of our particular stores has. We have recommend for you. Let take a quick view ?
+          {/* {console.log('request',this.state.request)} */}
+          {/* <h4>Name Product </h4>
+          <input  style={{width:"100%"}} disabled defaultValue={props.requests.name}/>   */}
+        </Modal.Body>
+        <Modal.Footer>
+          <Link to="/suggestioncart"><button type="button" class="btn btn-primary" onClick={props.onHide}>Accept</button></Link>
+          <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
+
   render() {
     const {
       redirectTo,
@@ -345,13 +448,22 @@ class CheckOut extends Component {
               )}
               <div className="col-12" style={{ textAlign: "center" }}>
                 {!toggleCheckout ? (
-                  <button
-                    onClick={() => this.toggleCheckout()}
-                    className="btn btn-primary"
-                    style={{ marginTop: -25, marginBottom: 10 }}
-                  >
-                    Next Step
-                  </button>
+                  <div>
+                    <button
+                      // onClick={() => this.toggleCheckout()}
+                      onClick={() => this.testFunction()}
+                      className="btn btn-primary"
+                      style={{ marginTop: -25, marginBottom: 10 }}
+                    >
+                      Next Step
+                    </button>
+                    <this.MyVerticallyCenteredModal
+                      show={this.state.modalShow}
+                      onHide={() => this.setState({modalShow: false})}
+                    />
+                  </div>
+                  
+                  
                 ) : null}
               </div>
             </div>

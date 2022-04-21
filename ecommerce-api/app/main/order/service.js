@@ -211,7 +211,7 @@ class OrderService extends BaseServiceCRUD {
         args:[buffer, atStore, fullName]
       }
       const res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
-      console.log(res)
+      console.log(res.data)
       if(res){
         var stringBuffer = res.data.result.data;
         var pdinOrder = Buffer.from(JSON.parse(JSON.stringify(stringBuffer))).toString();
@@ -286,6 +286,7 @@ class OrderService extends BaseServiceCRUD {
   async deleteOrder(id){
     // Neu la 1 Canceled order thi xoa luon do da tru roi
     // const order = await Models.Order.query().findOne({id:id});
+    console.log('id',id)
     let objectO = {
       fcn: "queryOrder",
       peers:["peer0.org1.example.com","peer0.org2.example.com"],
@@ -294,6 +295,7 @@ class OrderService extends BaseServiceCRUD {
       args:[id.toString()]
     }
     const res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", objectO);
+    console.log('res.data',res.data)
     if(!res){
       throw Boom.badRequest('Error in BC!')
     }

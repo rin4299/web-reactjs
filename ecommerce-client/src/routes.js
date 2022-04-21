@@ -17,7 +17,7 @@ import ProfilePage from './pages/ProfilePage';
 import ProductFavoritePage from './pages/ProductFavoritePage';
 import ProductSearchPage from './pages/ProductSerachPage';
 import HistoryOrderPage from './pages/HistoryOrderPage';
-
+import SuggestionCartPage from './pages/SuggestionCartPage';
 
 const routes = [
   {
@@ -55,6 +55,11 @@ const routes = [
     path: '/cart',
     exact: false,
     main: (match) => < ShoppingCartPage match={match} />
+  },
+  {
+    path: '/suggestioncart',
+    exact: false,
+    main: (match) => < SuggestionCartPage match={match} />
   },
   {
     path: '/checkout',
