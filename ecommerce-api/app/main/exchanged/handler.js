@@ -111,11 +111,22 @@ const controller = new ExchangeController();
     }
   };
 
-  exports.getStore = {
+  exports.getStoreDistance = {
     description: 'Tracking product',
     notes: 'Return list of history',
     tags: ['api', 'v1'],
-    handler: controller.getStore.bind(controller),
+    handler: controller.getStoreDistance.bind(controller),
+    auth: 'jwt',
+    validate: {
+
+    }
+  };
+
+  exports.getSuggestion = {
+    description: 'Tracking product',
+    notes: 'Return list of history',
+    tags: ['api', 'v1'],
+    handler: controller.getSuggestion.bind(controller),
     auth: 'jwt',
     validate: {
 

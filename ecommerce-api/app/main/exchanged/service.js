@@ -388,10 +388,11 @@ class ExchangeService extends BaseServiceCRUD {
     });
   }
 
-  async getStore(payload){
+  async getStoreDistance(payload){
     
-    let {address, orderId, lop} = payload;
-    console.log( address, orderId, lop);
+    let {address, userId} = payload;
+    console.log( address, userId);
+
     var rad = function(x) {
       return x * Math.PI / 180;
     };
@@ -411,7 +412,6 @@ class ExchangeService extends BaseServiceCRUD {
       apiKey: 'bd94e47e842341c1a497f48a2ad09182'
     });
 
-
     geocoder.geocode({address: address}, async function(err,res){
       //Check xem Address co hop le ko 
       // if(!res || err){
@@ -422,168 +422,204 @@ class ExchangeService extends BaseServiceCRUD {
       // }
       var lat = res[0]['latitude']
       var lng = res[0]['longitude']
-      var listofStore = []
-      var strongestFlag = true;
+      // var listofStore = []
+      // var strongestFlag = true;
       // console.log("1111111111111")
       const stores = await Models.Store.query();
       // console.log(stores);
       for(var i = 0; i < stores.length; i++){
-        listofStore.push({'distance': disCalculate(stores[i]['lat'],stores[i]['lng'],lat,lng),'storeName': stores[i]['storeName']})
-      }
-      listofStore.sort((a,b) => (a.distance > b.distance) ? 1 : (b.distance > a.distance) ? -1 : 0);
-      console.log(listofStore)
-
-
-      ///////////////////////////////////////////////////////////////////
-      const arrPQ = []
-      var proQ  = lop.split(",");
-      for(var i = 0; i < proQ.length; i++){
-        var temp = proQ[i].split("-");
-        arrPQ.push({'pId': parseInt(temp[0]), 'quantity': parseInt(temp[1])});
-      }
-      var flag1 = true
-      var memoryShell = [];
-      var productMatch = {};
-      var shortageShell = [];
-      for(var j = 0;j < listofStore.length; j++){
-        var productInStore = await Models.Ownership.query().where('storeName', listofStore[j]['storeName'])
-        memoryShell.push({'storeName': listofStore[j]['storeName']})
-        productMatch = {};
-        // shortageShell = [];
-        for(var x = 0; x < arrPQ.length; x++){
-          for(var y = 0; y < productInStore.length; y++){
-            if(arrPQ[x]['pId'] === productInStore[y].pId){
-              productMatch[arrPQ[x]['pId']] = productInStore[y].quantity
-              // productMatch.push({'pId': arrPQ[x]['pId'], 'currentQ': productInStore[y].quantity}); //Luu thong tin cac product matching cua moi store
-              if(arrPQ[x]['quantity'] > productInStore[y].quantity){ //quantity yeu cau > quantity co thi store do ko dap ung duoc
-                flag1 = false;
-                if(listofStore[j]['storeName'] === listofStore[0]['storeName']){
-                  shortageShell.push({'pId': arrPQ[x]['pId'], 'lostQ': arrPQ[x]['quantity'] - productInStore[y].quantity})
-                  // shortageShell[arrPQ[x]['pId']] = arrPQ[x]['quantity'] - productInStore[y].quantity
-                }
-                // console.log("3333333333333", shortageShell)
-              } 
-            }
-          }
-        }
-        // console.log(productMatch)
-        if(flag1 === true){
-          await Models.Order.query().update({atStore: listofStore[j]['storeName']} ).where('id', orderId);
-          // console.log(listofStore[j]['storeName']);
-          strongestFlag = false;
-          break;
+        // listofStore.push({'distance': disCalculate(stores[i]['lat'],stores[i]['lng'],lat,lng),'storeName': stores[i]['storeName']})
+        var existed = await Models.Distance.query().findOne({userId: userId}).where('storeName',stores[i].storeName)
+        if(existed){
+          await Models.Distance.query().update({address: address, distance: disCalculate(stores[i]['lat'],stores[i]['lng'],lat,lng)}).where('userId', userId).where('storeName', stores[i].storeName);
         } else {
-          memoryShell[j]['products'] = productMatch;
-          flag1 = true;
-        }
-        //get list of product by storeName in ownership
-        // for loop de check => 3TH
-          // 1: neu store gần nhất du thi query rồi đổi giá trị atStore trong table Order theo OrderId
-          // 2: neu storeA ko du lưu giá trị của store gần nhất và check các store khác và lưu giá trị, nếu đủ stop và -> y chang 1
-          // 3: neu ko có store đủ thì dựa vào độ thiếu của store gần nhất đối với mỗi sp mà tìm store phù hợp
-      } // end checking 1 for each store and take the value of matching product in each store
-      // memoryShell chua thong tin hang tai tung store 
-      // shortageShell chua so luong thieu neu ko co store nao dap du
-      if(strongestFlag){
-        console.log('sShell',shortageShell);
-        console.log('memoryShell',memoryShell);
-
-        await Models.Order.query().update({atStore: listofStore[0]['storeName']} ).where('id', orderId);
-        var candidates = {};
-        var flagForOneStoreEnough = true;
-        var flag2 = true;
-        for(var n = 1; n < memoryShell.length; n++){
-          var checker = true;
-          var inputSTRForOneStoreEnough = ""
-          for(var z = 0; z < shortageShell.length; z++){
-            if(memoryShell[n]['products'][shortageShell[z]['pId']] < shortageShell[z]['lostQ']){
-              checker =  false;
-            } else {
-              inputSTRForOneStoreEnough += shortageShell[z]['pId'] + "-" + shortageShell[z]['lostQ'] + ",";
-            }
+          var obj = {
+            'storeName': stores[i].storeName,
+            'address': address,
+            'userId': userId,
+            'distance': disCalculate(stores[i]['lat'],stores[i]['lng'],lat,lng)
           }
-          if(checker){
-            console.log(`One Store ${memoryShell[n]['storeName']} is enough with String: ${inputSTRForOneStoreEnough}`);
-            flagForOneStoreEnough = false;
-            let object = {
-                fcn: "createExchange",
-                peers:["peer0.org1.example.com","peer0.org2.example.com"],
-                chaincodeName:"productdetail",
-                channelName:"mychannel",
-                args:[listofStore[0]['storeName'], memoryShell[n]['storeName'], inputSTRForOneStoreEnough.slice(0, -1)]
-              }
-              console.log(object)
-              let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
-            console.log(res.data);
-            break;
-          }
-        }
-        if(flagForOneStoreEnough) {
-          for(var n = 0; n < shortageShell.length; n++){
-
-            for(var z = 1; z < memoryShell.length; z++){
-              if(shortageShell[n]['lostQ'] > 0 && memoryShell[z]['products'][shortageShell[n]['pId']] >= shortageShell[n]['lostQ']){
-                if(candidates[memoryShell[z]['storeName']] !== undefined){
-                  candidates[memoryShell[z]['storeName']] += shortageShell[n]['pId'].toString() + "-" +  shortageShell[n]['lostQ'].toString() + ",";
-                  shortageShell[n]['lostQ'] = shortageShell[n]['lostQ']  - memoryShell[z]['products'][shortageShell[n]['pId']];
-                  flag2 = false;
-                } else {
-                  candidates[memoryShell[z]['storeName']] = shortageShell[n]['pId'].toString() + "-" +  shortageShell[n]['lostQ'].toString() + ",";
-                  shortageShell[n]['lostQ'] = shortageShell[n]['lostQ']  - memoryShell[z]['products'][shortageShell[n]['pId']];
-                  flag2 = false;
-                }
-              }
-            }
-  
-            if(flag2){
-              for(var z = 1; z < memoryShell.length; z++){
-                if(shortageShell[n]['lostQ'] > 0 && shortageShell[n]['lostQ'] >= memoryShell[z]['products'][shortageShell[n]['pId']]){
-                  if(candidates[memoryShell[z]['storeName']] !== undefined){
-                    candidates[memoryShell[z]['storeName']] += shortageShell[n]['pId'].toString() + "-" +  memoryShell[z]['products'][shortageShell[n]['pId']].toString() + ",";
-                    shortageShell[n]['lostQ'] = shortageShell[n]['lostQ'] - memoryShell[z]['products'][shortageShell[n]['pId']];
-                    flag2 = false;
-                  } else {
-                    candidates[memoryShell[z]['storeName']] = shortageShell[n]['pId'].toString() + "-" +  memoryShell[z]['products'][shortageShell[n]['pId']].toString() + ",";
-                    shortageShell[n]['lostQ'] = shortageShell[n]['lostQ']  - memoryShell[z]['products'][shortageShell[n]['pId']];
-                    flag2 = false;
-                  }
-                } else {
-                  if(candidates[memoryShell[z]['storeName']] !== undefined){
-                    candidates[memoryShell[z]['storeName']] += shortageShell[n]['pId'].toString() + "-" +  shortageShell[n]['lostQ'].toString() + ",";
-                    shortageShell[n]['lostQ'] = shortageShell[n]['lostQ'] - memoryShell[z]['products'][shortageShell[n]['pId']];
-                    flag2 = false;
-                  } else {
-                    candidates[memoryShell[z]['storeName']] = shortageShell[n]['pId'].toString() + "-" +  shortageShell[n]['lostQ'].toString() + ",";
-                    shortageShell[n]['lostQ'] = shortageShell[n]['lostQ']  - memoryShell[z]['products'][shortageShell[n]['pId']];
-                    flag2 = false;
-                  }
-                }
-              }
-            } else {
-              flag2 = true;
-            }
-          }
-
-          console.log("Finally We have a list of candidates like this one: ",candidates);
-          let obj = Object.keys(candidates);
-          for(var m = 0; m < obj.length; m++){
-            let object = {
-              fcn: "createExchange",
-              peers:["peer0.org1.example.com","peer0.org2.example.com"],
-              chaincodeName:"productdetail",
-              channelName:"mychannel",
-              args:[listofStore[0]['storeName'], obj[m], candidates[obj[m]].slice(0, -1)]
-            }
-            console.log(object)
-            let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
-            console.log(res.data);
-          }
+          await Models.Distance.query().insert(obj).returning('*');
         }
         
       }
+      // listofStore.sort((a,b) => (a.distance > b.distance) ? 1 : (b.distance > a.distance) ? -1 : 0);
+      // console.log(listofStore)
       
     })
+    ///////////////////////////////////////////////////////////////////
+
     return "successful"
+  }
+
+
+  async getSuggestion(payload){
+
+    const {userId, lop} = payload
+    const listofStore = await Models.Distance.query().where('userId', userId);
+    console.log("LOS", listofStore)
+    if(listofStore.length === 0){
+      throw Boom.badData(`ListofStore Not Found Error!`)
+    }
+    listofStore.sort(function(a,b){
+      return a['distance'] - b['distance']
+    })
+    console.log("LOS after Sort", listofStore)
+    const arrPQ = []
+    var proQ  = lop.split(",");
+    for(var i = 0; i < proQ.length; i++){
+      var temp = proQ[i].split("-");
+      arrPQ.push({'pId': parseInt(temp[0]), 'quantity': parseInt(temp[1])});
+    }
+    var flag1 = true
+    var memoryShell = [];
+    var productMatch = {};
+    var shortageShell = [];
+    var suggestion = []
+
+    for(var j = 0;j < listofStore.length; j++){
+      var productInStore = await Models.Ownership.query().where('storeName', listofStore[j]['storeName'])
+      memoryShell.push({'storeName': listofStore[j]['storeName']})
+      
+      productMatch = {};
+      // shortageShell = [];
+      for(var x = 0; x < arrPQ.length; x++){
+        for(var y = 0; y < productInStore.length; y++){
+          if(arrPQ[x]['pId'] === productInStore[y].pId){
+            productMatch[arrPQ[x]['pId']] = productInStore[y].quantity
+            // productMatch.push({'pId': arrPQ[x]['pId'], 'currentQ': productInStore[y].quantity}); //Luu thong tin cac product matching cua moi store
+            if(arrPQ[x]['quantity'] > productInStore[y].quantity){ //quantity yeu cau > quantity co thi store do ko dap ung duoc
+              flag1 = false; // Store ko dap ung dc don
+              shortageShell.push({'pId': arrPQ[x]['pId'], 'quantity': productInStore[y].quantity}) 
+            } else {
+              shortageShell.push({'pId': arrPQ[x]['pId'], 'quantity': arrPQ[x]['quantity']})
+            }
+          }
+        }
+      }
+      // console.log(productMatch)
+      // Neu ma co store du thi return de tao 1 Order
+      if(flag1 === true){
+        // await Models.Order.query().update({atStore: listofStore[j]['storeName']} ).where('id', orderId);
+        // console.log(listofStore[j]['storeName']);
+        return [listofStore[j]['storeName']]
+      } else {
+        memoryShell[j]['products'] = productMatch;
+        var tempObj = {
+          'storeName': listofStore[j]['storeName'],
+          'suggestionList': shortageShell
+        }
+        suggestion.push(tempObj);
+        shortageShell = []
+        flag1 = true;
+      }
+    } // end checking 1 for each store and take the value of matching product in each store
+    
+    // Chia nho Order hoac la tao goi y tai tung store
+    
+    // memoryShell chua thong tin hang tai tung store 
+    // shortageShell chua so luong thieu neu ko co store nao dap du
+
+    // if(strongestFlag){
+    //   console.log('memoryShell',memoryShell);
+
+    //   await Models.Order.query().update({atStore: listofStore[0]['storeName']} ).where('id', orderId);
+    //   var candidates = {};
+    //   var flagForOneStoreEnough = true;
+    //   var flag2 = true;
+
+    console.log("SUGGESTION:", suggestion);
+    console.log("SUGGESTION:", suggestion[0]['suggestionList']);
+    console.log('memoryShell',memoryShell);
+    console.log('arrPQ',arrPQ);
+    console.log('arrPQ',arrPQ[0]);
+    var orderOfStore = []
+    for(var n = 0; n < memoryShell.length; n++){
+      var inOneStore = {
+        'storeName': memoryShell[n].storeName,
+        'products': []
+      }
+      for(var m = 0; m < arrPQ.length; m++){
+        if(arrPQ[m].quantity > 0 && arrPQ[m].quantity > memoryShell[n]['products'][arrPQ[m].pId]){
+          inOneStore['products'].push({'pId': arrPQ[m].pId.toString(), 'quantity': memoryShell[n]['products'][arrPQ[m].pId.toString()] })
+          arrPQ[m].quantity = arrPQ[m].quantity  - memoryShell[n]['products'][arrPQ[m].pId.toString()];
+        } else {
+          if(arrPQ[m].quantity > 0){
+            inOneStore['products'].push({'pId': arrPQ[m].pId.toString(), 'quantity':  arrPQ[m].quantity })
+            arrPQ[m].quantity = 0;
+          }  
+        }
+      }
+      orderOfStore.push(inOneStore);
+    }
+    var returnObj = {
+      'SuggestionOfEachStore': suggestion,
+      'ParseOrderIntoStores': orderOfStore
+    }
+    return returnObj;
+    //   if(flagForOneStoreEnough) {
+    //     for(var n = 0; n < shortageShell.length; n++){
+
+    //       for(var z = 1; z < memoryShell.length; z++){
+    //         if(shortageShell[n]['lostQ'] > 0 && memoryShell[z]['products'][shortageShell[n]['pId']] >= shortageShell[n]['lostQ']){
+    //           if(candidates[memoryShell[z]['storeName']] !== undefined){
+    //             candidates[memoryShell[z]['storeName']] += shortageShell[n]['pId'].toString() + "-" +  shortageShell[n]['lostQ'].toString() + ",";
+    //             shortageShell[n]['lostQ'] = shortageShell[n]['lostQ']  - memoryShell[z]['products'][shortageShell[n]['pId']];
+    //             flag2 = false;
+    //           } else {
+    //             candidates[memoryShell[z]['storeName']] = shortageShell[n]['pId'].toString() + "-" +  shortageShell[n]['lostQ'].toString() + ",";
+    //             shortageShell[n]['lostQ'] = shortageShell[n]['lostQ']  - memoryShell[z]['products'][shortageShell[n]['pId']];
+    //             flag2 = false;
+    //           }
+    //         }
+    //       }
+
+    //       if(flag2){
+    //         for(var z = 1; z < memoryShell.length; z++){
+    //           if(shortageShell[n]['lostQ'] > 0 && shortageShell[n]['lostQ'] >= memoryShell[z]['products'][shortageShell[n]['pId']]){
+    //             if(candidates[memoryShell[z]['storeName']] !== undefined){
+    //               candidates[memoryShell[z]['storeName']] += shortageShell[n]['pId'].toString() + "-" +  memoryShell[z]['products'][shortageShell[n]['pId']].toString() + ",";
+    //               shortageShell[n]['lostQ'] = shortageShell[n]['lostQ'] - memoryShell[z]['products'][shortageShell[n]['pId']];
+    //               flag2 = false;
+    //             } else {
+    //               candidates[memoryShell[z]['storeName']] = shortageShell[n]['pId'].toString() + "-" +  memoryShell[z]['products'][shortageShell[n]['pId']].toString() + ",";
+    //               shortageShell[n]['lostQ'] = shortageShell[n]['lostQ']  - memoryShell[z]['products'][shortageShell[n]['pId']];
+    //               flag2 = false;
+    //             }
+    //           } else {
+    //             if(candidates[memoryShell[z]['storeName']] !== undefined){
+    //               candidates[memoryShell[z]['storeName']] += shortageShell[n]['pId'].toString() + "-" +  shortageShell[n]['lostQ'].toString() + ",";
+    //               shortageShell[n]['lostQ'] = shortageShell[n]['lostQ'] - memoryShell[z]['products'][shortageShell[n]['pId']];
+    //               flag2 = false;
+    //             } else {
+    //               candidates[memoryShell[z]['storeName']] = shortageShell[n]['pId'].toString() + "-" +  shortageShell[n]['lostQ'].toString() + ",";
+    //               shortageShell[n]['lostQ'] = shortageShell[n]['lostQ']  - memoryShell[z]['products'][shortageShell[n]['pId']];
+    //               flag2 = false;
+    //             }
+    //           }
+    //         }
+    //       } else {
+    //         flag2 = true;
+    //       }
+    //     }
+
+    //     console.log("Finally We have a list of candidates like this one: ",candidates);
+    //     let obj = Object.keys(candidates);
+    //     for(var m = 0; m < obj.length; m++){
+    //       let object = {
+    //         fcn: "createExchange",
+    //         peers:["peer0.org1.example.com","peer0.org2.example.com"],
+    //         chaincodeName:"productdetail",
+    //         channelName:"mychannel",
+    //         args:[listofStore[0]['storeName'], obj[m], candidates[obj[m]].slice(0, -1)]
+    //       }
+    //       console.log(object)
+    //       let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+    //       console.log(res.data);
+    //     }
+    //   }
+      
+    // }
   }
 
 

@@ -46,7 +46,12 @@ const Routes = [
   {
     method: 'POST',
     path: '/api/v1/getstore',
-    config: handler.getStore
+    config: handler.getStoreDistance
+  },
+  {
+    method: 'POST',
+    path: '/api/v1/getsuggestion',
+    config: handler.getSuggestion
   },
   {
     method: 'GET',

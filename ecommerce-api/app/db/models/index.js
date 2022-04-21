@@ -20,6 +20,7 @@ const ProductDetails = require('./ProductDetails');
 const Import = require('./Import')
 const ProductReport = require('./ProductReport');
 const ProductReportDetail = require('./ProductReportDetail');
+const Distance = require('./Distance')
 module.exports = {
   knex,
   User,
@@ -40,5 +41,6 @@ module.exports = {
   ProductDetails,
   Import,
   ProductReport,
-  ProductReportDetail
+  ProductReportDetail,
+  Distance
 };

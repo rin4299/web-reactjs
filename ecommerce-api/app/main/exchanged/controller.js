@@ -91,12 +91,23 @@ class ExchangeController extends BaseControllerCRUD {
     }
   };
 
-  async getStore(request) {
+  async getStoreDistance(request) {
     try {
       const {
         payload
       } = request;
-      return await this.service.getStore(payload);
+      return await this.service.getStoreDistance(payload);
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  async getSuggestion(request) {
+    try {
+      const {
+        payload
+      } = request;
+      return await this.service.getSuggestion(payload);
     } catch (err) {
       throw err;
     }

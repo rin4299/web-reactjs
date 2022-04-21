@@ -412,6 +412,10 @@ class OrderService extends BaseServiceCRUD {
       returnArray.push(complete[0])
     }
     console.log("RES:" , res)
+    const OrderDetail = await Models.OrderDetail.query().where('orderId', parseInt(returnArray[0]['id']));
+    for(var j = 0; j< returnArray.length; j++){
+      returnArray[j]['orderDetail'] = OrderDetail;
+    }
     return returnArray;
     
 

@@ -151,8 +151,7 @@ class CheckOut extends Component {
         console.log(addr);
           const getStore = {
             address: addr,
-            orderId: orderDb.data.id,
-            lop: lop
+            userId: userId
           }
         console.log(getStore);
         const feedback = await callApi("getstore", "POST", getStore, token);
