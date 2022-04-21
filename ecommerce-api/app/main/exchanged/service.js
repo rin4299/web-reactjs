@@ -552,10 +552,12 @@ class ExchangeService extends BaseServiceCRUD {
       }
       orderOfStore.push(inOneStore);
     }
-    var returnObj = {
-      'SuggestionOfEachStore': suggestion,
-      'ParseOrderIntoStores': orderOfStore
-    }
+    var returnObj = 
+      [
+        suggestion,
+        orderOfStore
+      ] 
+    
     return returnObj;
     //   if(flagForOneStoreEnough) {
     //     for(var n = 0; n < shortageShell.length; n++){
