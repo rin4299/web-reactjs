@@ -15,7 +15,7 @@ class SuggestionCart extends Component {
         super(props);
         this.state = {
             filterStore: 'All',
-            getsuggestion:'',
+            getsuggestion:[,],
         }
     }
     async componentDidMount() {
@@ -72,7 +72,7 @@ class SuggestionCart extends Component {
             })
         // getsuggestion = res.data
         });
-        // console.log('getsuggestion', this.state.getsuggestion)
+        console.log('getsuggestion', this.state.getsuggestion)
     }
 
     handleChange = (event) => {
@@ -169,40 +169,63 @@ class SuggestionCart extends Component {
                                         {/* {
                                         this.showItem(items)
                                         } */}
-                                        {items && items.length ? items.map((item,index) => {
-                                            console.log(item)
+                                        {items && items.length && filterStore == 'All' ? items.map((item,index) => {
+                                            {/* console.log('all',item) */}
                                             return (
                                                 <tr>
-                                                    <td className="li-product-remove"><Link to="#"><i style={{fontSize: 20}} onClick={() => this.removeItem(item)} className="fa fa-trash" /></Link></td>
+                                                    <td className="li-product-remove"><Link to="#"><i style={{fontSize: 20}} 
+                                                    onClick={() => this.removeItem(item)} 
+                                                    className="fa fa-trash" /></Link></td>
                                                     <td className="li-product-thumbnail d-flex justify-content-center"><a href="/">
                                                     <div className="fix-cart"> <img className="fix-img" src={item.image ?  item.image : null} alt="Li's Product" /></div>
                                                     </a></td>
                                                     <td className="li-product-name"><a className="text-dark" href="/">{item.nameProduct}</a></td>
                                                     <td className="product-subtotal"><span className="amount">{formatNumber.format(item.price)}</span></td>
                                                     <td className="quantity">
-                                                    {filterStore == 'All' ? 
                                                     <div className="cart-plus-minus">
                                                         <input onChange={() => { }} className="cart-plus-minus-box" value={item.quantity || 0} />
                                                         <div onClick={() => this.downItem(item)} className="dec qtybutton"><i className="fa fa-angle-down" />
                                                         </div>
                                                         <div onClick={() => this.upItem(item)} className="inc qtybutton"><i className="fa fa-angle-up" /></div>
                                                     </div>
-                                                    : 
-                                                    <div className="cart-plus-minus">
-                                                        <input onChange={() => { }} className="cart-plus-minus-box" disabled value={item.quantity || 0} />
-                                                        {/* <div onClick={() => this.downItem(item)} className="dec qtybutton"><i className="fa fa-angle-down" />
-                                                        </div>
-                                                        <div onClick={() => this.upItem(item)} className="inc qtybutton"><i className="fa fa-angle-up" /></div> */}
-                                                    </div>
-                                                    }
-                                                    
                                                     </td>
                                                     <td className='number-Available'><span className="amount">{item.numberAvailable}</span></td>
                                                     <td className="product-subtotal"><span className="amount">{formatNumber.format(item.price * item.quantity)}</span></td>
                                                 </tr>
                                             )
-                                        }): null}
-                                        
+                                        })
+                                        :null}
+
+                                        {getsuggestion[0] && getsuggestion[0].length && filterStore !== 'All' ? getsuggestion[0].filter((items,index) => {
+                                            return items.storeName == filterStore}).map((items,index) => {
+                                                console.log('items', items)
+                                                let newitem = items.suggestionList
+                                                return newitem.map((object) => {
+                                                    console.log('object', object.product)
+                                                    return (
+                                                        <tr>
+                                                            <td className="li-product-remove"><Link to="#"><i style={{fontSize: 20}} 
+                                                            // onClick={() => this.removeItem(object)} 
+                                                            className="fa fa-trash" /></Link></td>
+                                                            <td className="li-product-thumbnail d-flex justify-content-center"><a href="/">
+                                                            <div className="fix-cart"> <img className="fix-img" src={object.product.image ?  object.product.image : null} alt="Li's Product" /></div>
+                                                            </a></td>
+                                                            <td className="li-product-name"><a className="text-dark" href="/">{object.product.nameProduct}</a></td>
+                                                            <td className="product-subtotal"><span className="amount">{formatNumber.format(object.product.price)}</span></td>
+                                                            <td className="quantity">
+                                                            <div className="cart-plus-minus">
+                                                                <input onChange={() => { }} className="cart-plus-minus-box" disabled value={object.quantity || 0} />
+                                                            </div>
+                                                            </td>
+                                                            <td className='number-Available'><span className="amount">{object.product.numberAvailable}</span></td>
+                                                            <td className="product-subtotal"><span className="amount">{formatNumber.format(object.product.price * object.quantity)}</span></td>
+                                                        </tr>
+                                                    )
+                                                    
+                                                })
+                                            })
+                                            
+                                             : null }
                                     </tbody>
                                     </table>
                                 </div>

@@ -59,12 +59,14 @@ class SumTotal extends Component {
             <li style={{ color: 'red' }}>Total <span>{amount ? formatNumber.format(amount + shippingTotal) : 0}</span></li>
           </ul>
           <button onClick={() => this.checkAuthenticate()} className="fix-text-checkout">Order Now</button>
+          <button onClick={() => {console.log('Order All')}} className="fix-text-checkout" >Order All</button>
         </div>
         <div className="coupon-all">
           <div className="coupon">
             <input id="coupon_code" className="input-text" name="coupon_code" placeholder="Code..." type="text" />
             <input className="button" name="apply_coupon" type="submit" />
             <span className="fix-text-discount">Discount Code / Gifts</span>
+            
           </div>
         </div>
       </div>
