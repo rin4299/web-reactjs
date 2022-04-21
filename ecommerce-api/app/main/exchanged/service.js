@@ -490,9 +490,11 @@ class ExchangeService extends BaseServiceCRUD {
             // productMatch.push({'pId': arrPQ[x]['pId'], 'currentQ': productInStore[y].quantity}); //Luu thong tin cac product matching cua moi store
             if(arrPQ[x]['quantity'] > productInStore[y].quantity){ //quantity yeu cau > quantity co thi store do ko dap ung duoc
               flag1 = false; // Store ko dap ung dc don
-              shortageShell.push({'pId': arrPQ[x]['pId'], 'quantity': productInStore[y].quantity}) 
+              var product = await Models.Product.query().findOne({id: arrPQ[x]['pId']})
+              shortageShell.push({'pId': arrPQ[x]['pId'], 'quantity': productInStore[y].quantity, 'product': product}) 
             } else {
-              shortageShell.push({'pId': arrPQ[x]['pId'], 'quantity': arrPQ[x]['quantity']})
+              var product = await Models.Product.query().findOne({id: arrPQ[x]['pId']})
+              shortageShell.push({'pId': arrPQ[x]['pId'], 'quantity': arrPQ[x]['quantity'], 'product': product})
             }
           }
         }
@@ -541,17 +543,21 @@ class ExchangeService extends BaseServiceCRUD {
       }
       for(var m = 0; m < arrPQ.length; m++){
         if(arrPQ[m].quantity > 0 && arrPQ[m].quantity > memoryShell[n]['products'][arrPQ[m].pId]){
-          inOneStore['products'].push({'pId': arrPQ[m].pId.toString(), 'quantity': memoryShell[n]['products'][arrPQ[m].pId.toString()] })
+          var product = await Models.Product.query().findOne({id: arrPQ[m].pId})
+          inOneStore['products'].push({'pId': arrPQ[m].pId, 'quantity': memoryShell[n]['products'][arrPQ[m].pId.toString()], 'product': product})
+          
           arrPQ[m].quantity = arrPQ[m].quantity  - memoryShell[n]['products'][arrPQ[m].pId.toString()];
         } else {
           if(arrPQ[m].quantity > 0){
-            inOneStore['products'].push({'pId': arrPQ[m].pId.toString(), 'quantity':  arrPQ[m].quantity })
+            var product = await Models.Product.query().findOne({id: arrPQ[m].pId})
+            inOneStore['products'].push({'pId': arrPQ[m].pId, 'quantity':  arrPQ[m].quantity, 'product': product})
             arrPQ[m].quantity = 0;
           }  
         }
       }
       orderOfStore.push(inOneStore);
     }
+    
     var returnObj = 
       [
         suggestion,
