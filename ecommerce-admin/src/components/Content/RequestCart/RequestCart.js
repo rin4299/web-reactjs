@@ -176,13 +176,13 @@ class RequestCart extends Component {
                   <form onSubmit={(event) => this.handleSubmit(event)}
                     className="form-inline md-form form-sm mt-0" style={{ justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20 }}>
                   </form>
-                  <div className="card-body">
+                  <div className="card-body" style={{width:'100%'}}>
                     <div className="Shopping-cart-area pt-30 pb-30">
                         <div className="container">
                             <div className="row">
                                 <div className="col-sm-8 col-xs-12">
                                 <form>
-                                    <div className="table-content table-responsive">
+                                    {/* <div className="table-content table-responsive"> */}
                                     <table className="table">
                                         <thead>
                                         <tr>
@@ -200,7 +200,7 @@ class RequestCart extends Component {
                                         }
                                         </tbody>
                                     </table>
-                                    </div>
+                                    {/* </div> */}
                                 </form>
                                 </div>
                                 <div className="col-sm-4 col-xs-12">

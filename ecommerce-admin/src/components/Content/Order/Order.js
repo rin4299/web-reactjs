@@ -12,7 +12,7 @@ import {exportExcel} from '../../../utils/exportExcel'
 import callApi from '../../../utils/apiCaller';
 import { toast } from "react-toastify";
 import Modal from 'react-bootstrap/Modal'
-
+import RangePicker from 'react-range-picker'
 const MySwal = withReactContent(Swal)
 
 let token;
@@ -55,7 +55,9 @@ class Order extends Component {
     this.props.fetch_orders(token, null, this.state.user[0].name).then(res => {
       console.log('result',res.results)
       this.setState({
-        total: res.results
+        total: res.results.sort((a,b)=> {
+          return new Date(a.createdAt) < new Date(b.createdAt)
+        })
       });
     }).catch(err => {
       console.log(err);  
@@ -113,7 +115,7 @@ class Order extends Component {
   //   })
   // }
 
-  filter = (event) => {
+  filterText = (event) => {
     const keyword = event.target.value
     this.setState({
       searchText: keyword
@@ -290,16 +292,25 @@ class Order extends Component {
                   <div>
                     
                     </div>
-                  <div style={{witdh:"30px", justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20, marginLeft:"auto" }}>    
-                  <select  className="form-control mb-3" name="status" onChange={(event) => {
-                                                                                                // this.setState({
-                                                                                                //   filterStatus : event.target.value}
-                                                                                                // )
-                                                                                                this.state.filterStatus = event.target.value
-                                                                                                this.fetch_reload_data()
-                                                                                              }} >
+                  <div style={{witdh:"30px", justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20, marginLeft:"auto" }} class="btn-group">
+                  {/* <RangePicker
+                    dateFormat='dd/MM/yyyy'
+                    isClearable={true}
+                    placeholder='Date...'
+                  /> */}
+                  <select name="sotring" onChange={(event) => {this.setState({ total : total.reverse()})}} >
+                      <option value='Newest'>Newest</option>
+                      <option value='Oldest'>Oldest</option>
+                    </select>     
+                  <select name="status" onChange={(event) => {
+                                                                // this.setState({
+                                                                //   filterStatus : event.target.value}
+                                                                // )
+                                                                this.state.filterStatus = event.target.value
+                                                                this.fetch_reload_data()
+                                                              }} >
                       <option value='...'>...</option>
-                      <option value='Unconfirm'>Unconfirm</option>
+                      <option value='Unconfirm' >Unconfirm</option>
                       <option value='Confirm'>Confirm</option>
                       <option value='Shipping' >Shipping</option>
                       <option value='Complete' >Complete</option>
@@ -307,7 +318,7 @@ class Order extends Component {
                     </select>      
                       <input
                         name="searchText"
-                        onChange={this.filter}
+                        onChange={this.filterText}
                         value={searchText}
                         className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
                         aria-label="Search" />

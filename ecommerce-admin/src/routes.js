@@ -23,6 +23,10 @@ import YourRequestPage from 'pages/YourRequestPage';
 import HistoryRequestPage from 'pages/HistoryRequestPage';
 import TrackingPage from 'pages/TrackingPage';
 import RequestCartPage from 'pages/RequestCartPage';
+import ImportPage from 'pages/ImportPage';
+import ActionImportPage from 'pages/ActionImportPage';
+import ProductReportPage from 'pages/ProductReportPage';
+import ActionReportProductPage from 'pages/ActionReportProductPage';
 const routes = [
   {
     path: '/',
@@ -62,17 +66,17 @@ const routes = [
   {
     path: '/yourrequests',
     exact: true,
-    main: ({ match }) => <YourRequestPage  match={match}/>
+    main: () => <YourRequestPage />
   },
   {
     path: '/historyrequest',
     exact: true,
-    main: ({ match }) => <HistoryRequestPage  match={match}/>
+    main: () => <HistoryRequestPage />
   },
   {
     path: '/tracking',
     exact: true,
-    main: ({ match }) => <TrackingPage  match={match}/>
+    main: () => <TrackingPage />
   },
   {
     path: '/discounts',
@@ -108,6 +112,26 @@ const routes = [
     path: '/about',
     exact: true,
     main: () => <AboutPage />
+  },
+  {
+    path: '/import',
+    exact: true,
+    main: () => <ImportPage />
+  },
+  {
+    path: '/productreport',
+    exact: true,
+    main: () => <ProductReportPage />
+  },
+  {
+    path: '/productreport/add',
+    exact: false,
+    main: ({ history }) => <ActionReportProductPage history={history} />
+  },
+  {
+    path: '/import/add',
+    exact: false,
+    main: ({ history }) => <ActionImportPage history={history} />
   },
   {
     path: '/roles/add',

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { actFetchProductsRequest, actDeleteProductRequest, actFindProductsRequest , actFetchProductsRequest2} from '../../../redux/actions/product';
+import { actFetchProductsRequest, actDeleteProductRequest, actFindProductsRequest} from '../../../redux/actions/product';
 import { actCreateExchange, actGetManyDiff } from '../../../redux/actions/exchange';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -272,13 +272,14 @@ class Product extends Component {
                     <button onClick={()=>this.downloadExcel()} style={{ border: 0, background: "white" }}> <i className="fa fa-file-excel-o"
                         style={{fontSize: 18, color: '#1d7044'}}> Excel</i></button>
                   </div>
-                  <div style={{witdh:"30px", justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20, marginLeft:"auto" }}>          
+                  <div style={{justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20, marginLeft:"auto"}} className='btn-group'>          
                       <input
                         name="searchText"
                         onChange={this.filter}
                         value={searchText}
                         className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
                         aria-label="Search" />
+                      <Link to='products/add' className='btn btn-primary' style={{marginLeft:'20px'}}>Create</Link>
                   </div>
                   <div className="card-body">
                     <div className="table-responsive">
@@ -387,9 +388,6 @@ const mapDispatchToProps = (dispatch) => {
     fetch_products: (token, offset, storename) => {
        return dispatch(actFetchProductsRequest(token, offset, storename))
     },
-    fetch_products2: (token, storename) => {
-      return dispatch(actFetchProductsRequest2(token, storename))
-   },
     delete_product: (id, token) => {
       dispatch(actDeleteProductRequest(id, token))
     },
@@ -399,9 +397,6 @@ const mapDispatchToProps = (dispatch) => {
     create_exchange: (token, payload) => {
       return dispatch(actCreateExchange(token, payload))
     }, 
-    getmany_diff: (id, token) => {
-      return dispatch(actGetManyDiff(id, token))
-    },
     addCart: (item, quantity) => {
       dispatch(actAddCartRequest(item, quantity))
     },

@@ -16,7 +16,7 @@ import AfterCheckoutPage from './pages/AfterCheckoutPage';
 import ProfilePage from './pages/ProfilePage';
 import ProductFavoritePage from './pages/ProductFavoritePage';
 import ProductSearchPage from './pages/ProductSerachPage';
-
+import HistoryOrderPage from './pages/HistoryOrderPage';
 
 
 const routes = [
@@ -80,6 +80,11 @@ const routes = [
     path: '/about',
     exact: false,
     main: (match) => < AboutPage match={match}/>
+  },
+  {
+    path: '/historyorder',
+    exact: false,
+    main: (match) => < HistoryOrderPage match={match}/>
   },
   {
     path: '/blogs',

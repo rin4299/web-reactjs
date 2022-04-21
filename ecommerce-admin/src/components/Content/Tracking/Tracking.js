@@ -157,7 +157,7 @@ class Tracking extends Component {
     return (
       <Modal
         {...props}
-        size="lg"
+        size="xl"
         aria-labelledby="contained-modal-title-vcenter"
         centered
       >

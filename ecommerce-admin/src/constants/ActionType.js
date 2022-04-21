@@ -89,3 +89,11 @@ export const ADD_CART = "ADD_CART"
 export const UPDATE_CART = "UPDATE_CART"
 export const REMOVE_CART = "REMOVE_CART"
 export const CLEAR_CART = "CLEAR_CART"
+
+export const FETCH_IMPORT = "FETCH_IMPORT"
+export const FIND_IMPORT = "FIND_IMPORT"
+export const CREATE_IMPORT = "CREATE_IMPORT"
+
+export const FETCH_REPORT = "FETCH_REPORT"
+export const CREATE_REPORT = "CREATE_REPORT"
+export const FIND_REPORT = "FIND_REPORT"
