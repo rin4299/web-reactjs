@@ -541,11 +541,11 @@ class ExchangeService extends BaseServiceCRUD {
       }
       for(var m = 0; m < arrPQ.length; m++){
         if(arrPQ[m].quantity > 0 && arrPQ[m].quantity > memoryShell[n]['products'][arrPQ[m].pId]){
-          inOneStore['products'].push({'pId': arrPQ[m].pId.toString(), 'quantity': memoryShell[n]['products'][arrPQ[m].pId.toString()] })
+          inOneStore['products'].push({'pId': arrPQ[m].pId, 'quantity': memoryShell[n]['products'][arrPQ[m].pId.toString()] })
           arrPQ[m].quantity = arrPQ[m].quantity  - memoryShell[n]['products'][arrPQ[m].pId.toString()];
         } else {
           if(arrPQ[m].quantity > 0){
-            inOneStore['products'].push({'pId': arrPQ[m].pId.toString(), 'quantity':  arrPQ[m].quantity })
+            inOneStore['products'].push({'pId': arrPQ[m].pId, 'quantity':  arrPQ[m].quantity })
             arrPQ[m].quantity = 0;
           }  
         }
