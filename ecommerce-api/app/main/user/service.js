@@ -56,7 +56,7 @@ class UserService extends BaseServiceCRUD {
     for(var i = 0; i < recMessage.length; i++){
       if(recMessage[i].userId === userId.toString() && recMessage[i].isActive){
         var orderDetail = await Models.OrderDetail.query().where('orderId', parseInt(recMessage[i].id));
-        recMessage[i]['orderDetail'] = orderDetail;
+        recMessage[i]['orderDetails'] = orderDetail;
         returnArr.push(recMessage[i]);
       }
     }

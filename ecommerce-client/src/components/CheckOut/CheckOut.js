@@ -104,6 +104,7 @@ class CheckOut extends Component {
         //insert order to db
         startLoading();
         const orderDb = await callApi("orders", "POST", resultOrder, token); //method post nen truyen them token tren headers
+        console.log('orderDB',orderDb)
         //END GET DATA FOR TABLE ORDER
 
         var lop = ""

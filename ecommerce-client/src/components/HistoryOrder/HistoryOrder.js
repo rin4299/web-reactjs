@@ -171,6 +171,7 @@ class HistoryOrder extends Component {
                                                             </thead>
                                                             <tbody>
                                                                 {item.orderDetails && item.orderDetails.length ? item.orderDetails.map((order,index) => {
+                                                                console.log('item',order)
                                                                 return(
                                                                     <tr key = {index}>
                                                                     <td scope="row">{index + 1}</td>
