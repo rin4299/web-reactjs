@@ -211,6 +211,7 @@ class OrderService extends BaseServiceCRUD {
         args:[buffer, atStore, fullName]
       }
       const res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+      console.log(res)
       if(res){
         var stringBuffer = res.data.result.data;
         var pdinOrder = Buffer.from(JSON.parse(JSON.stringify(stringBuffer))).toString();

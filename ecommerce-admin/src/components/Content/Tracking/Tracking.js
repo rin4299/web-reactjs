@@ -11,12 +11,13 @@ import {exportExcel} from 'utils/exportExcel'
 import Paginator from 'react-js-paginator';
 import callApi from '../../../utils/apiCaller';
 import Modal from 'react-bootstrap/Modal'
-
+import {Steps} from 'antd'
+// import "antd/dist/antd.css"
 
 const MySwal = withReactContent(Swal)
 
 let token;
-
+const {Step} = Steps;
 
 class Tracking extends Component {
 
@@ -297,6 +298,10 @@ class Tracking extends Component {
                       />
                   </ul>
                 </nav>
+                {/* <Steps direction='vertical' current={0}>
+                  <Step title="Finished" description={"somethings"}/>
+                  <Step title="Finished" description={"somethings"}/>
+                </Steps> */}
               </div>
             </div>
           </div>

@@ -17,7 +17,7 @@ class HistoryOrder extends Component {
         this.state = {
           historyBooking: [],
           modalShow: false,
-          status:'all'
+          filterStatus: 'All',
         }
     }
 
@@ -108,20 +108,23 @@ class HistoryOrder extends Component {
                 <div className="row justify-content-md-center">
                     <ul className="nav nav-tabs" style={{ paddingTop: 30, marginLeft: 100}} id="myTab" role="tablist">
                         <li className="nav-item">
-                            <button className="nav-link active btn-lg" name="status" value="ALL" data-toggle="tab" role="tab" aria-controls="all" aria-selected="true" onClick={this.handleChange}>ALL</button>
+                            <button className="nav-link active btn-lg" name="status" value="All" data-toggle="tab" role="tab" aria-controls="all" aria-selected="true" onClick={this.handleChange}>ALL</button>
                             {/* <a className="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="all" aria-selected="true">All</a> */}
                         </li>
                         <li className="nav-item" style={{marginLeft: 10}}>
-                            <button className="nav-link btn-lg" name="status" value="READY" data-toggle="tab" role="tab" aria-controls="ready" aria-selected="false" onClick={this.handleChange}>READY</button>
+                            <button className="nav-link btn-lg" name="filterStatus" value="Unconfirm" data-toggle="tab" role="tab" aria-controls="ready" aria-selected="false" onClick={this.handleChange}>UNCONFIRM</button>
                         </li>
                         <li className="nav-item" style={{marginLeft: 10}}>
-                            <button className="nav-link btn-lg" name="status" value="SHIPPING" data-toggle="tab" role="tab" aria-controls="shipping" aria-selected="false" onClick={this.handleChange}>SHIPPING</button>
+                            <button className="nav-link btn-lg" name="filterStatus" value="Confirm" data-toggle="tab" role="tab" aria-controls="ready" aria-selected="false" onClick={this.handleChange}>CONFIRM</button>
                         </li>
                         <li className="nav-item" style={{marginLeft: 10}}>
-                            <button className="nav-link btn-lg" name="status" value="COMPLETE" data-toggle="tab" role="tab" aria-controls="complete" aria-selected="false" onClick={this.handleChange}>COMPLETE</button>
+                            <button className="nav-link btn-lg" name="filterStatus" value="Shipping" data-toggle="tab" role="tab" aria-controls="shipping" aria-selected="false" onClick={this.handleChange}>SHIPPING</button>
+                        </li>
+                        <li className="nav-item" style={{marginLeft: 10}}>
+                            <button className="nav-link btn-lg" name="filterStatus" value="Complete" data-toggle="tab" role="tab" aria-controls="complete" aria-selected="false" onClick={this.handleChange}>COMPLETE</button>
                         </li>
                         <li className="nav-item" style={{marginLeft: 10}} >
-                            <button className="nav-link btn-lg" name="status" value="CANCEL" data-toggle="tab" role="tab" aria-controls="cancel" aria-selected="false" onClick={this.handleChange}>CANCEL</button>
+                            <button className="nav-link btn-lg" name="filterStatus" value="Canceled" data-toggle="tab" role="tab" aria-controls="cancel" aria-selected="false" onClick={this.handleChange}>CANCEL</button>
                         </li>
                     </ul>
                 </div>
@@ -151,8 +154,14 @@ class HistoryOrder extends Component {
                                     )
                                     }) : null} */}
                                     {
-                                        historyBooking && historyBooking.length ? historyBooking.map((item, index) => {
-                                        {/* console.log('item',item.orderDetails) */}
+                                        historyBooking && historyBooking.length ? historyBooking
+                                        .filter((item,index) => {
+                                            if(this.state.filterStatus === 'All'){
+                                            return true
+                                            }
+                                            return item.status == this.state.filterStatus
+                                        })
+                                        .map((item, index) => {
                                         return (
                                             <tr key={index} id="myrow">
                                                 <th><Link to="/orders/history/item">#{item.id}</Link></th>
@@ -171,7 +180,7 @@ class HistoryOrder extends Component {
                                                             </thead>
                                                             <tbody>
                                                                 {item.orderDetails && item.orderDetails.length ? item.orderDetails.map((order,index) => {
-                                                                console.log('item',order)
+                                                                {/* console.log('item',order) */}
                                                                 return(
                                                                     <tr key = {index}>
                                                                     <td scope="row">{index + 1}</td>
@@ -186,8 +195,8 @@ class HistoryOrder extends Component {
                                                         </table>
                                                     </div>
                                                 </th>
-                                                <th><Moment format="YYYY-MM-DD">
-                                                    {item.createdAt}
+                                                <th><Moment format="DD-MM-YYYY">
+                                                    {Date(item.createdAt)}
                                                     </Moment>
                                                 </th>
                                                 <th>

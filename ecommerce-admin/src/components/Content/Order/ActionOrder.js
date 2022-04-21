@@ -411,7 +411,7 @@ class ActionOrder extends Component {
                       <div className="form-group row">
                         <label className="col-sm-3 form-control-label">Status</label>
                         <div className="col-sm-9">
-                          <select  className="form-control mb-3" name="status" value={status} onChange={this.handleChange}>
+                          <select  className="form-control mb-3" name="status" value={status} disabled onChange={this.handleChange}>
                             <option value='Unconfirm'>Unconfirm</option>
                             <option value='Confirm'>Confirm</option>
                             <option value='Shipping' >Shipping</option>
@@ -448,6 +448,7 @@ class ActionOrder extends Component {
                         <div className="col-sm-4 offset-sm-3">
                           <Link to="/orders"><button type="reset" className="btn btn-secondary" style={{ marginRight: 2 }}>Cancel</button></Link>
                           {/* <button type="reset" className="btn btn-secondary" style={{ marginRight: 2 }}>Cancel</button> */}
+                          {/* <Link to="/orders"><button type="submit" className="btn btn-primary">Save changes</button></Link> */}
                           <button type="submit" className="btn btn-primary">Save changes</button>
                         </div>
                       </div>

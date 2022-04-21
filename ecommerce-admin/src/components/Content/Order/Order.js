@@ -25,7 +25,7 @@ class Order extends Component {
       total: '',
       currentPage: 1,
       user: [],
-      filterStatus: '...',
+      filterStatus: 'All',
       productDetails: 0,
       modalShow: false,
     }
@@ -309,7 +309,7 @@ class Order extends Component {
                                                                 this.state.filterStatus = event.target.value
                                                                 this.fetch_reload_data()
                                                               }} >
-                      <option value='...'>...</option>
+                      <option value='All'>All</option>
                       <option value='Unconfirm' >Unconfirm</option>
                       <option value='Confirm'>Confirm</option>
                       <option value='Shipping' >Shipping</option>
@@ -352,7 +352,7 @@ class Order extends Component {
                                 />
                           {orders && orders.length ? orders
                           .filter((item,index) => {
-                            if(this.state.filterStatus === '...'){
+                            if(this.state.filterStatus === 'All'){
                               return true
                             }
                             return item.status == this.state.filterStatus
@@ -414,8 +414,8 @@ class Order extends Component {
                                 <td><p>{item.note}</p></td>
                                 <td>{item.id}</td>
                                 <td>
-                                  <Moment format="YYYY/MM/DD">
-                                    {item.createdAt}
+                                  <Moment format="DD/MM/YYYY">
+                                    {Date(item.createdAt)}
                                   </Moment>
                                 </td>
                                 <td>

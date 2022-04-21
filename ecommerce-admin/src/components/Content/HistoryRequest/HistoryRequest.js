@@ -341,7 +341,6 @@ class HistoryRequest extends Component {
                         <tbody>
                           {total2 && total2.length ? total2.map((item, index) => {
                             var time = new Date(item.latestUpdate).toDateString() ;
-                            {/* console.log('time',time) */}
                               return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
