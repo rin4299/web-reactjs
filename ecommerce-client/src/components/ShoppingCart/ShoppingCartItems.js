@@ -35,7 +35,6 @@ class ShoppingCartItems extends Component {
 
   render() {
     const { item } = this.props;
-    console.log('item trong cartItem',item)
     return (
       <tr>
         <td className="li-product-remove"><Link to="#"><i style={{fontSize: 20}} onClick={() => this.removeItem(item)} className="fa fa-trash" /></Link></td>

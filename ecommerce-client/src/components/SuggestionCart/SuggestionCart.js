@@ -15,9 +15,10 @@ class SuggestionCart extends Component {
         super(props);
         this.state = {
             filterStore: 'All',
-            getsuggestion:[,],
+            getsuggestion:[[],[]],
             redirectYourOrder: false,
-            redirectYourLogin: false
+            redirectYourLogin: false,
+            OrderSingle : []
         }
     }
     async componentDidMount() {
@@ -67,7 +68,6 @@ class SuggestionCart extends Component {
         "lop": lop,
         "userId":userId
         }
-        let getsuggestion;
         await callApi("getsuggestion", "POST", payload2, token).then(res =>{
             this.setState({
                 getsuggestion : res.data
@@ -125,6 +125,36 @@ class SuggestionCart extends Component {
         toast.success('Delete product is successful')
     }
 
+    updateItem = (item) => {
+
+    }
+
+    orderSingle = () => { 
+        
+    }
+
+    UpdateOrderSingle = () => {
+        const {getsuggestion , filterStore } = this.state
+        let cart = JSON.parse(localStorage.getItem('_cart'));
+        console.log('cart',cart)
+        let items
+        if ( getsuggestion[0] && getsuggestion[0].length && filterStore !== 'All' ){
+            items = getsuggestion[0].filter((items,index) => {return items.storeName == filterStore})
+            items = items[0].suggestionList
+            // console.log('temp', items)
+            items.forEach((item) => {
+                const index = cart.findIndex(e => e.id === item.product.id);
+                cart[index].quantity = item.product.quantity
+                let newItem = cart[index]
+                console.log('newItem', newItem)
+                this.props.changQuantityItem(newItem);
+            })
+            this.checkAuthenticate()
+            // console.log('cart after', JSON.parse(localStorage.getItem('_cart')))
+        }
+
+    }
+
     checkAuthenticate = () => {
         const { user, items } = this.props;
         if (!items.length) {
@@ -144,7 +174,8 @@ class SuggestionCart extends Component {
 
   render() {
     const { items } = this.props;
-    const { getsuggestion , filterStore , redirectYourOrder, redirectYourLogin } = this.state;
+    const { getsuggestion , filterStore , redirectYourOrder, redirectYourLogin, OrderSingle } = this.state;
+    console.log(getsuggestion[0])
     let amount = 0;
     let shippingTotal = 2;
     if (items.length > 0 && filterStore=='All') {
@@ -158,10 +189,20 @@ class SuggestionCart extends Component {
             newItems = getsuggestion[0].filter((item)=> {
                return item.storeName == filterStore
             })
-            console.log('newItem',newItems)
+            // console.log('newItem',newItems)
+            let newItems2 = newItems[0].suggestionList
+            // console.log('newItem2',newItems2)
+
+            if (newItems2 && newItems2.length > 0 ){
+                amount = newItems2.reduce((sum, item) => {
+                    // console.log('item in store A', item)
+                    return sum += item.product.quantity * item.product.price
+                }, 0)
+            }
         }
     }
-    console.log('test total',getsuggestion[0])
+    // console.log('test total',getsuggestion)
+
     if (redirectYourOrder) {
       return <Redirect to="/checkout"></Redirect>
     }
@@ -177,7 +218,7 @@ class SuggestionCart extends Component {
                             <button className="nav-link active btn-lg" name="filterStore" value="All" data-toggle="tab" role="tab" aria-controls="all" aria-selected="true" onClick={this.handleChange}>All</button>
                             {/* <a className="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="all" aria-selected="true">All</a> */}
                         </li>
-                        {getsuggestion[0] ? getsuggestion[0].map((item,index) =>{
+                        {getsuggestion[0] && (getsuggestion[0].length > 0 )? getsuggestion[0].map((item,index) =>{
                             {/* console.log('item',item) */}
                             return (
                                 <li className="nav-item" >
@@ -212,7 +253,7 @@ class SuggestionCart extends Component {
                                         this.showItem(items)
                                         } */}
                                         {items && items.length && filterStore == 'All' ? items.map((item,index) => {
-                                            {/* console.log('all',item) */}
+                                            {/* console.log('local storage',item) */}
                                             return (
                                                 <tr>
                                                     <td className="li-product-remove"><Link to="#"><i style={{fontSize: 20}} 
@@ -240,14 +281,19 @@ class SuggestionCart extends Component {
 
                                         {getsuggestion[0] && getsuggestion[0].length && filterStore !== 'All' ? getsuggestion[0].filter((items,index) => {
                                             return items.storeName == filterStore}).map((items,index) => {
-                                                console.log('items', items)
+                                                {/* console.log('items', items) */}
                                                 let newitem = items.suggestionList
+                                                {/* console.log('newitem', newitem); */}
+                                                {/* this.setState({
+                                                    orderSingle: newitem
+                                                }); */}
+                                                {/* console.log('OrderSingle',OrderSingle) */}
                                                 return newitem.map((object) => {
                                                     {/* console.log('object', object.product) */}
                                                     return (
                                                         <tr>
                                                             <td className="li-product-remove"><Link to="#"><i style={{fontSize: 20}} 
-                                                            // onClick={() => this.removeItem(object)} 
+                                                            onClick={() => this.removeItem(object.product)} 
                                                             className="fa fa-trash" /></Link></td>
                                                             <td className="li-product-thumbnail d-flex justify-content-center"><a href="/">
                                                             <div className="fix-cart"> <img className="fix-img" src={object.product.image ?  object.product.image : null} alt="Li's Product" /></div>
@@ -256,11 +302,11 @@ class SuggestionCart extends Component {
                                                             <td className="product-subtotal"><span className="amount">{formatNumber.format(object.product.price)}</span></td>
                                                             <td className="quantity">
                                                             <div className="cart-plus-minus">
-                                                                <input onChange={() => { }} className="cart-plus-minus-box" disabled value={object.quantity || 0} />
+                                                                <input onChange={() => { }} className="cart-plus-minus-box" disabled value={object.product.quantity || 0} />
                                                             </div>
                                                             </td>
                                                             <td className='number-Available'><span className="amount">{object.product.numberAvailable}</span></td>
-                                                            <td className="product-subtotal"><span className="amount">{formatNumber.format(object.product.price * object.quantity)}</span></td>
+                                                            <td className="product-subtotal"><span className="amount">{formatNumber.format(object.product.price * object.product.quantity)}</span></td>
                                                         </tr>
                                                     )
                                                     
@@ -283,7 +329,11 @@ class SuggestionCart extends Component {
                                 <li>Shipping <span>{formatNumber.format(amount ? shippingTotal : 0)}</span></li>
                                 <li style={{ color: 'red' }}>Total <span>{amount ? formatNumber.format(amount + shippingTotal) : 0}</span></li>
                             </ul>
-                            <button onClick={() => this.checkAuthenticate()} className="fix-text-checkout">Order Now</button>
+                            <button onClick={() => 
+                                // this.checkAuthenticate()
+                                this.UpdateOrderSingle()
+                                // this.orderSingle()
+                            } className="fix-text-checkout">Order Now</button>
                             <button onClick={() => {console.log('Order All')}} className="fix-text-checkout" >Order All</button>
                             </div>
                             <div className="coupon-all">
@@ -306,7 +356,7 @@ class SuggestionCart extends Component {
 }
 
 const mapStateToProps = (state) => {
-    console.log('state', state)
+    // console.log('state', state)
   return {
     items: state.cart,
     user: state.auth

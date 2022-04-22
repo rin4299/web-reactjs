@@ -10,7 +10,6 @@ export const actFetchCartRequest = () => {
         for (let i = 0; i < localStorage.length; i++) {
             if (localStorage.key(i) === '_cart') {
                 const res = localStorage.getItem('_cart');
-                console.log('fetch_cart2', JSON.parse(res))
                 dispatch(actFetchCart(JSON.parse(res)));
             }
         }
@@ -78,7 +77,9 @@ export const actUpdateCartRequest = (item) => {
         let res = JSON.parse(localStorage.getItem('_cart'));
         const index = res.findIndex(e => e.id === item.id);
         res[index] = item;
+        // console.log("ok",item)
         localStorage.setItem('_cart', JSON.stringify(res))
+        // console.log('cart updated', res)
         dispatch(actUpdateCart(item));
     };
 }

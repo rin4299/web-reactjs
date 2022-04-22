@@ -27,13 +27,14 @@ class CheckOut extends Component {
       shippingAddress: false,
       checkout: false,
       result: false,
-      modalShow: false,
+      // modalShow: false,
     };
     this.billing = React.createRef();
   }
 
-  componentDidMount() {
+  componentDidMount(props) {
     token = localStorage.getItem("_auth");
+    console.log('test',this.props)
   }
 
   submitOrder = async () => {
@@ -248,6 +249,7 @@ class CheckOut extends Component {
       },
       token,
     };
+    console.log('resultOrder',resultOrder)
     this.setState({
       toggleCheckout: !toggleCheckout,
       shippingAddress: !shippingAddress,
@@ -265,78 +267,108 @@ class CheckOut extends Component {
     this.props.reset_cart();
   }
 
-  testFunction = async () => {
-    // const auth = localStorage.getItem("_auth");
+  // testFunction = async () => {
     
-    token = localStorage.getItem("_auth");
-    if (!token) {
-      return toast.error("Missing authentication!");
-    }
-    // console.log('Next Step',payload)
-    const resData = await callApi("users/me", "GET", null, token);
-    const userId = resData.data.results[0].id;
-    // output user id
-    const builder = localStorage.getItem("_cart");
-    const dataCart = JSON.parse(builder);
-    console.log(dataCart)
-    // if (res.name === "" || res.address === "" || res.phone === "") {
-    //   return toast.error("Please complete form before checkout");
-    // }
-    const payload1 = {
-      address:"268 Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Việt Nam",
-      userId: userId
-    }
-    let getstore
-    await callApi("getstore", "POST", payload1, token).then(res => {
-      getstore = res.data
-    });
-    console.log(getstore)
+  //   token = localStorage.getItem("_auth");
+  //   if (!token) {
+  //     return toast.error("Missing authentication!");
+  //   }
+  //   const resData = await callApi("users/me", "GET", null, token);
+  //   const userId = resData.data.results[0].id;
+  //   const builder = localStorage.getItem("_cart");
+  //   const dataCart = JSON.parse(builder);
+  //   console.log(dataCart)
+  //   const payload1 = {
+  //     address:"268 Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Việt Nam",
+  //     userId: userId
+  //   }
+  //   let getstore
+  //   await callApi("getstore", "POST", payload1, token).then(res => {
+  //     getstore = res.data
+  //   });
+  //   console.log(getstore)
 
-    let dataItems = [];
-    let lop='';
-    dataCart.forEach((item) => {
-      dataItems.push({
-        sku: item.id,
-        name: item.nameProduct,
-        description: item.description,
-        quantity: item.quantity,
-        price: item.price,
-        currency: "USD",
-      });
+  //   let dataItems = [];
+  //   let lop='';
+  //   dataCart.forEach((item) => {
+  //     dataItems.push({
+  //       sku: item.id,
+  //       name: item.nameProduct,
+  //       description: item.description,
+  //       quantity: item.quantity,
+  //       price: item.price,
+  //       currency: "USD",
+  //     });
+  //     if(lop == '') lop = item.id.toString() + '-' + item.quantity.toString()
+  //     else {
+  //       lop = lop + ',' + item.id.toString() + '-' + item.quantity.toString()   
+  //     }
+  //   });
+  //   console.log(lop)
+  //   const payload2 = {
+  //     "lop": lop,
+  //     "userId":userId
+  //   }
+  //   let getsuggestion;
+  //   await callApi("getsuggestion", "POST", payload2, token).then(res =>{
+  //     getsuggestion = res.data
+  //   });
+  //   console.log('getsuggestion', getsuggestion)
+  //   if(getsuggestion.length !== 1){
+  //       this.setState({modalShow: true});
+  //   }
+  // }
+  get_lop = () => {
+    // token = localStorage.getItem("_auth");
+    //   if (!token) {
+    //   return toast.error("Missing authentication!");
+    //   }
+      // console.log('Next Step',payload)
+      // const resData = await callApi("users/me", "GET", null, token);
+      // const userId = resData.data.results[0].id;
+      // output user id
+      const builder = localStorage.getItem("_cart");
+      const dataCart = JSON.parse(builder);
+      // const payload1 = {
+      // address:"268 Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Việt Nam",
+      // userId: userId
+      // }
+      // let getstore
+      // await callApi("getstore", "POST", payload1, token).then(res => {
+      // getstore = res.data
+      // });
+      // console.log('getstore',getstore)
+
+      // let dataItems = [];
+      let lop='';
+      dataCart.forEach((item) => {
+      // dataItems.push({
+      //     sku: item.id,
+      //     name: item.nameProduct,
+      //     description: item.description,
+      //     quantity: item.quantity,
+      //     price: item.price,
+      //     currency: "USD",
+      // });
       if(lop == '') lop = item.id.toString() + '-' + item.quantity.toString()
       else {
-        lop = lop + ',' + item.id.toString() + '-' + item.quantity.toString()   
+          lop = lop + ',' + item.id.toString() + '-' + item.quantity.toString()   
       }
-    });
-    console.log(lop)
-    const payload2 = {
-      "lop": lop,
-      "userId":userId
-    }
-    let getsuggestion;
-    await callApi("getsuggestion", "POST", payload2, token).then(res =>{
-      getsuggestion = res.data
-    });
-    // let storeSuggestion = resData3.data
-    console.log('getsuggestion', getsuggestion)
-    if(getsuggestion.length !== 1){
-        this.setState({modalShow: true});
-      // MySwal.fire({
-      //   title: "Notification",
-      //   text: "Your quantity is more than any one of our particular stores has. We have recommend for you. Let take a quick view ?",
-      //   icon: "warning",
-      //   showCancelButton: true,
-      //   confirmButtonColor: "#3085d6",
-      //   cancelButtonColor: "#d33",
-      //   confirmButtonText: "Yes, Let's see!",
-      // }).then(async (result) => {
-      //   if(result.isConfirmed){
-      //     console.log('ressult',result)
-      //     return <Redirect to="/cart"></Redirect>
-      //   }
-      // })
-    }
+      });
+      console.log('lop',lop)
+      // const payload2 = {
+      // "lop": lop,
+      // "userId":userId
+      // }
+      // await callApi("getsuggestion", "POST", payload2, token).then(res =>{
+      //     this.setState({
+      //         getsuggestion : res.data
+      //     })
+      // // getsuggestion = res.data
+      // });
+      // console.log('getsuggestion', this.state.getsuggestion)
   }
+
 
   MyVerticallyCenteredModal = (props) => {
     return (
@@ -366,6 +398,9 @@ class CheckOut extends Component {
   }
 
   render() {
+    // let atStore = 
+    console.log('atstore Checkout', localStorage.getItem('_atStore'))
+    this.get_lop()
     const {
       redirectTo,
       toggleCheckout,
@@ -450,17 +485,17 @@ class CheckOut extends Component {
                 {!toggleCheckout ? (
                   <div>
                     <button
-                      // onClick={() => this.toggleCheckout()}
-                      onClick={() => this.testFunction()}
+                      onClick={() => this.toggleCheckout()}
+                      // onClick={() => this.testFunction()}
                       className="btn btn-primary"
                       style={{ marginTop: -25, marginBottom: 10 }}
                     >
                       Next Step
                     </button>
-                    <this.MyVerticallyCenteredModal
+                    {/* <this.MyVerticallyCenteredModal
                       show={this.state.modalShow}
                       onHide={() => this.setState({modalShow: false})}
-                    />
+                    /> */}
                   </div>
                   
                   
