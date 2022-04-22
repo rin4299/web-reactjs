@@ -10,6 +10,7 @@ export const actFetchCartRequest = () => {
         for (let i = 0; i < localStorage.length; i++) {
             if (localStorage.key(i) === '_cart') {
                 const res = localStorage.getItem('_cart');
+                console.log('fetch_cart2', JSON.parse(res))
                 dispatch(actFetchCart(JSON.parse(res)));
             }
         }

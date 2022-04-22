@@ -6,10 +6,13 @@ const findIndexs = (id, state) => {
     index = state.findIndex(e => e.id === id)
     return index;
 }
-const products = (state = initialState, action) => {
+const cart = (state = initialState, action) => {
+    console.log('fetch_cart')
+
     switch (action.type) {
         case Types.FETCH_CART:
             state = action.items;
+            console.log('fetch_cart', state)
             return [...state];
         case Types.ADD_CART:
             state.push(action.item);
@@ -29,4 +32,4 @@ const products = (state = initialState, action) => {
     }
 };
 
-export default products;
+export default cart;

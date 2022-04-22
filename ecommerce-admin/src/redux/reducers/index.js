@@ -13,6 +13,7 @@ import infoMe from './infoMe';
 import ratings from './ratings';
 import contacts from './contacts';
 import loading from './loading';
+import cart  from  './cart'
 
 const appReducers = combineReducers({
     auth,

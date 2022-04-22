@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import SumTotal from './SumTotal';
 import callApi from "../../utils/apiCaller";
 import { toast } from "react-toastify";
-import { Link } from 'react-router-dom'
+import { Link , Redirect } from 'react-router-dom'
 import { formatNumber } from '../../config/TYPE'
 import { actRemoveCartRequest, actUpdateCartRequest } from '../../redux/actions/cart';
 
@@ -16,6 +16,8 @@ class SuggestionCart extends Component {
         this.state = {
             filterStore: 'All',
             getsuggestion:[,],
+            redirectYourOrder: false,
+            redirectYourLogin: false
         }
     }
     async componentDidMount() {
@@ -123,9 +125,49 @@ class SuggestionCart extends Component {
         toast.success('Delete product is successful')
     }
 
+    checkAuthenticate = () => {
+        const { user, items } = this.props;
+        if (!items.length) {
+          return toast.error('Please purchase items before payment');
+        }
+        if (user) {
+          this.setState({
+            redirectYourOrder: true
+          })
+        } else {
+          toast.error('You can login before checkout');
+          this.setState({
+            redirectYourLogin: true
+          })
+        }
+    }
+
   render() {
     const { items } = this.props;
-    const { getsuggestion , filterStore } = this.state;
+    const { getsuggestion , filterStore , redirectYourOrder, redirectYourLogin } = this.state;
+    let amount = 0;
+    let shippingTotal = 2;
+    if (items.length > 0 && filterStore=='All') {
+      amount = items.reduce((sum, item) => {
+        return sum += item.quantity * item.price
+      }, 0)
+    }
+    else {
+        let newItems
+        if(getsuggestion[0] && getsuggestion[0].length > 0){
+            newItems = getsuggestion[0].filter((item)=> {
+               return item.storeName == filterStore
+            })
+            console.log('newItem',newItems)
+        }
+    }
+    console.log('test total',getsuggestion[0])
+    if (redirectYourOrder) {
+      return <Redirect to="/checkout"></Redirect>
+    }
+    if (redirectYourLogin) {
+      return <Redirect to="/login-register"></Redirect>
+    }
     return (
         <div>
             <div className='container'>
@@ -201,7 +243,7 @@ class SuggestionCart extends Component {
                                                 console.log('items', items)
                                                 let newitem = items.suggestionList
                                                 return newitem.map((object) => {
-                                                    console.log('object', object.product)
+                                                    {/* console.log('object', object.product) */}
                                                     return (
                                                         <tr>
                                                             <td className="li-product-remove"><Link to="#"><i style={{fontSize: 20}} 
@@ -232,7 +274,27 @@ class SuggestionCart extends Component {
                             </form>
                         </div>
                     <div className="col-sm-4 col-xs-12">
-                        <SumTotal></SumTotal>
+                        {/* <SumTotal></SumTotal> */}
+                        <div>
+                            <div className="cart-page-total">
+                            <h2>Cart totals</h2>
+                            <ul>
+                                <li>Subtotal <span>{amount ? formatNumber.format(amount) : 0}</span></li>
+                                <li>Shipping <span>{formatNumber.format(amount ? shippingTotal : 0)}</span></li>
+                                <li style={{ color: 'red' }}>Total <span>{amount ? formatNumber.format(amount + shippingTotal) : 0}</span></li>
+                            </ul>
+                            <button onClick={() => this.checkAuthenticate()} className="fix-text-checkout">Order Now</button>
+                            <button onClick={() => {console.log('Order All')}} className="fix-text-checkout" >Order All</button>
+                            </div>
+                            <div className="coupon-all">
+                            <div className="coupon">
+                                <input id="coupon_code" className="input-text" name="coupon_code" placeholder="Code..." type="text" />
+                                <input className="button" name="apply_coupon" type="submit" />
+                                <span className="fix-text-discount">Discount Code / Gifts</span>
+                                
+                            </div>
+                            </div>
+                        </div>
                     </div>
                     </div>
                 </div>
@@ -244,8 +306,10 @@ class SuggestionCart extends Component {
 }
 
 const mapStateToProps = (state) => {
+    console.log('state', state)
   return {
-    items: state.cart
+    items: state.cart,
+    user: state.auth
   }
 }
 

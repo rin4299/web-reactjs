@@ -10,6 +10,7 @@ const products = (state = initialState, action) => {
     switch (action.type) {
         case Types.FETCH_CART:
             state = action.items;
+            console.log('fetch_cart', state)
             return [...state];
         case Types.ADD_CART:
             state.push(action.item);
