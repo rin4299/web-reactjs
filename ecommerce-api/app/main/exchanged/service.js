@@ -491,10 +491,12 @@ class ExchangeService extends BaseServiceCRUD {
             if(arrPQ[x]['quantity'] > productInStore[y].quantity){ //quantity yeu cau > quantity co thi store do ko dap ung duoc
               flag1 = false; // Store ko dap ung dc don
               var product = await Models.Product.query().findOne({id: arrPQ[x]['pId']})
-              shortageShell.push({'pId': arrPQ[x]['pId'], 'quantity': productInStore[y].quantity, 'product': product}) 
+	      product['quantity'] = productInStore[y].quantity
+              shortageShell.push({'pId': arrPQ[x]['pId'], 'product': product})
             } else {
               var product = await Models.Product.query().findOne({id: arrPQ[x]['pId']})
-              shortageShell.push({'pId': arrPQ[x]['pId'], 'quantity': arrPQ[x]['quantity'], 'product': product})
+	      product['quantity'] = arrPQ[x]['quantity']
+              shortageShell.push({'pId': arrPQ[x]['pId'], 'product': product})
             }
           }
         }
@@ -544,13 +546,15 @@ class ExchangeService extends BaseServiceCRUD {
       for(var m = 0; m < arrPQ.length; m++){
         if(arrPQ[m].quantity > 0 && arrPQ[m].quantity > memoryShell[n]['products'][arrPQ[m].pId]){
           var product = await Models.Product.query().findOne({id: arrPQ[m].pId})
-          inOneStore['products'].push({'pId': arrPQ[m].pId, 'quantity': memoryShell[n]['products'][arrPQ[m].pId.toString()], 'product': product})
-          
+	  product['quantity'] = memoryShell[n]['products'][arrPQ[m].pId.toString()]
+          inOneStore['products'].push({'pId': arrPQ[m].pId, 'product': product})
+    
           arrPQ[m].quantity = arrPQ[m].quantity  - memoryShell[n]['products'][arrPQ[m].pId.toString()];
         } else {
           if(arrPQ[m].quantity > 0){
             var product = await Models.Product.query().findOne({id: arrPQ[m].pId})
-            inOneStore['products'].push({'pId': arrPQ[m].pId, 'quantity':  arrPQ[m].quantity, 'product': product})
+	    product['quantity'] = arrPQ[m].quantity
+            inOneStore['products'].push({'pId': arrPQ[m].pId, 'product': product})
             arrPQ[m].quantity = 0;
           }  
         }
