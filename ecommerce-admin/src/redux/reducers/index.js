@@ -29,7 +29,8 @@ const appReducers = combineReducers({
     infoMe,
     ratings,
     contacts,
-    loading
+    loading,
+    cart
 });
 
 export default appReducers;

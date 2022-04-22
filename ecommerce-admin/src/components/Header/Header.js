@@ -7,7 +7,6 @@ import { actFetchCartRequest } from '../../redux/actions/cart';
 
 
 let token;
-let cart;
 class Header extends Component {
 
   constructor(props) {
@@ -41,7 +40,9 @@ class Header extends Component {
     // this.setState({
     //   cart : JSON.parse(localStorage.getItem('_cart'))
     // })
-    cart = JSON.parse(localStorage.getItem('_cart'))
+    // cart = JSON.parse(localStorage.getItem('_cart'))
+    const { cart } = this.props
+    console.log('cart in header', cart)
     console.log(this.state.Countcart)
     if (cart.length > 0) {
       count = cart.reduce((sum, item) => {
@@ -119,6 +120,13 @@ class Header extends Component {
 //   }
 // }
 
+const mapStateToProps = (state) => {
+  console.log('state', state)
+  return {
+    cart: state.cart
+  }
+}
+
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -134,4 +142,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(null, mapDispatchToProps)(Header)
+export default connect(mapStateToProps, mapDispatchToProps)(Header)

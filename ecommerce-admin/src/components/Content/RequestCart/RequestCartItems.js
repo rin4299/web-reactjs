@@ -61,6 +61,7 @@ class RequestCartItems extends Component {
   }
 }
 
+
 const mapDispatchToProps = (dispatch) => {
   return {
     removeItem: (item) => {
