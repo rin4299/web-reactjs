@@ -232,11 +232,18 @@ class ShoppingCart extends Component {
       localStorage.setItem('_atStore', filterStore)
     }
     console.log('_atStore3',localStorage.getItem('_atStore'))
-    let numOrders
+    let numOrders = 1
     if (getsuggestion[1] != null ){
-      numOrders = getsuggestion[1].length;
-      console.log(numOrders)
+      if (isAccepted && filterStore == 'All'){
+        numOrders = getsuggestion[1].length;
+      }
+      else {
+        numOrders = 1
+      }
     }
+    console.log(numOrders)
+    localStorage.setItem('numOrders', numOrders)
+
     
     let amount = 0;
     let shippingTotal = 2;

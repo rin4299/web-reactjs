@@ -28,6 +28,7 @@ class CheckOut extends Component {
       checkout: false,
       result: false,
       // modalShow: false,
+      lopOrder :'',
     };
     this.billing = React.createRef();
   }
@@ -93,18 +94,29 @@ class CheckOut extends Component {
           codeProvince: provinceData,
           codeState: stateData,
         }; // output address
+        console.log('address',addressResult)
+        const addressResult2 = res.address + ',' + addressState + ',' + addressProvince;
         const note = res.note !== "" ? res.note : null;
+        // const atStore = localStorage.getItem('_atStore');
+        // const { lopOrder } = this.state
+        const lopOrder = this.get_lop();
+        // const numOrders = localStorage.getItem('numOrders')
+        const atStore = localStorage.getItem('_atStore');
+
         const resultOrder = {
           fullName: res.name,
-          address: addressResult,
+          address: addressResult2,
           note: note,
           phone: res.phone,
-          shippingTotal: ship,
+          shippingTotal: ship ,
           itemAmount: amount,
           promoTotal,
           userId,
           totalAmount: ship + amount - promoTotal,
+          atStore : atStore,
+          lop : lopOrder
         };
+        console.log('submit order', resultOrder)
         //insert order to db
         startLoading();
         const orderDb = await callApi("orders", "POST", resultOrder, token); //method post nen truyen them token tren headers
@@ -206,7 +218,6 @@ class CheckOut extends Component {
         return { message: "error" };
       }); //output name state
     }
-
     const addressResult = {
       province: addressProvince,
       state: addressState,
@@ -214,6 +225,8 @@ class CheckOut extends Component {
       codeProvince: provinceData,
       codeState: stateData,
     }; // output address
+    const addressResult2 = res.address + ',' + addressState + ',' + addressProvince;
+
     const note = res.note !== "" ? res.note : null;
     let amount = 0;
     let dataItems = [];
@@ -232,9 +245,13 @@ class CheckOut extends Component {
         return (sum += item.quantity * item.price);
       }, 0);
     } //output total Amount
+    // const numOrders = localStorage.getItem('numOrders')
+    const lopOrder = this.get_lop();
+    const atStore = localStorage.getItem('_atStore');
+    // const { lopOrder } = this.state
     resultOrder = {
       fullName: res.name,
-      address: addressResult,
+      address: addressResult2,
       note: note,
       phone: res.phone,
       itemAmount: amount,
@@ -248,6 +265,8 @@ class CheckOut extends Component {
         itemsDetails: dataCart,
       },
       token,
+      atStore : atStore,
+      lop : lopOrder
     };
     console.log('resultOrder',resultOrder)
     this.setState({
@@ -355,7 +374,11 @@ class CheckOut extends Component {
           lop = lop + ',' + item.id.toString() + '-' + item.quantity.toString()   
       }
       });
+      // this.setState({
+      //   lopOrder : lop
+      // })
       console.log('lop',lop)
+      return lop
       // const payload2 = {
       // "lop": lop,
       // "userId":userId
@@ -400,7 +423,7 @@ class CheckOut extends Component {
   render() {
     // let atStore = 
     console.log('atstore Checkout', localStorage.getItem('_atStore'))
-    this.get_lop()
+    console.log('numberOrders', localStorage.getItem('numOrders'))
     const {
       redirectTo,
       toggleCheckout,

@@ -17,7 +17,8 @@ class YourOrder extends Component {
 
   render() {
     const { items, order } = this.props;
-    const shippingTotal = 2;
+    const numOrders = localStorage.getItem('numOrders')
+    const shippingTotal = 2 * numOrders;
     let count = 0;
     if (items.length > 0) {
       count = items.reduce((sum, item) => {
