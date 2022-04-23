@@ -18,6 +18,7 @@ class Producer extends Component {
     this.state = {
       searchText: '',
       total: 0,
+      total2: 0,
       currentPage: 1
     }
   }
@@ -30,7 +31,8 @@ class Producer extends Component {
     token = localStorage.getItem('_auth');
     this.props.fetch_producers(token).then(res => {
       this.setState({
-        total: res.total
+        total: res.results,
+        total2 : res.results.slice(0,10)
       });
     }).catch(err => {
       console.log(err);  
@@ -42,6 +44,7 @@ class Producer extends Component {
     const offset = limit * (content - 1);
     this.props.fetch_producers(token, offset);
     this.setState({
+      total2: this.state.total.slice(offset, offset + 10),
       currentPage: content
     })
     window.scrollTo(0, 0);
@@ -77,14 +80,34 @@ class Producer extends Component {
     });
   }
 
-  handleSubmit = (event) => {
-    event.preventDefault();
-    const { searchText } = this.state;
-    this.props.find_producers(token, searchText).then(res => {
-      this.setState({
-        total: res.total
+  // handleSubmit = (event) => {
+  //   event.preventDefault();
+  //   const { searchText } = this.state;
+  //   this.props.find_producers(token, searchText).then(res => {
+  //     this.setState({
+  //       total: res.total
+  //     })
+  //   })
+  // }
+
+  filterText = (event) => {
+    const keyword = event.target.value
+    this.setState({
+      searchText: keyword
+    });
+    if(keyword !== ''){
+      // console.log('test',this.state.total)
+      const result = this.state.total.filter((item)=> {
+        return item.name.toLowerCase().startsWith(keyword.toLowerCase());
       })
-    })
+      this.setState({
+        total: result,
+        total2: result.slice(0,10)
+      })
+    }
+    else{
+      this.fetch_reload_data()
+    }
   }
 
   downloadExcel = () => {
@@ -93,7 +116,8 @@ class Producer extends Component {
   }
 
   render() {
-    let { producers } = this.props;
+    // let { producers } = this.props;
+    let producers = this.state.total2;
     const { searchText, total } = this.state;
     return (
       <div className="content-inner">
@@ -120,14 +144,15 @@ class Producer extends Component {
                     <button onClick={()=>this.downloadExcel()} style={{ border: 0, background: "white" }}> <i className="fa fa-file-excel-o"
                         style={{fontSize: 18, color: '#1d7044'}}> Excel</i></button>
                   </div>
-                  <form onSubmit={(event) => this.handleSubmit(event)}
+                  <form
                     className="form-inline md-form form-sm mt-0" style={{ justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20 }}>
                     <div>
                       <button style={{ border: 0, background: 'white' }}><i className="fa fa-search" aria-hidden="true"></i></button>
                       <input name="searchText"
-                        onChange={this.handleChange}
+                        onChange={this.filterText}
                         value={searchText}
-                        className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
+                        className="form-control form-control-sm ml-3 w-75" type="text" 
+                        placeholder="Search by Name ..."
                         aria-label="Search" />
                     </div>
                     <Link to="/producers/add" className="btn btn-primary" > Create</Link>
@@ -187,7 +212,7 @@ class Producer extends Component {
                   <ul className="pagination">
                   <Paginator
                         pageSize={10}
-                        totalElements={total}
+                        totalElements={total.length}
                         onPageChangeCallback={(e) => {this.pageChange(e)}}
                       />
                   </ul>

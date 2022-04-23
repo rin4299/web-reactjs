@@ -6,9 +6,12 @@ import { actAddOrderRequest, actGetOrderRequest, actEditOrderRequest } from '../
 import { Redirect } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom'
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 let token;
 let id;
 
+const MySwal = withReactContent(Swal);
 class ActionOrder extends Component {
   constructor(props) {
     super(props);
@@ -166,14 +169,40 @@ class ActionOrder extends Component {
         isPaymentOnline,
         status
       }
-      await this.props.edit_order(token, id, editOrder);
-      this.setState({
-        redirectToOrder: true
-      })
+      console.log('editOrder',editOrder)
+      // await this.props.edit_order(token, id, editOrder)
+      await this.props.edit_order(token, id, editOrder)
+      // console.log(test)
+      // .then(res => {
+      //   this.setState({
+      //     redirectToOrder: true
+      //   })
+      //   console.log(res)
+      // });
+      setTimeout(null, 3000);
+
+        MySwal.fire({
+          title: "Redirect To Order",
+          // text: "You want to check out now?",
+          icon: "warning",
+          // showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          // cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, please!",
+        }).then(async (result) => {
+          if(result.value){
+            this.setState({
+              redirectToOrder: true
+            })
+          }
+          // console.log('result', result)
+        })
+
     }
 
 
   }
+
 
   sumTotal = (itemAmount, shippingTotal, promoTotal) => {
     const newitemAmount = itemAmount ? itemAmount : 0;

@@ -7,16 +7,16 @@ const findIndexs = (id, state) => {
     return index;
 }
 const cart = (state = initialState, action) => {
-    console.log('action.type', action.type)
+    // console.log('action.type', action.type)
 
     switch (action.type) {
         case Types.FETCH_CART:
             state = action.items;
-            console.log('fetch_cart', [...state])
+            // console.log('fetch_cart', [...state])
             return [...state];
         case Types.ADD_CART:
             state.push(action.item);
-            console.log('push_cart', [...state])
+            // console.log('push_cart', [...state])
             return [...state];
         case Types.UPDATE_CART:
             index = findIndexs(action.item.id, state);

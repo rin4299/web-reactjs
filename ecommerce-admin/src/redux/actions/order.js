@@ -148,10 +148,29 @@ export const actEditOrderRequest = (token, id, data) => {
   return async dispatch => {
     const res = await callApi(`orders/${id}`, "PUT", data, token);
     if (res && res.status === 200) {
-      toast.success("Edit order is success");
+      // toast.success("Edit order is success");
       dispatch(actEditOrder(res.data));
     }
   };
+
+  // return dispatch => {
+  //   dispatch(actShowLoading());
+  //   return new Promise((resolve, reject) => {
+  //     callApi(`orders/${id}`, "PUT", data, token)
+  //       .then(res => {
+  //         if (res && res.status === 200) {
+  //           dispatch(actEditOrder(res.data));
+  //           resolve(res.data);
+  //           setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+  //         }
+  //       })
+  //       .catch(err => {
+  //         console.log(err);
+  //         reject(err);
+  //         setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+  //       });
+  //   });
+  // };
 };
 
 export const actEditOrder = data => {

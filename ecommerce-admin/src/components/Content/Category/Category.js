@@ -18,6 +18,7 @@ class Category extends Component {
     this.state = {
       searchText: '',
       total: 0,
+      total2: 0,
       currentPage: 1
     }
   }
@@ -29,7 +30,8 @@ class Category extends Component {
     token = localStorage.getItem('_auth');
     this.props.fetch_categories(token).then(res => {
       this.setState({
-        total: res.total
+        total: res.results,
+        total2 : res.results.slice(0,10)
       });
     }).catch(err => {
       console.log(err);  
@@ -41,6 +43,7 @@ class Category extends Component {
     const offset = limit * (content - 1);
     this.props.fetch_categories(token, offset);
     this.setState({
+      total2: this.state.total.slice(offset, offset + 10),
       currentPage: content
     })
     window.scrollTo(0, 0);
@@ -76,14 +79,36 @@ class Category extends Component {
     });
   }
 
-  handleSubmit = (event) => {
-    event.preventDefault();
-    const { searchText } = this.state;
-    this.props.find_categories(token, searchText).then(res => {
-      this.setState({
-        total: res.total
+  // handleSubmit = (event) => {
+  //   event.preventDefault();
+  //   const { searchText } = this.state;
+  //   this.props.find_categories(token, searchText).then(res => {
+  //     console.log('res',res)
+  //     this.setState({
+  //       total2: res.results,
+  //       total : res.results
+  //     })
+  //   })
+  // }
+
+  filterText = (event) => {
+    const keyword = event.target.value
+    this.setState({
+      searchText: keyword
+    });
+    if(keyword !== ''){
+      // console.log('test',this.state.total)
+      const result = this.state.total.filter((item)=> {
+        return item.nameCategory.toLowerCase().startsWith(keyword.toLowerCase());
       })
-    })
+      this.setState({
+        total: result,
+        total2: result.slice(0,10)
+      })
+    }
+    else{
+      this.fetch_reload_data()
+    }
   }
 
   downloadExcel = () => {
@@ -92,7 +117,8 @@ class Category extends Component {
   }
 
   render() {
-    let { categories } = this.props;
+    // let { categories } = this.props;
+    let categories = this.state.total2;
     const { searchText, total } = this.state;
     return (
       <div className="content-inner">
@@ -119,15 +145,16 @@ class Category extends Component {
                     <button onClick={()=>this.downloadExcel()} style={{ border: 0, background: "white" }}> <i className="fa fa-file-excel-o"
                         style={{fontSize: 18, color: '#1d7044'}}> Excel</i></button>
                   </div>
-                  <form onSubmit={(event) => this.handleSubmit(event)}
+                  <form
                     className="form-inline md-form form-sm mt-0" style={{ justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20 }}>
                     <div>
                       <i className="fa fa-search" aria-hidden="true"></i>
                       <input
                         name="searchText"
-                        onChange={this.handleChange}
+                        onChange={this.filterText}
                         value={searchText}
-                        className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
+                        className="form-control form-control-sm ml-3 w-75" type="text" 
+                        placeholder="Search by Name ..."
                         aria-label="Search" />
                     </div>
                     <Link to="/categories/add" className="btn btn-primary" > Create</Link>
@@ -184,7 +211,7 @@ class Category extends Component {
                   <ul className="pagination">
                   <Paginator
                         pageSize={10}
-                        totalElements={total}
+                        totalElements={total.length}
                         onPageChangeCallback={(e) => {this.pageChange(e)}}
                       />
                   </ul>
