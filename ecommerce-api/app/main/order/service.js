@@ -5,6 +5,7 @@ const Models = require('../../db/models');
 const BaseServiceCRUD = require('../../base/BaseServiceCRUD');
 const MailUtils = require('../../emailService');
 const { default: Axios } = require('axios');
+const { query } = require('../../db/models/CustomModel');
 
 class OrderService extends BaseServiceCRUD {
   constructor() {
@@ -13,38 +14,150 @@ class OrderService extends BaseServiceCRUD {
 
   async createOne(payload) {
     console.log("PAYLOAD", payload)
-    var keys = Object.keys(payload)
-    for(var z = 0; z < keys.length; z++){
-      if(!payload[keys[z]]){
-        payload[keys[z]] = ""
+    
+    const {fullName, address, note, phone, shippingTotal, itemAmount, promoTotal, totalAmount, orderBill, atStore, lop} = payload
+    const user = await Models.User.query().findOne('name', fullName);
+    const userId = user.id; 
+    const arrPQ = []
+      var proQ  = lop.split(",");
+      for(var i = 0; i < proQ.length; i++){
+        var temp = proQ[i].split("-");
+        arrPQ.push({'pId': parseInt(temp[0]), 'quantity': parseInt(temp[1])});
       }
+    if(atStore === "All"){
+      const listofStore = await Models.Distance.query().where('userId', userId);
+      console.log("LOS", listofStore)
+      if(listofStore.length === 0){
+        throw Boom.badData(`ListofStore Not Found Error!`)
+      }
+      listofStore.sort(function(a,b){
+        return a['distance'] - b['distance']
+      })
+      console.log("LOS after Sort", listofStore)
+      
+      var tempPrice = 0;
+      var orderOfStore = []
+      var returnOrderList = []
+      for(var j = 0;j < listofStore.length; j++){
+        var productInStore = await Models.Ownership.query().where('storeName', listofStore[j]['storeName'])
+        tempPrice = 0;
+        var inOneStore = {
+          'storeName': listofStore[j].storeName,
+          'products': []
+        }
+        for(var x = 0; x < arrPQ.length; x++){
+          for(var y = 0; y < productInStore.length; y++){
+            if(arrPQ[x]['pId'] === productInStore[y].pId){
+              if(arrPQ[x].quantity > 0 && arrPQ[x].quantity > productInStore[y].quantity){
+                var product = await Models.Product.query().findOne({id: arrPQ[x].pId})
+                // Update Number Available
+                await Models.Product.query().update({numberAvailable: product.numberAvailable - productInStore[y].quantity}).where('id', productInStore[y].pId);
+                if(product.numberAvailable < arrPQ[x].quantity){
+                  throw Boom.badData(`Cannot create the Order because the value of quantity of product is updated!`)
+                }
+                product['quantity'] = productInStore[y].quantity
+                tempPrice += productInStore[y].quantity * product.price;
+                inOneStore['products'].push(product)
+                // Update arrPQ
+                arrPQ[x].quantity = arrPQ[x].quantity  - productInStore[y].quantity;
+              } else {
+                if(arrPQ[x].quantity > 0){
+                  var product = await Models.Product.query().findOne({id: arrPQ[x].pId})
+                  await Models.Product.query().update({numberAvailable: product.numberAvailable - arrPQ[x].quantity}).where('id', productInStore[y].pId);
+                  if(product.numberAvailable < arrPQ[x].quantity){
+                    throw Boom.badData(`Cannot create the Order because the value of quantity of product is updated!`)
+                  }
+                  product['quantity'] = arrPQ[x].quantity
+                  tempPrice += arrPQ[x].quantity * product.price;
+                  inOneStore['products'].push(product)
+                  arrPQ[x].quantity = 0;
+                }  
+              }
+            }
+
+          }
+        }
+        inOneStore['itemAmount'] = tempPrice;
+        orderOfStore.push(inOneStore);
+      }
+      var newShippingTotal = shippingTotal;
+      var newPromoTotal = promoTotal;
+      var newTotalAmount = 0;
+      for(var m = 0; m < orderOfStore.length; m++){
+        // Create Order for one Store
+        if(orderOfStore[m].itemAmount > 0){
+          newTotalAmount = newShippingTotal + orderOfStore[m].itemAmount + newPromoTotal;
+          let object = {
+            fcn: "createOrder",
+            peers:["peer0.org1.example.com","peer0.org2.example.com"],
+            chaincodeName:"productdetail",
+            channelName:"mychannel",
+            args:[fullName, address, note.toString(), phone, orderOfStore[m].storeName, newShippingTotal.toString(), orderOfStore[m].itemAmount.toString(), newPromoTotal.toString(), newTotalAmount.toString(), userId.toString()]
+          }
+          const res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+          if(!res){
+            throw Boom.badRequest('Error')
+          }
+          var data = res.data.result.data;
+          var listofP = Buffer.from(JSON.parse(JSON.stringify(data))).toString();
+          var result = JSON.parse(listofP)
+          returnOrderList.push(result)
+          console.log("CREATE ORDER RESULT: ", result);
+          for( var n = 0; n < orderOfStore[m].products.length; n++){
+            // Create OrderDetail for one kind of Product in a Store Order
+            var payload = {
+              'orderId': parseInt(result.id),
+              'quantity': orderOfStore[m].products[n].quantity,
+              'price': orderOfStore[m].products[n].price,
+              'productId': orderOfStore[m].products[n].id,
+              'nameProduct': orderOfStore[m].products[n].nameProduct
+            }
+            await Models.OrderDetail.query().insert(payload);
+          }
+        }
+        
+      }
+      return returnOrderList; // return list of new Orders which have been created!
+    } else {
+      let object = {
+        fcn: "createOrder",
+        peers:["peer0.org1.example.com","peer0.org2.example.com"],
+        chaincodeName:"productdetail",
+        channelName:"mychannel",
+        args:[fullName, address, note.toString(), phone, atStore, shippingTotal.toString(), itemAmount.toString(), promoTotal.toString(), totalAmount.toString(), userId.toString()]
+      }
+      const res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+      if(!res){
+        throw Boom.badRequest('Error')
+      }
+      var data = res.data.result.data;
+      var listofP = Buffer.from(JSON.parse(JSON.stringify(data))).toString();
+      var result = JSON.parse(listofP)
+      console.log("CREATE ORDER RESULT: ", result);
+      for(var i = 0; i < arrPQ.length; i++){
+        var product = await Models.Product.query().findOne({id: arrPQ[i].pId})
+        if(product.numberAvailable < arrPQ){
+          throw Boom.badData(`Cannot create the Order because the value of quantity of product is updated!`)
+        }
+        await Models.Product.query().update({numberAvailable: product.numberAvailable - arrPQ[i].quantity}).where('id', arrPQ[i].pId);
+        var payload = {
+          'orderId': parseInt(result.id),
+          'quantity': arrPQ[i].quantity,
+          'price': product.price,
+          'productId': product.id,
+          'nameProduct': product.nameProduct
+        }
+        await Models.OrderDetail.query().insert(payload);
+      }
+
+      // const id = payload.userId;
+      // const user = await Models.User.query().findById(id);
+      // if (!user) {
+      //   throw Boom.notFound('user not found')
+      // }
+      // MailUtils.sendEmailCreateOrderEmail(user.email)
+      return [result];
     }
-    console.log(payload)
-    const {fullName, note, phone, shippingTotal, itemAmount, promoTotal, userId, totalAmount} = payload
-    var address = ""
-    var atStore = "StoreA"
-    let object = {
-      fcn: "createOrder",
-      peers:["peer0.org1.example.com","peer0.org2.example.com"],
-      chaincodeName:"productdetail",
-      channelName:"mychannel",
-      args:[fullName, address, note.toString(), phone, atStore, shippingTotal.toString(), itemAmount.toString(), promoTotal.toString(), totalAmount.toString(), userId.toString()]
-    }
-    const res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
-    if(!res){
-      throw Boom.badRequest('Error')
-    }
-    var data = res.data.result.data;
-    var listofP = Buffer.from(JSON.parse(JSON.stringify(data))).toString();
-    var result = JSON.parse(listofP)
-    console.log("CREATE ORDER RESULT: ", result);
-    const id = payload.userId;
-    const user = await Models.User.query().findById(id);
-    if (!user) {
-      throw Boom.notFound('user not found')
-    }
-    // MailUtils.sendEmailCreateOrderEmail(user.email)
-    return result;
   }
 
   async getMany(query) {

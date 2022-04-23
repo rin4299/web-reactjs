@@ -123,60 +123,60 @@ class CheckOut extends Component {
         console.log('orderDB',orderDb)
         //END GET DATA FOR TABLE ORDER
 
-        var lop = ""
-        //GET DATA ORDER_DETAIL
-        cart.map(async (item) => {
-          const resultOrderDetail = {
-            quantity: item.quantity,
-            price: item.price,
-            orderId: orderDb.data.id,
-            productId: item.id,
-            nameProduct: item.nameProduct,
-          };
-          lop = lop + item.id + "-" + item.quantity + ",";
-          const payloadNumberAvailable = { numberAvailable: item.quantity };
-          const changeNumberAvailableProduct = callApi(
-            `products/${item.id}/updateNumberAvailable`,
-            "PUT",
-            payloadNumberAvailable,
-            token
-          );
-          const addOrderDetail = callApi(
-            "orderDetails",
-            "POST",
-            resultOrderDetail,
-            token
-          );
-          await Promise.all([changeNumberAvailableProduct, addOrderDetail]);
-          MySwal.fire({
-            position: "top-end",
-            icon: "success",
-            title: "Success!",
-            showConfirmButton: true,
-            timer: 1500000,
-          });
-          this.setState({
-            checkout: true,
-            result: true,
-          });
-          doneLoading();
-        });
-        //ENDGET DATA ORDER_DETAIL
-        lop = lop.slice(0, -1);
-        console.log(lop);
-        var addr = addressResult.house + ", " + addressResult.state + ", " + addressResult.province;
-        console.log(addr);
-          const getStore = {
-            address: addr,
-            userId: userId
-          }
-        console.log(getStore);
-        const feedback = await callApi("getstore", "POST", getStore, token);
-        console.log(feedback);
+        // var lop = ""
+        // //GET DATA ORDER_DETAIL
+        // cart.map(async (item) => {
+        //   const resultOrderDetail = {
+        //     quantity: item.quantity,
+        //     price: item.price,
+        //     orderId: orderDb.data.id,
+        //     productId: item.id,
+        //     nameProduct: item.nameProduct,
+        //   };
+        //   lop = lop + item.id + "-" + item.quantity + ",";
+        //   const payloadNumberAvailable = { numberAvailable: item.quantity };
+        //   const changeNumberAvailableProduct = callApi(
+        //     `products/${item.id}/updateNumberAvailable`,
+        //     "PUT",
+        //     payloadNumberAvailable,
+        //     token
+        //   );
+        //   const addOrderDetail = callApi(
+        //     "orderDetails",
+        //     "POST",
+        //     resultOrderDetail,
+        //     token
+        //   );
+        //   await Promise.all([changeNumberAvailableProduct, addOrderDetail]);
+        //   MySwal.fire({
+        //     position: "top-end",
+        //     icon: "success",
+        //     title: "Success!",
+        //     showConfirmButton: true,
+        //     timer: 1500000,
+        //   });
+        //   this.setState({
+        //     checkout: true,
+        //     result: true,
+        //   });
+        //   doneLoading();
+        // });
+        // //ENDGET DATA ORDER_DETAIL
+        // lop = lop.slice(0, -1);
+        // console.log(lop);
+        // var addr = addressResult.house + ", " + addressResult.state + ", " + addressResult.province;
+        // console.log(addr);
+        //   const getStore = {
+        //     address: addr,
+        //     userId: userId
+        //   }
+        // console.log(getStore);
+        // const feedback = await callApi("getstore", "POST", getStore, token);
+        // console.log(feedback);
         //CLEAR CART AFTER CHECKOUT IF input Available Address
-        if(feedback.status === 200 || feedback.data === "successful" ){
+        // if(feedback.status === 200 || feedback.data === "successful" ){
           this.props.reset_cart();
-        }
+        // }
       }
     });
   };
