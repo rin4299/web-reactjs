@@ -12,7 +12,7 @@ class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      Countcart : 0,
+      // Countcart : 0,
     }
   }
 
@@ -42,8 +42,7 @@ class Header extends Component {
     // })
     // cart = JSON.parse(localStorage.getItem('_cart'))
     const { cart } = this.props
-    console.log('cart in header', cart)
-    console.log(this.state.Countcart)
+    // console.log('cart in header', cart)
     if (cart.length > 0) {
       count = cart.reduce((sum, item) => {
         return sum += item.quantity
@@ -121,7 +120,7 @@ class Header extends Component {
 // }
 
 const mapStateToProps = (state) => {
-  console.log('state', state)
+  // console.log('state', state)
   return {
     cart: state.cart
   }

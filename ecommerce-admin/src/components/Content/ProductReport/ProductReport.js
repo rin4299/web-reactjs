@@ -34,6 +34,7 @@ class ProductReport extends Component {
       dateRange: [null,null],
       isOldest: true,
       modalShow : false,
+      Newest : 'Newest',
     }
   }
 
@@ -60,9 +61,16 @@ class ProductReport extends Component {
 
   fetch_reload_data(){
     token = localStorage.getItem('_auth');
+    console.log('reload')
     // console.log("id", this.state.user[0].name);
     // this.props.fetchImport(this.state.user[0].name,token)
     this.props.fetchReport(this.state.user[0].name,token).then(res => {
+      res = res.sort((a,b)=> {
+        return new Date(a.updatedAt) < new Date(b.updatedAt)
+      })
+      if(!this.state.Newest){
+        res = res.reverse()
+      }
       this.setState({
         total: res,
         total2: res.slice(0,10)
@@ -70,9 +78,11 @@ class ProductReport extends Component {
         //   return new Date(a.latestUpdate) < new Date(b.latestUpdate)
         // })
       })
+      // this.sortNewest()
     }).catch(err => {
       console.log(err)
     })
+
   }
 
   pageChange(content){
@@ -87,29 +97,47 @@ class ProductReport extends Component {
 /////////////////////////
   filterText = (event) => {
 
-    const value = event.target.value;
-    const name = event.target.name;
-    console.log(value)
+    const keyword = event.target.value
     this.setState({
-      [name]: value
+      searchText: keyword
     });
-    console.log('test',this.state.total,value)
-    // if(value !== ''){
-    //   const result = this.state.total.filter((item)=> {
-    //     return item.id.toLowerCase().startsWith(value.toLowerCase());
-    //   })
-    // //   .sort((a,b)=> {
-    // //     return new Date(a.createdAt) < new Date(b.createdAt)
-    // //   })
+    if(keyword !== ''){
+      // console.log('test',this.state.total,keyword)
+      const result = this.state.total.filter((item)=> {
+        return item.id == keyword ;
+      }).sort((a,b)=> {
+        return new Date(a.createdAt) < new Date(b.createdAt)
+      })
+      // console.log('result', result)
 
-    //   this.setState({
-    //     total: result,
-    //     total2: result.slice(0,10)
-    //   })
-    // }
-    // else{
-    //   this.fetch_reload_data()
-    // }
+      this.setState({
+        total: result,
+        total2: result.slice(0,10)
+      })
+    }else{
+      this.fetch_reload_data()
+    }
+  }
+
+  sortNewest = () => {
+    const { total2, Newest } = this.state
+    // const value = event.target.value
+    if(Array.isArray(total2)){
+      console.log('total2', total2)
+      if(Newest == 'Newest'){
+        this.setState({
+          total2 : total2.sort((a,b)=> {
+            return new Date(a.updatedAt) < new Date(b.updatedAt)
+          })
+        })
+      }else {
+        this.setState({
+          total2 : total2.sort((a,b)=> {
+            return new Date(a.updatedAt) > new Date(b.updatedAt)
+          })
+        })
+      }
+    }
   }
 
   handleRemove = (id) => {
@@ -132,6 +160,15 @@ class ProductReport extends Component {
       }
     })
   }
+
+  // handleChange = (event) => {
+  //   const target = event.target;
+  //   const value = target.type === 'checkbox' ? target.checked : target.value;
+  //   const name = target.name;
+  //   this.setState({
+  //     [name]: value
+  //   });
+  // }
 
   async find_report_detail (id){
     token = localStorage.getItem('_auth');
@@ -200,28 +237,6 @@ class ProductReport extends Component {
           <div >
             {this.state.ReportDetail ? 
             <form >
-              {/* <div className="form-group">
-                <label htmlFor="from">Id-request </label>
-                <input className="form-control" disabled defaultValue={this.state.history.id}/>  
-              </div>
-              <div className="form-group">
-                <label htmlFor="from">From </label>
-                <input className="form-control" disabled defaultValue={this.state.history.reqUserName}/>  
-              </div>
-              <div className="form-group">
-                <label htmlFor="to">To </label>
-                <input className="form-control" disabled defaultValue={this.state.history.recUserName}/>  
-              </div>
-              <div className="form-group">
-                <label htmlFor="name">Type </label>
-                <input className="form-control" disabled defaultValue={this.state.history.reqUserName == this.state.user[0].name ? 'REQUEST' : 'RECEIVE' }/>
-              </div>
-              <div className="form-group">
-                <label htmlFor="from">Time </label>
-                <input className="form-control" disabled defaultValue={
-                    props.history.times
-                  }/>  
-              </div> */}
               <div className="table-responsive">
                 <table className="table table-hover" style={{ textAlign: "center" }}>
                   <thead>
@@ -280,6 +295,7 @@ class ProductReport extends Component {
     // console.log(total2)
     const [startDate, endDate] = this.state.dateRange
     const { searchText } = this.state;
+    // this.sortNewest()
     return (
       <div className="content-inner">
         {/* Page Header*/}
@@ -324,9 +340,14 @@ class ProductReport extends Component {
                       isClearable={true}
                       placeholderText='Date ...'
                     /> */}
-                    <select name="sorting" onChange={(event) => {this.setState({ total2 : total2.reverse()})}} >
-                      <option value='Newest'>Newest</option>
-                      <option value='Oldest'>Oldest</option>
+                    <select name="sorting" defaultChecked={this.state.Newest} onChange={(event) => {
+                                                                                                      this.setState({
+                                                                                                        Newest : event.target.value
+                                                                                                      })
+                                                                                                      this.sortNewest()
+                                                                                                  }} >
+                      <option name='Newest' value='Newest'>Newest</option>
+                      <option name='Newest' value='Oldest'>Oldest</option>
                     </select>      
                       <input
                         name="searchText"

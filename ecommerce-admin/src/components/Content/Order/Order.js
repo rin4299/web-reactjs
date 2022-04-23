@@ -22,7 +22,8 @@ class Order extends Component {
     super(props);
     this.state = {
       searchText: '',
-      total: '',
+      total: 0,
+      total2:0,
       currentPage: 1,
       user: [],
       filterStatus: 'All',
@@ -50,7 +51,7 @@ class Order extends Component {
     await this.fetch_reload_data(); //recive data from return promise dispatch
   }
 
-  fetch_reload_data(){
+  async fetch_reload_data(){
     token = localStorage.getItem('_auth');
     this.props.fetch_orders(token, null, this.state.user[0].name).then(res => {
       console.log('result',res.results)
@@ -185,7 +186,7 @@ class Order extends Component {
   async fetch_product_details_Order(item){
     // console.log('fetch thanh cong', id)
     token = localStorage.getItem('_auth');
-
+    console.log(item)
     if (item.status === 'Complete'){
       await this.props.find_order_product_detail(token, item.id).then(res => {
         this.setState({
@@ -211,7 +212,7 @@ class Order extends Component {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            History Detail
+            ID Product details
           </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{overflow: 'auto'}}>
@@ -265,6 +266,7 @@ class Order extends Component {
   }
 
   render() {
+    // this.fetch_reload_data()
     const  orders = this.state.total;
     const { searchText, total } = this.state;
     return (
@@ -323,12 +325,13 @@ class Order extends Component {
                         name="searchText"
                         onChange={this.filterText}
                         value={searchText}
-                        className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
+                        className="form-control form-control-sm ml-3 w-75" type="text" 
+                        placeholder="Search by Name ..."
                         aria-label="Search" />
                   </div>
                   <div className="card-body">
                     <div className="table-responsive">
-                      <table className="table table-hover">
+                      <table className="table table-hover" style={{ textAlign: "center" }}>
                         <thead>
                           <tr>
                             <th>Number</th>
@@ -337,6 +340,7 @@ class Order extends Component {
                             <th>Phone</th>
                             <th>Status</th>
                             <th>Paid</th>
+                            <th>Ids</th>
                             {/* <th style={{ textAlign: "center" }}>Payment Online</th> */}
                             <th>Item Amount</th>
                             <th>Shipping Total</th>
@@ -363,10 +367,7 @@ class Order extends Component {
                           .map((item, index) => {
                             {/* console.log('order',item) */}
                             return (
-                              <tr key={index} onClick={()=>{ 
-                                // this.fetch_product_details_Order(item)
-                                console.log('onclick')
-                                }}
+                              <tr key={index} 
                               >
                                 <th scope="row">{index + 1}</th>
                                 <td>{item.fullName}</td>
@@ -403,6 +404,12 @@ class Order extends Component {
                                   <div className="i-checks">
                                     <input type="checkbox" onChange={()=>{}} checked={false} className="checkbox-template" />
                                   </div>}
+                                </td>
+                                <td>
+                                  <button type="button" className='btn btn-light' onClick={()=>{ 
+                                    this.fetch_product_details_Order(item)
+                                    // console.log('onclick')
+                                    }}>View</button>
                                 </td>
                                 {/* <td style={{ textAlign: "center" }}>{item.isPaymentOnline ?
                                   <div className="i-checks">
@@ -462,6 +469,7 @@ class Order extends Component {
 }
 
 const mapStateToProps = (state) => {
+  // console.log
   return {
     orders: state.orders
   }

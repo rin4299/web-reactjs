@@ -242,7 +242,7 @@ class ShoppingCart extends Component {
       }
     }
     console.log(numOrders)
-    localStorage.setItem('numOrders', numOrders)
+    localStorage.setItem('numOrders', filterStore)
 
     
     let amount = 0;
@@ -326,6 +326,7 @@ class ShoppingCart extends Component {
                                         } */}
                                         {items && items.length && filterStore == 'All' ? items.map((item,index) => {
                                             {/* console.log('local storage',item) */}
+                                            {item.quantity > item.numberAvailable ? item.quantity = item.numberAvailable : item.quantity}
                                             return (
                                                 <tr>
                                                     <td className="li-product-remove"><Link to="#"><i style={{fontSize: 20}} 

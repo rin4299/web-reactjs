@@ -66,15 +66,15 @@ class Import extends Component {
         storeName = this.state.user[0].name
     }
     
-    console.log("id", storeName);
+    // console.log("id", storeName);
     // this.props.fetchImport(this.state.user[0].name,token)
     this.props.fetchImport(storeName,token).then(res => {
+      res = res.sort((a,b)=> {
+        return new Date(a.updatedAt) < new Date(b.updatedAt)
+      })
       this.setState({
         total: res,
         total2: res.slice(0,10)
-        // .sort((a,b)=> {
-        //   return new Date(a.latestUpdate) < new Date(b.latestUpdate)
-        // })
       })
     }).catch(err => {
       console.log(err)
@@ -92,30 +92,26 @@ class Import extends Component {
   }
 /////////////////////////
   filterText = (event) => {
-
-    const value = event.target.value;
-    const name = event.target.name;
-    console.log(value)
+    const keyword = event.target.value
     this.setState({
-      [name]: value
+      searchText: keyword
     });
-    console.log('test',this.state.total,value)
-    // if(value !== ''){
-    //   const result = this.state.total.filter((item)=> {
-    //     return item.id.toLowerCase().startsWith(value.toLowerCase());
-    //   })
-    // //   .sort((a,b)=> {
-    // //     return new Date(a.createdAt) < new Date(b.createdAt)
-    // //   })
+    if(keyword !== ''){
+      // console.log('test',this.state.total,keyword)
+      const result = this.state.total.filter((item)=> {
+        return item.id == keyword ;
+      }).sort((a,b)=> {
+        return new Date(a.createdAt) < new Date(b.createdAt)
+      })
+      // console.log('result', result)
 
-    //   this.setState({
-    //     total: result,
-    //     total2: result.slice(0,10)
-    //   })
-    // }
-    // else{
-    //   this.fetch_reload_data()
-    // }
+      this.setState({
+        total: result,
+        total2: result.slice(0,10)
+      })
+    }else{
+      this.fetch_reload_data()
+    }
   }
 
   handleRemove = (id) => {
@@ -161,15 +157,24 @@ class Import extends Component {
 
   }
 
-  sortByDate(){
-    const {total2} = this.state;
+  sortNewest = (event) => {
+    const { total2, Newest } = this.state
+    const value = event.target.value
     if(Array.isArray(total2)){
-      let temp2 = total2.sort((a,b)=> {
-        return new Date(a.latestUpdate) > new Date(b.latestUpdate)
-      })
-      this.setState({
-        total2 : temp2
-      })
+      console.log('total2', total2)
+      if(value == 'Newest'){
+        this.setState({
+          total2 : total2.sort((a,b)=> {
+            return new Date(a.updatedAt) < new Date(b.updatedAt)
+          })
+        })
+      }else {
+        this.setState({
+          total2 : total2.sort((a,b)=> {
+            return new Date(a.updatedAt) > new Date(b.updatedAt)
+          })
+        })
+      }
     }
   }
 
@@ -314,7 +319,7 @@ class Import extends Component {
                       isClearable={true}
                       placeholderText='Date ...'
                     /> */}
-                    <select name="sorting" onChange={(event) => {this.setState({ total2 : total2.reverse()})}} >
+                    <select name="sorting" onChange={(event) => {this.sortNewest(event)}} >
                       <option value='Newest'>Newest</option>
                       <option value='Oldest'>Oldest</option>
                     </select>      
@@ -322,7 +327,9 @@ class Import extends Component {
                         name="searchText"
                         onChange={this.filterText}
                         value={searchText}
-                        className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
+                        className="form-control form-control-sm ml-3 w-75" 
+                        type="text" 
+                        placeholder="Search by Id"
                         aria-label="Search" />
                         <Link to='import/add' className='btn btn-primary' style={{marginLeft:'20px'}}>Create</Link>
                         {/* <button onClick={this.myFunction()}>add row</button> */}

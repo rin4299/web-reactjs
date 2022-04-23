@@ -17,7 +17,7 @@ import { toast } from 'react-toastify';
                 if (res && res.status === 200) { 
                 dispatch(actFetchImport(res.data));
                 resolve(res.data);
-                console.log(res.data)
+                // console.log(res.data)
                 setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
                 }
             })
