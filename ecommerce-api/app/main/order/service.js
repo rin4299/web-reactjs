@@ -392,7 +392,7 @@ class OrderService extends BaseServiceCRUD {
         }
       }
       // Update BC va xoa ProductDetails
-      if(order.status === "Shipping" || order.status === "Canceled"){
+      if(order.status === "Shipping"){
           var buffer = await Models.ProductDetails.query().findOne("orderId", orderId);
           console.log(buffer)
           let object = {
