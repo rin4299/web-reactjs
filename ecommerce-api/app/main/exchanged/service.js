@@ -347,7 +347,22 @@ class ExchangeService extends BaseServiceCRUD {
     req = req + '["' + id.toString() + '"]' + `&peer=peer0.org1.example.com&fcn=getHistoryForAsset`;
     let res = await Axios.get(req);
     if(res.data){
-      return res.data
+      var returnArray = []
+      var tempJSON = {}
+      for(var i =0; i < res.data.length; i++){
+        if(tempJSON.hasOwnProperty(res.data[i]['Value']["ownerName"])){
+          tempJSON[res.data[i]['Value']["ownerName"]].push(res.data[i])
+        } else {
+          tempJSON[res.data[i]['Value']["ownerName"]] = []
+          tempJSON[res.data[i]['Value']["ownerName"]].push(res.data[i])
+        }
+      }
+      var countKeys = Object.keys(tempJSON);
+      for(var k = 0; k < countKeys.length; k++){
+        returnArray.push(tempJSON[countKeys[k]][0])
+      }
+      console.log("Tracking ReturnArray, :" ,returnArray)
+      return returnArray
     } else {
       throw Boom.badRequest('Failed to track product history!');
     }
