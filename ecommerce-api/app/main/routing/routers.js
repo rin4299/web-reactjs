@@ -5,7 +5,7 @@ const handler = require('./handler');
 const Routes = [
   {
     method: 'GET',
-    path: '/api/v1/routing',
+    path: '/api/v1/routing/{storeName}',
     config: handler.routing
   }
 ];

@@ -57,6 +57,19 @@ const controller = new ExchangeController();
     }
   };
 
+  exports.changeStatus = {
+    description: 'Update Order',
+    notes: 'Return updated Order by id',
+    tags: ['api', 'v1'],
+    handler: controller.changeStatus.bind(controller),
+    auth: {
+      strategy: 'jwt',
+    },
+    validate: {
+
+    }
+  };
+
   exports.getAdminDiff = {
     description: 'Get Users list',
     notes: 'Return Users items',

@@ -32,77 +32,70 @@ class RoutingService {
        return y(a)
     }
 
-    async routing(){
+    async routing(storeName){
+        
+        var Store_Information = await Models.Store.query().findOne('storeName', storeName);
         var capacity = 30;
-        const root = {"lat": 10.770418589006429, "lng": 106.65940945485951} //Bv Trung Vuong
-        var listOfData = [
-            {
-                "orderId": 1,
-                "quantity": 4,
-                "createdDate": new Date(2022,3,28,17,11,10,0),
-                "lat": 10.773437530712947, 
-                "lng": 106.66075877249628
-            }, //DDH BK HCM
-            {
-                "orderId": 2,
-                "quantity": 9,
-                "createdDate": new Date(2022,3,28,17,33,10,0),
-                "lat": 10.764295513785777, 
-                "lng": 106.6596164671719
-            }, // Ho boi Phu Tho
-            {
-                "orderId": 3,
-                "quantity": 11,
-                "createdDate": new Date(2022,3,28,18,10,10,0),
-                "lat": 10.77388036853931,
-                "lng": 106.66594462505371
-            }, // DH PNT
-            {
-                "orderId": 4,
-                "quantity": 7,
-                "createdDate": new Date(2022,3,28,20,10,10,0),
-                "lat": 10.762730749864517, 
-                "lng": 106.66962553574938
-            }, // Bv Hoa Hao 
-            {
-                "orderId": 5,
-                "quantity": 3,
-                "createdDate":new Date(2022,3,28,15,10,10,0),
-                "lat": 10.759595359260528, 
-                "lng": 106.6822344896001
-            }, //DH Sai Gon 
-            {
-                "orderId": 6,
-                "quantity": 14,
-                "createdDate": new Date(2022,3,28,13,10,10,0),
-                "lat": 10.793679933916495, 
-                "lng": 106.6545222982223
-            } // THPT Nguyen Thuong Hien
-        ];
+        var List_Of_Orders = []
+        var List_Of_Exchanges = []
+        var listOfData = []
+        const root = {"lat": Store_Information['lat'], "lng": Store_Information['lng']}
+        //Load Orders
+        let res = await Axios.get("http://localhost:4000/channels/mychannel/chaincodes/productdetail?args=['1']&peer=peer0.org1.example.com&fcn=queryAllOrders");
+        if(!res){
+            throw Boom.badRequest('Cannot load data of Orders from BC!')
+        }
+        var Received_List_Of_Orders = res.data
+        console.log("RoO", Received_List_Of_Orders)
+        for(var or_counter = 0; or_counter < Received_List_Of_Orders.length; or_counter++){
+            if( Received_List_Of_Orders[or_counter]['isActive'] === true && Received_List_Of_Orders[or_counter]['atStore'] === storeName && Received_List_Of_Orders[or_counter]['status'] === "Processing"){
+                Received_List_Of_Orders[or_counter]['specialId'] = "O-" +  Received_List_Of_Orders[or_counter]['id'];
+                Received_List_Of_Orders[or_counter]['createdAt'] = new Date(Received_List_Of_Orders[or_counter]['createdAt'].slice(8,18) * 1000);
+                List_Of_Orders.push(Received_List_Of_Orders[or_counter]);
+            }   
+        }
+        let res_Exchange = await Axios.get("http://localhost:4000/channels/mychannel/chaincodes/productdetail?args=['1']&peer=peer0.org1.example.com&fcn=queryAllExchanges");
+        if(!res_Exchange){
+            throw Boom.badRequest('Cannot load data of Exchanges from BC!')
+        }
+        var Received_List_Of_Exchanges = res_Exchange.data
+        console.log("RoE", Received_List_Of_Exchanges)
+        for(var ex_counter = 0; ex_counter < Received_List_Of_Exchanges.length; ex_counter++){
+            if(Received_List_Of_Exchanges[ex_counter]['isActive'] === true && Received_List_Of_Exchanges[ex_counter]['recUserName'] === storeName && Received_List_Of_Exchanges[ex_counter]['isAccepted'] === true && Received_List_Of_Exchanges[ex_counter]['status'] === "Processing"){
+                Received_List_Of_Exchanges[ex_counter]['specialId'] = "E-" + Received_List_Of_Exchanges[ex_counter]['id'];
+                Received_List_Of_Exchanges[ex_counter]['createdAt'] = new Date(Received_List_Of_Exchanges[ex_counter]['createdAt'].slice(8,18) * 1000);;
+                List_Of_Exchanges.push(Received_List_Of_Exchanges[ex_counter]);
+            }
+        }
+        console.log("LoO", List_Of_Orders)
+        console.log("LoE", List_Of_Exchanges)
+        listOfData = List_Of_Orders .concat(List_Of_Exchanges);
+        console.log("LoData", listOfData)
         listOfData.sort((a,b) => {
-            return a.createdDate - b.createdDate;
+            return a['createdAt'] - b['createdAt'];
         })
-        var newArray = []
+        console.log("LoData After Sorting", listOfData)
+        var Array_Of_Capacity = []
         var geoString = root['lng'].toString() + "," + root['lat'].toString() + ";";
         for (var i = 0; i < listOfData.length; i++){
-            capacity = capacity- listOfData[i]['quantity']
+            capacity = capacity- listOfData[i]['totalQuantity']
             if(capacity > 0){
-                newArray.push(listOfData[i])
+                Array_Of_Capacity.push(listOfData[i])
                 geoString += listOfData[i]['lng'].toString() + "," + listOfData[i]['lat'].toString() + ";";
             }
         }
 
-        console.log("NEW", newArray)
+        console.log("Array_Based_On_Max_Cap: ", Array_Of_Capacity)
         geoString = geoString.slice(0, geoString.length - 1)
-        console.log("NEW", geoString)
+        console.log("GeoString: ", geoString)
         
         
-        const a = await this.getListOfOptimized(geoString);
-        console.log("AA", a)
+        const List_Of_Optimized_Shipping = await this.getListOfOptimized(geoString);
+        console.log("List Of Optimized Shipping Routing: ", List_Of_Optimized_Shipping)
 
-        var returnArray = []
-        for(var m = 1; m<a.length - 1; m++){
-            returnArray.push(newArray[a[m] - 1])
+        var returnArray = [Store_Information]
+        for(var m = 1; m<List_Of_Optimized_Shipping.length - 1; m++){
+            returnArray.push(Array_Of_Capacity[List_Of_Optimized_Shipping[m] - 1])
         }
         return returnArray;
     }

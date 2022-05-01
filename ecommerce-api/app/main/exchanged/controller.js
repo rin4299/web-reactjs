@@ -51,6 +51,17 @@ class ExchangeController extends BaseControllerCRUD {
     }
   };
 
+  async changeStatus(request) {
+    try {
+      const {
+        payload
+      } = request;
+      return await this.service.changeStatus(payload);
+    } catch (err) {
+      throw err;
+    }
+  };
+
   async getAdminDiff(request) {
     try {
       const {id} = request.params;

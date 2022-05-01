@@ -24,6 +24,11 @@ const Routes = [
     config: handler.updateConfirm
   },
   {
+    method: 'POST',
+    path: '/api/v1/exchange/changeStatus',
+    config: handler.changeStatus
+  },
+  {
     method: 'GET',
     path: '/api/v1/admindiff/{id}',
     config: handler.getAdminDiff

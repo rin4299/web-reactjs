@@ -18,10 +18,12 @@ class OrderService extends BaseServiceCRUD {
     const user = await Models.User.query().findOne('name', fullName);
     const userId = user.id; 
     const arrPQ = []
-      var proQ  = lop.split(",");
+    var totalQuantity = 0
+    var proQ  = lop.split(",");
       for(var i = 0; i < proQ.length; i++){
         var temp = proQ[i].split("-");
         arrPQ.push({'pId': parseInt(temp[0]), 'quantity': parseInt(temp[1])});
+        totalQuantity = totalQuantity + parseInt(temp[1])
       }
     if(atStore === "All"){
       const listofStore = await Models.Distance.query().where('userId', userId);
@@ -35,11 +37,13 @@ class OrderService extends BaseServiceCRUD {
       console.log("LOS after Sort", listofStore)
       
       var tempPrice = 0;
+      var tempQuantity = 0;
       var orderOfStore = []
       var returnOrderList = []
       for(var j = 0;j < listofStore.length; j++){
         var productInStore = await Models.Ownership.query().where('storeName', listofStore[j]['storeName'])
         tempPrice = 0;
+        tempQuantity = 0;
         var inOneStore = {
           'storeName': listofStore[j].storeName,
           'products': []
@@ -55,6 +59,7 @@ class OrderService extends BaseServiceCRUD {
                   throw Boom.badData(`Cannot create the Order because the value of quantity of product is updated!`)
                 }
                 product['quantity'] = productInStore[y].quantity
+                tempQuantity += productInStore[y].quantity
                 tempPrice += productInStore[y].quantity * product.price;
                 inOneStore['products'].push(product)
                 // Update arrPQ
@@ -67,6 +72,7 @@ class OrderService extends BaseServiceCRUD {
                     throw Boom.badData(`Cannot create the Order because the value of quantity of product is updated!`)
                   }
                   product['quantity'] = arrPQ[x].quantity
+                  tempQuantity += arrPQ[x].quantity
                   tempPrice += arrPQ[x].quantity * product.price;
                   inOneStore['products'].push(product)
                   arrPQ[x].quantity = 0;
@@ -77,6 +83,7 @@ class OrderService extends BaseServiceCRUD {
           }
         }
         inOneStore['itemAmount'] = tempPrice;
+        inOneStore['totalQuantity'] = tempQuantity;
         orderOfStore.push(inOneStore);
       }
       var newShippingTotal = shippingTotal;
@@ -91,7 +98,7 @@ class OrderService extends BaseServiceCRUD {
             peers:["peer0.org1.example.com","peer0.org2.example.com"],
             chaincodeName:"productdetail",
             channelName:"mychannel",
-            args:[fullName, address, note.toString(), phone, orderOfStore[m].storeName, newShippingTotal.toString(), orderOfStore[m].itemAmount.toString(), newPromoTotal.toString(), newTotalAmount.toString(), userId.toString(), lng,toString(), lat.toString()]
+            args:[fullName, address, note.toString(), phone, orderOfStore[m].storeName, newShippingTotal.toString(), orderOfStore[m].itemAmount.toString(), newPromoTotal.toString(), newTotalAmount.toString(), userId.toString(), lng,toString(), lat.toString(), orderOfStore[m].totalQuantity.toString()]
           }
           const res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
           if(!res){
@@ -125,7 +132,7 @@ class OrderService extends BaseServiceCRUD {
         peers:["peer0.org1.example.com","peer0.org2.example.com"],
         chaincodeName:"productdetail",
         channelName:"mychannel",
-        args:[fullName, address, note.toString(), phone, atStore, shippingTotal.toString(), itemAmount.toString(), promoTotal.toString(), totalAmount.toString(), userId.toString(), lng.toString(), lat.toString()]
+        args:[fullName, address, note.toString(), phone, atStore, shippingTotal.toString(), itemAmount.toString(), promoTotal.toString(), totalAmount.toString(), userId.toString(), lng.toString(), lat.toString(), totalQuantity.toString()]
       }
       const res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
       if(!res){

@@ -8,12 +8,15 @@ class RoutingController extends BaseControllerCRUD {
       super(new RoutingService());
     }
 
-    async routing() {
+    async routing(request) {
         try {
             // const a = await this.service.routing();
             // console.log("AA", a)
             // return a;
-          return await this.service.routing();
+          const {
+              storeName
+            } = request.params;
+          return await this.service.routing(storeName);
         } catch (err) {
           throw err;
         }
