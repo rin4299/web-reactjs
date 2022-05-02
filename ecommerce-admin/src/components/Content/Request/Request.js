@@ -64,6 +64,7 @@ class Request extends Component {
     token = localStorage.getItem('_auth');
     // console.log("id", this.state.user[0].id);
     this.props.fetch_exchange_request(this.state.user[0].id, token).then(res => {
+      console.log(res)
       this.setState({
         total: res,
         total2 : res.slice(0,10)

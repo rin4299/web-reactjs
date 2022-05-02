@@ -12,7 +12,7 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import "./style.css";
 import Modal from 'react-bootstrap/Modal'
-import { GoogleMap , LoadScript, Polyline, Marker, DirectionsService } from "@react-google-maps/api";
+// import { GoogleMap , LoadScript, Polyline, Marker, DirectionsService } from "@react-google-maps/api";
 
 const MySwal = withReactContent(Swal);
 
@@ -30,6 +30,8 @@ class CheckOut extends Component {
       result: false,
       // modalShow: false,
       lopOrder :'',
+      lat: null,
+      lng : null,
     };
     this.billing = React.createRef();
   }
@@ -105,7 +107,7 @@ class CheckOut extends Component {
         const lopOrder = this.get_lop();
         // const numOrders = localStorage.getItem('numOrders')
         const atStore = localStorage.getItem('_atStore');
-
+        console.log('res', res)
         const resultOrder = {
           fullName: res.name,
           address: addressResult2,
@@ -118,8 +120,10 @@ class CheckOut extends Component {
           totalAmount: ship + amount - promoTotal,
           atStore : atStore,
           lop : lopOrder,
+          lat: res.lat,
+          lng: res.lng,
         };
-        // console.log('submit order', resultOrder)
+        console.log('submit order', resultOrder)
         //insert order to db
         startLoading();
         const orderDb = await callApi("orders", "POST", resultOrder, token); //method post nen truyen them token tren headers
@@ -194,6 +198,7 @@ class CheckOut extends Component {
 
     // console.log('billing',this.billing.current)
     res = this.billing.current.getBillingState();
+    // console.log('res',res)
     const { provinceData, stateData } = res; //get code
     const resData = await callApi("users/me", "GET", null, token);
     const userId = resData.data.results[0].id;
@@ -271,9 +276,11 @@ class CheckOut extends Component {
       },
       token,
       atStore : atStore,
-      lop : lopOrder
+      lop : lopOrder,
+      lat : res.lat, 
+      lng : res.lng,
     };
-    // console.log('resultOrder',resultOrder)
+    console.log('resultOrder',resultOrder)
     this.setState({
       toggleCheckout: !toggleCheckout,
       shippingAddress: !shippingAddress,
