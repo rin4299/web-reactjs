@@ -62,8 +62,8 @@ exports.createOne = {
   handler: controller.createOne.bind(controller),
   auth: 'jwt',
   validate: {
-    headers: validator.checkToken,
-    payload: validator.createOrder
+    // headers: validator.checkToken,
+    // payload: validator.createOrder
   }
 };
 

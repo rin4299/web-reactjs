@@ -132,24 +132,26 @@ class ExchangeService extends BaseServiceCRUD {
     try {
         const {reqUserName, recUserName, multiRequest} = payload;
         var lop = ""
+        var TotalQuantity = 0
         for(var i = 0; i < multiRequest.length; i++){
             var product = await Models.Product.query().findOne('nameProduct', multiRequest[i]['pName']);
             var ownership = await Models.Ownership.query().findOne({pId: product.id}).where("storeName", recUserName);
             if(multiRequest[i]['quantity'] > ownership.quantity){
               throw Boom.badRequest(`Cannot create this Request because store ${recUserName} only has ${ownership.quantity} while ${multiRequest[i]['quantity']} is needed!`)
             }
-            lop = lop + String(product.id) + "-" + String(multiRequest[i]['quantity']) + ","
+            lop = lop + String(product.id) + "-" + String(multiRequest[i]['quantity']) + ",";
+            TotalQuantity += multiRequest[i]['quantity']
         }
         lop = lop.slice(0,-1)
         console.log(lop)
-    
+        const Address_Of_Receiver = await Models.Store.query().findOne({storeName: recUserName})
         // let data = this.bcCallerInvoke(["peer0.org1.example.com", "peer0.org2.example.com"], "productdetail", "mychannel", "createExchange", [reqUserName, recUserName, lop]);
         let object = {
           fcn: "createExchange",
           peers:["peer0.org1.example.com","peer0.org2.example.com"],
           chaincodeName:"productdetail",
           channelName:"mychannel",
-          args:[reqUserName, recUserName, lop]
+          args:[reqUserName, recUserName, lop, Address_Of_Receiver['lng'].toString(), Address_Of_Receiver['lat'].toString(), TotalQuantity.toString()]
         }
         console.log(object)
         let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
@@ -194,13 +196,133 @@ class ExchangeService extends BaseServiceCRUD {
       peers:["peer0.org1.example.com","peer0.org2.example.com"],
       chaincodeName:"productdetail",
       channelName:"mychannel",
-      args:[id, "isAccepted"]
+      args:[id.toString(), "isAccepted"]
     }
     var res = await await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
     if(res.data){
       return "Updated!"
     } else {
       throw Boom.badRequest('Failed to update!');
+    }
+  }
+
+
+  async changeStatus(payload) {
+    console.log(payload)
+    const {id, status} = payload;
+    let objectExchange = {
+      fcn: "queryExchange",
+      peers:["peer0.org1.example.com","peer0.org2.example.com"],
+      chaincodeName:"productdetail",
+      channelName:"mychannel",
+      args:[id.toString()]
+    }
+    const res_Exchange_Infor = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", objectExchange);
+    if(!res_Exchange_Infor){
+      throw Boom.badRequest('Error in BC!')
+    }
+    var data = res_Exchange_Infor.data.result.data;
+    var listofP = Buffer.from(JSON.parse(JSON.stringify(data))).toString();
+    var exchangeInfor = JSON.parse(listofP)
+    console.log("ORDER FROM BC: ", exchangeInfor)
+    if (status === "Shipping"){ // SHIPPING
+      if(exchangeInfor.status === "Complete" || exchangeInfor.status === "Canceled" || exchangeInfor.status !== "Processing"){
+        throw Boom.badRequest(`Can not change the ${exchangeInfor.status} order!`)
+      }
+      // Taken PDs
+      let object1 = {
+        fcn: "changeProductDetail",
+        peers:["peer0.org1.example.com","peer0.org2.example.com"],
+        chaincodeName:"productdetail",
+        channelName:"mychannel",
+        args:[id.toString(), "preparing"]
+      }
+        var sres = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object1);
+        if(!sres){
+          throw Boom.badRequest('Failed to update ProuctDetail!');
+        }
+        console.log("Exchange | changeStatus | UpdateShipping: ",sres.data)
+      // Update Status
+
+      let object = {
+        fcn: "changeExchangeInfor",
+        peers:["peer0.org1.example.com","peer0.org2.example.com"],
+        chaincodeName:"productdetail",
+        channelName:"mychannel",
+        args:[id.toString(), "status", status]
+      }
+      var res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+      if(res.data){
+        return `Successfully change the status of Order ${id} from ${exchangeInfor.status} to ${status}!`
+      } else {
+        throw Boom.badRequest('Failed to update!');
+      }
+      
+    } else if (status === "Complete"){ // COMPLETE
+      // 1 đơn chỉ được chuyển qua Complete khi status khác Shipping
+      if(order.status === "Canceled" || order.status !== "Shipping"){
+        throw Boom.badRequest(`Can not change the ${order.status} order!`)
+      }
+      
+      let object = {
+        fcn: "changeExchangeInfor",
+        peers:["peer0.org1.example.com","peer0.org2.example.com"],
+        chaincodeName:"productdetail",
+        channelName:"mychannel",
+        args:[id.toString(), "status", status]
+      }
+      var res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+      if(res.data){
+        return `Successfully change the status of Order ${id} from ${exchangeInfor.status} to ${status}!`
+      } else {
+        throw Boom.badRequest('Failed to update!');
+      }
+      
+    } else if (status === "Canceled") { // CANCEL
+      //1 đơn chuyển sang Canceled thì:
+      if(order.status === "Complete"){ //1 đơn chỉ được chuyển qua Canceled khi status khác Complete
+        throw Boom.badRequest(`Can not cancel the ${order.status} order!`)
+      }
+      if (exchangeInfor.status === "Processing" || exchangeInfor.status === "Shipping"){
+        // Cap nhat lai Ownership
+        var liss_Of_Products_in_Exchange = exchangeInfor.listofProduct;
+        var temp = liss_Of_Products_in_Exchange.split(",");
+        for(var i = 0; i < temp.length; i++){
+          var infor = temp[i].split("-");
+          var productQ = await Models.Ownership.query().where('storeName', storeName).findOne({pId: parseInt(infor[0])});
+          await Models.Ownership.query().update({quantity: productQ.quantity + parseInt(infor[1])} ).where('storeName', storeName).where('pId', productQ.pId);
+        }
+      }
+      if(exchangeInfor.status === "Shipping") {
+        // Cap nhat lai isTaken = false 
+        let object_Change_IsTaken = {
+          fcn: "changeProductDetail",
+          peers:["peer0.org1.example.com","peer0.org2.example.com"],
+          chaincodeName:"productdetail",
+          channelName:"mychannel",
+          args:[id.toString(), "unpreparing"]
+        }
+          var Change_IsTaken_res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object_Change_IsTaken);
+          if(!Change_IsTaken_res){
+            throw Boom.badRequest('Failed to update ProuctDetail in DeleteRequest!');
+          }
+      }
+
+      let object = {
+        fcn: "changeExchangeInfor",
+        peers:["peer0.org1.example.com","peer0.org2.example.com"],
+        chaincodeName:"productdetail",
+        channelName:"mychannel",
+        args:[id.toString(), "status", status]
+      }
+      var res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+      if(res.data){
+        return `Successfully change the status of Order ${id} from ${exchangeInfor.status} to ${status}!`
+      } else {
+        throw Boom.badRequest('Failed to update!');
+      }
+    } else { // UNCONFIRM
+      throw Boom.badRequest("Can not change any current status to Processing!")
     }
   }
 
@@ -237,7 +359,7 @@ class ExchangeService extends BaseServiceCRUD {
       peers:["peer0.org1.example.com","peer0.org2.example.com"],
       chaincodeName:"productdetail",
       channelName:"mychannel",
-      args:[id, "isConfirm"]
+      args:[id.toString(), "isConfirm"]
     }
     var res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
     if(res.data){
@@ -246,7 +368,7 @@ class ExchangeService extends BaseServiceCRUD {
         peers:["peer0.org1.example.com","peer0.org2.example.com"],
         chaincodeName:"productdetail",
         channelName:"mychannel",
-        args:[id]
+        args:[id.toString()]
       }
         var sres = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object1);
         if(sres.data){
@@ -285,23 +407,58 @@ class ExchangeService extends BaseServiceCRUD {
 
   async deleteRequest(id) {
 
-    // let exchange = await Models.Exchanged.query().where('id', id);
-    // let e = exchange[0];
-    // if(e.isAccepted === true){
-    //   throw Boom.badRequest('Cannot delete the current accepted Exchange Request!');
-    // }
-    // await Models.Exchanged.query().where('id', id).delete();
- 
-    // return { message: 'Delete Request is successfully done' };
+    let objectExchange = {
+      fcn: "queryExchange",
+      peers:["peer0.org1.example.com","peer0.org2.example.com"],
+      chaincodeName:"productdetail",
+      channelName:"mychannel",
+      args:[id.toString()]
+    }
+    const res_Exchange_Infor = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", objectExchange);
+    if(!res_Exchange_Infor){
+      throw Boom.badRequest('Error in BC!')
+    }
+    var data = res_Exchange_Infor.data.result.data;
+    var listofP = Buffer.from(JSON.parse(JSON.stringify(data))).toString();
+    var exchangeInfor = JSON.parse(listofP)
+    console.log("ORDER FROM BC: ", exchangeInfor)
+    if(exchangeInfor.status === "Complete") {
+      throw Boom.badRequest(`Cannot Delete Exchange with Id = ${id} whose status is Complete!`)
+    }
+    if((exchangeInfor.status === "Processing" && exchangeInfor.isAccepted === true) || exchangeInfor.status === "Shipping"){
+      // Update Ownership
+      var liss_Of_Products_in_Exchange = exchangeInfor.listofProduct;
+      var temp = liss_Of_Products_in_Exchange.split(",");
+      for(var i = 0; i < temp.length; i++){
+        var infor = temp[i].split("-");
+        var productQ = await Models.Ownership.query().where('storeName', exchangeInfor.recUserName).findOne({pId: parseInt(infor[0])});
+        await Models.Ownership.query().update({quantity: productQ.quantity + parseInt(infor[1])}).where('storeName', exchangeInfor.recUserName).where('pId', productQ.pId);
+      }
+    }
+
+    if(exchangeInfor.status === "Shipping") {
+      // Cap nhat lai isTaken = false 
+      let object_Change_IsTaken = {
+        fcn: "changeProductDetail",
+        peers:["peer0.org1.example.com","peer0.org2.example.com"],
+        chaincodeName:"productdetail",
+        channelName:"mychannel",
+        args:[id.toString(), "unpreparing"]
+      }
+        var Change_IsTaken_res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object_Change_IsTaken);
+        if(!Change_IsTaken_res){
+          throw Boom.badRequest('Failed to update ProuctDetail in DeleteRequest!');
+        }
+    }
 
     let object = {
       fcn: "changeExchangeInfor",
       peers:["peer0.org1.example.com","peer0.org2.example.com"],
       chaincodeName:"productdetail",
       channelName:"mychannel",
-      args:[id, "delete"]
+      args:[id.toString(), "delete"]
     }
-    var res = await await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+    var res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
     if(res.data){
       return "Deleted!"
     } else {
@@ -347,7 +504,50 @@ class ExchangeService extends BaseServiceCRUD {
     req = req + '["' + id.toString() + '"]' + `&peer=peer0.org1.example.com&fcn=getHistoryForAsset`;
     let res = await Axios.get(req);
     if(res.data){
-      return res.data
+      var returnArray = []
+      var tempJSON = {}
+      for(var i =0; i < res.data.length; i++){
+        if(tempJSON.hasOwnProperty(res.data[i]['Value']["ownerName"])){
+          tempJSON[res.data[i]['Value']["ownerName"]].push(res.data[i])
+        } else {
+          tempJSON[res.data[i]['Value']["ownerName"]] = []
+          tempJSON[res.data[i]['Value']["ownerName"]].push(res.data[i])
+        }
+      }
+      var countKeys = Object.keys(tempJSON);
+      var len = 0;
+      for(var k = 0; k < countKeys.length; k++){
+        returnArray.push(tempJSON[countKeys[k]][0])
+        len = returnArray.length;
+        if(returnArray[len-1]['Value']["ownerName"].slice(0,5) === "Store"){
+          var storeInfor = await Models.Store.query().findOne({storeName: returnArray[len-1]['Value']["ownerName"]});
+          returnArray[len-1]['Value']['information'] = storeInfor;
+        } else {
+          let stringS = returnArray[len-1]['Value']['pid'] + "-" +returnArray[len-1]['Value']['id'];
+          console.log(stringS)
+          // var listOfOrderDetails = await Models.ProductDetails.query().whereRaw(`"listPds" LIKE \'%\' || ${stringS} || \'%\' `);
+          var OrderDetails = await Models.ProductDetails.query().where("listPds", 'like', `%${stringS}%`);
+          console.log("Pleased!",OrderDetails);
+          let object = {
+            fcn: "queryOrder",
+            peers:["peer0.org1.example.com","peer0.org2.example.com"],
+            chaincodeName:"productdetail",
+            channelName:"mychannel",
+            args:[OrderDetails[0]['orderId'].toString()]
+          }
+          console.log(object)
+          let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+          if(!res){
+            throw Boom.badRequest("Cannot connect to BC!")
+          } 
+          var data = res.data.result.data;
+          var listofP = Buffer.from(JSON.parse(JSON.stringify(data))).toString();
+          var result = JSON.parse(listofP)
+          returnArray[len-1]['Value']['information'] = result;
+        }
+      }
+      console.log("Tracking ReturnArray, :" ,returnArray)
+      return returnArray
     } else {
       throw Boom.badRequest('Failed to track product history!');
     }
