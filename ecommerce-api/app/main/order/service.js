@@ -193,6 +193,8 @@ class OrderService extends BaseServiceCRUD {
         recMessage[i]['itemAmount'] = parseFloat(recMessage[i]['itemAmount'])
         recMessage[i]['promoTotal'] = parseFloat(recMessage[i]['promoTotal'])
         recMessage[i]['totalAmount'] = parseFloat(recMessage[i]['totalAmount'])
+        var date = new Date(recMessage[i]['createdAt'].slice(8,18)*1000)
+        recMessage[i]['createdAt'] = date
         recMessage[i]['orderDetail'] = orderDetail;
         returnArr.push(recMessage[i]);
       }

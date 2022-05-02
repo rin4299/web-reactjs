@@ -61,15 +61,17 @@ class ProductReport extends Component {
 
   fetch_reload_data(){
     token = localStorage.getItem('_auth');
-    console.log('reload')
     // console.log("id", this.state.user[0].name);
     // this.props.fetchImport(this.state.user[0].name,token)
     this.props.fetchReport(this.state.user[0].name,token).then(res => {
       res = res.sort((a,b)=> {
-        return new Date(a.updatedAt) < new Date(b.updatedAt)
+        return new Date(a.createdAt) < new Date(b.createdAt)
       })
-      if(!this.state.Newest){
+      console.log('reload',this.state.Newest)
+
+      if(this.state.Newest != 'Newest'){
         res = res.reverse()
+        console.log('reload2',this.state.Newest)
       }
       this.setState({
         total: res,
@@ -119,21 +121,26 @@ class ProductReport extends Component {
     }
   }
 
-  sortNewest = () => {
+  sortNewest = (event) => {
     const { total2, Newest } = this.state
-    // const value = event.target.value
+    this.setState({
+      Newest : event.target.value
+    })
+    const value = event.target.value
     if(Array.isArray(total2)){
-      console.log('total2', total2)
-      if(Newest == 'Newest'){
+      // console.log('total2', total2)
+      if(value == 'Newest'){
+        console.log('Newest')
         this.setState({
           total2 : total2.sort((a,b)=> {
-            return new Date(a.updatedAt) < new Date(b.updatedAt)
+            return new Date(a.createdAt) < new Date(b.createdAt)
           })
         })
       }else {
+        console.log('Oldest')
         this.setState({
           total2 : total2.sort((a,b)=> {
-            return new Date(a.updatedAt) > new Date(b.updatedAt)
+            return new Date(a.createdAt) > new Date(b.createdAt)
           })
         })
       }
@@ -341,10 +348,7 @@ class ProductReport extends Component {
                       placeholderText='Date ...'
                     /> */}
                     <select name="sorting" defaultChecked={this.state.Newest} onChange={(event) => {
-                                                                                                      this.setState({
-                                                                                                        Newest : event.target.value
-                                                                                                      })
-                                                                                                      this.sortNewest()
+                                                                                                      this.sortNewest(event)                                                                                                      
                                                                                                   }} >
                       <option name='Newest' value='Newest'>Newest</option>
                       <option name='Newest' value='Oldest'>Oldest</option>

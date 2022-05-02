@@ -38,10 +38,13 @@ export default class PaypalCheckoutButton extends Component {
     };
     const PayPalButton = paypal.Button.driver("react", { React, ReactDOM });
     const payment = (data, actions) => {
+      console.log('orderBill',order.orderBill)
       return actions.payment.create({
         intent: "sale",
         payer: {
+
             payment_method: "paypal"
+
         },
         transactions: [
           {

@@ -192,9 +192,9 @@ class ActionProducer extends Component {
                                 <div key={index} className="i-checks" style={{ display: 'inline-block', paddingRight: 35 }} >
                                   {
                                     item.id === categoryId ?
-                                      <input id={index} name="categoryId" checked value={categoryId} onChange={this.handleChange} type="radio" value={item.id} className="radio-template" />
+                                      <input id={index} name="categoryId" checked onChange={this.handleChange} type="radio" value={item.id} className="radio-template" />
                                       :
-                                      <input id={index} name="categoryId" value={categoryId} onChange={this.handleChange} type="radio" value={item.id} className="radio-template" />
+                                      <input id={index} name="categoryId"  onChange={this.handleChange} type="radio" value={item.id} className="radio-template" />
                                   }
                                   <label>{item.nameCategory}</label>
                                 </div>

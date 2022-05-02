@@ -245,6 +245,7 @@ class YourRequest extends Component {
                             <th>To</th>
                             <th>Number Product</th>
                             <th>Active</th>
+                            <th>Status</th>
                             <th>Action</th>
                           </tr>
                         </thead>
@@ -271,6 +272,7 @@ class YourRequest extends Component {
                                     <input type="checkbox" checked={false} className="checkbox-template" />
                                   </div>}
                                 </td>
+                                <td>{item.isAccepted ? item.status : "Unconfirm" }</td>
                                 <td>{item.isAccepted ?
                                 <div className="i-checks">
                                     <button class="btn btn-info" onClick={() => {this.setState({modalShow: true,receive : item, id : item.id, nameProduct: item.products[0].nameProduct, quantityRequest: item.products[0].quantity} )}}>Confirm</button>

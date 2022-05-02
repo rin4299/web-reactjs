@@ -64,6 +64,7 @@ class Request extends Component {
     token = localStorage.getItem('_auth');
     // console.log("id", this.state.user[0].id);
     this.props.fetch_exchange_request(this.state.user[0].id, token).then(res => {
+      console.log(res)
       this.setState({
         total: res,
         total2 : res.slice(0,10)
@@ -98,6 +99,7 @@ class Request extends Component {
     })
     this.setState({modalShow: false})
   }
+
 
   MyVerticallyCenteredModal = (props) => {
     return (
@@ -216,12 +218,13 @@ class Request extends Component {
                             <th>From</th>
                             <th>To</th>
                             <th >Number Product</th>
+                            <th>Status</th>
                             <th>Action</th>
                           </tr>
                         </thead>
                         <tbody>
                           {total2 && total2.length ? total2.map((item, index) => {
-                            if(item.isAccepted){
+                            if(item.status === "Shipping"){
                               return null;
                             }
                             else{
@@ -232,6 +235,7 @@ class Request extends Component {
                                 <td><span className="text-truncate" >{item.reqUserName}</span></td>
                                 <td><span className="text-truncate" >{item.recUserName}</span></td>
                                 <td><span>{item.products.length}</span></td>
+                                <td>{item.isAccepted ? item.status : "Unconfirm" }</td>
                                 <td>{item.isAccepted ?
                                   <div className="i-checks">
                                     <input type="checkbox" checked={true} className="checkbox-template" />
