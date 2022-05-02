@@ -14,7 +14,7 @@ class OrderService extends BaseServiceCRUD {
   async createOne(payload) {
     console.log("PAYLOAD", payload)
     
-    const {fullName, address, note, phone, shippingTotal, itemAmount, promoTotal, totalAmount, orderBill, atStore, lop, lng, lat} = payload
+    const {fullName, address, note, phone, shippingTotal, itemAmount, promoTotal, totalAmount, orderBill, atStore, lop, lng, lat, isPaymentOnline} = payload
     const user = await Models.User.query().findOne('name', fullName);
     const userId = user.id; 
     const arrPQ = []
@@ -98,7 +98,7 @@ class OrderService extends BaseServiceCRUD {
             peers:["peer0.org1.example.com","peer0.org2.example.com"],
             chaincodeName:"productdetail",
             channelName:"mychannel",
-            args:[fullName, address, note.toString(), phone, orderOfStore[m].storeName, newShippingTotal.toString(), orderOfStore[m].itemAmount.toString(), newPromoTotal.toString(), newTotalAmount.toString(), userId.toString(), lng,toString(), lat.toString(), orderOfStore[m].totalQuantity.toString()]
+            args:[fullName, address, note.toString(), phone, orderOfStore[m].storeName, newShippingTotal.toString(), orderOfStore[m].itemAmount.toString(), newPromoTotal.toString(), newTotalAmount.toString(), userId.toString(), lng,toString(), lat.toString(), orderOfStore[m].totalQuantity.toString(), isPaymentOnline.toString()]
           }
           const res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
           if(!res){
@@ -132,7 +132,7 @@ class OrderService extends BaseServiceCRUD {
         peers:["peer0.org1.example.com","peer0.org2.example.com"],
         chaincodeName:"productdetail",
         channelName:"mychannel",
-        args:[fullName, address, note.toString(), phone, atStore, shippingTotal.toString(), itemAmount.toString(), promoTotal.toString(), totalAmount.toString(), userId.toString(), lng.toString(), lat.toString(), totalQuantity.toString()]
+        args:[fullName, address, note.toString(), phone, atStore, shippingTotal.toString(), itemAmount.toString(), promoTotal.toString(), totalAmount.toString(), userId.toString(), lng.toString(), lat.toString(), totalQuantity.toString(), isPaymentOnline.toString()]
       }
       const res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
       if(!res){

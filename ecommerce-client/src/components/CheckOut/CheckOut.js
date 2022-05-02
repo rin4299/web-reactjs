@@ -114,14 +114,16 @@ class CheckOut extends Component {
           note: note,
           phone: res.phone,
           shippingTotal: ship ,
-          itemAmount: amount,
+          itemAmount: parseFloat(amount.toFixed(2)),
           promoTotal,
           userId,
-          totalAmount: ship + amount - promoTotal,
+          totalAmount: parseFloat((ship + amount - promoTotal).toFixed(2)),
           atStore : atStore,
           lop : lopOrder,
           lat: res.lat,
           lng: res.lng,
+          isPaymentOnline: false,
+          isPaid: false,
         };
         console.log('submit order', resultOrder)
         //insert order to db
