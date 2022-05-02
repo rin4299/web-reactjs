@@ -33,7 +33,7 @@ class HistoryRequest extends Component {
       // startDate: new Date(),
       // endDate : '',
       dateRange: [null,null],
-      isOldest: true,
+      Newest : 'Newest',
     }
   }
 
@@ -62,11 +62,23 @@ class HistoryRequest extends Component {
     token = localStorage.getItem('_auth');
     // console.log("id", this.state.user[0].id);
     this.props.fetch_history_request(this.state.user[0].id, token).then(res => {
+      res = res.sort((a,b)=> {
+        // console.log(new Date(a.latestUpdate) ,new Date(b.latestUpdate))
+        console.log(a.latestUpdate, b.latestUpdate)
+        return new Date(a.latestUpdate) < new Date(b.latestUpdate)
+      })
+      console.log('reload',this.state.Newest)
+
+      if(this.state.Newest != 'Newest'){
+        res = res.reverse()
+        console.log('reload2',this.state.Newest)
+      }
       this.setState({
         total: res,
-        total2: res.slice(0,10).sort((a,b)=> {
-          return new Date(a.latestUpdate) < new Date(b.latestUpdate)
-        })
+        total2: res.slice(0,10)
+        // .sort((a,b)=> {
+        //   return new Date(a.latestUpdate) < new Date(b.latestUpdate)
+        // })
       })
     }).catch(err => {
       console.log(err)
@@ -131,6 +143,32 @@ class HistoryRequest extends Component {
         )
       }
     })
+  }
+
+  sortNewest = (event) => {
+    const { total2, Newest } = this.state
+    this.setState({
+      Newest : event.target.value
+    })
+    const value = event.target.value
+    if(Array.isArray(total2)){
+      // console.log('total2', total2)
+      if(value == 'Newest'){
+        console.log('Newest')
+        this.setState({
+          total2 : total2.sort((a,b)=> {
+            return new Date(a.latestUpdate) < new Date(b.latestUpdate)
+          })
+        })
+      }else {
+        console.log('Oldest')
+        this.setState({
+          total2 : total2.sort((a,b)=> {
+            return new Date(a.latestUpdate) > new Date(b.latestUpdate)
+          })
+        })
+      }
+    }
   }
 
   updateAccept = (id) => {
@@ -313,7 +351,9 @@ class HistoryRequest extends Component {
                       isClearable={true}
                       placeholderText='Date ...'
                     />
-                    <select name="sorting" onChange={(event) => {this.setState({ total2 : total2.reverse()})}} >
+                    <select name="sorting" onChange={(event) => {
+                                                                    this.sortNewest(event)                                                                                                      
+                                                                }}>
                       <option value='Newest'>Newest</option>
                       <option value='Oldest'>Oldest</option>
                     </select>      
@@ -334,6 +374,7 @@ class HistoryRequest extends Component {
                             <th>From</th>
                             <th>To</th>
                             <th>Type</th>
+                            <th>Status</th>
                             <th>Time</th>
                             <th></th>
                           </tr>
@@ -353,6 +394,7 @@ class HistoryRequest extends Component {
                                 <span>RECEIVE</span> 
                                 }
                                 </td>
+                                <td>Status cua exchange</td>
                                 <td ><span style={{width:"auto"}}>{time}</span></td>
                                 <td>
                                   <div>

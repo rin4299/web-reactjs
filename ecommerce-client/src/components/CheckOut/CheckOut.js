@@ -12,6 +12,7 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import "./style.css";
 import Modal from 'react-bootstrap/Modal'
+import { GoogleMap , LoadScript, Polyline, Marker, DirectionsService } from "@react-google-maps/api";
 
 const MySwal = withReactContent(Swal);
 
@@ -35,8 +36,10 @@ class CheckOut extends Component {
 
   componentDidMount(props) {
     token = localStorage.getItem("_auth");
-    console.log('test',this.props)
+    // console.log('test',this.props)
   }
+  
+
 
   submitOrder = async () => {
     MySwal.fire({
@@ -94,7 +97,7 @@ class CheckOut extends Component {
           codeProvince: provinceData,
           codeState: stateData,
         }; // output address
-        console.log('address',addressResult)
+        // console.log('address',addressResult)
         const addressResult2 = res.address + ',' + addressState + ',' + addressProvince;
         const note = res.note !== "" ? res.note : null;
         // const atStore = localStorage.getItem('_atStore');
@@ -114,13 +117,13 @@ class CheckOut extends Component {
           userId,
           totalAmount: ship + amount - promoTotal,
           atStore : atStore,
-          lop : lopOrder
+          lop : lopOrder,
         };
-        console.log('submit order', resultOrder)
+        // console.log('submit order', resultOrder)
         //insert order to db
         startLoading();
         const orderDb = await callApi("orders", "POST", resultOrder, token); //method post nen truyen them token tren headers
-        console.log('orderDB',orderDb)
+        // console.log('orderDB',orderDb)
         //END GET DATA FOR TABLE ORDER
 
         var lop = ""
@@ -163,16 +166,16 @@ class CheckOut extends Component {
         });
         //ENDGET DATA ORDER_DETAIL
         lop = lop.slice(0, -1);
-        console.log(lop);
+        // console.log(lop);
         var addr = addressResult.house + ", " + addressResult.state + ", " + addressResult.province;
-        console.log(addr);
+        // console.log(addr);
           const getStore = {
             address: addr,
             userId: userId
           }
-        console.log(getStore);
+        // console.log(getStore);
         const feedback = await callApi("getstore", "POST", getStore, token);
-        console.log(feedback);
+        // console.log(feedback);
         //CLEAR CART AFTER CHECKOUT IF input Available Address
         if(feedback.status === 200 || feedback.data === "successful" ){
           this.props.reset_cart();
@@ -184,10 +187,12 @@ class CheckOut extends Component {
   toggleCheckout = async () => {
     const { toggleCheckout, shippingAddress } = this.state;
     const auth = localStorage.getItem("_auth");
-    console.log('auth', auth)
+    // console.log('auth', auth)
     if (!auth) {
       return toast.error("Missing authentication!");
     }
+
+    // console.log('billing',this.billing.current)
     res = this.billing.current.getBillingState();
     const { provinceData, stateData } = res; //get code
     const resData = await callApi("users/me", "GET", null, token);
@@ -268,7 +273,7 @@ class CheckOut extends Component {
       atStore : atStore,
       lop : lopOrder
     };
-    console.log('resultOrder',resultOrder)
+    // console.log('resultOrder',resultOrder)
     this.setState({
       toggleCheckout: !toggleCheckout,
       shippingAddress: !shippingAddress,
@@ -286,57 +291,6 @@ class CheckOut extends Component {
     this.props.reset_cart();
   }
 
-  // testFunction = async () => {
-    
-  //   token = localStorage.getItem("_auth");
-  //   if (!token) {
-  //     return toast.error("Missing authentication!");
-  //   }
-  //   const resData = await callApi("users/me", "GET", null, token);
-  //   const userId = resData.data.results[0].id;
-  //   const builder = localStorage.getItem("_cart");
-  //   const dataCart = JSON.parse(builder);
-  //   console.log(dataCart)
-  //   const payload1 = {
-  //     address:"268 Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Việt Nam",
-  //     userId: userId
-  //   }
-  //   let getstore
-  //   await callApi("getstore", "POST", payload1, token).then(res => {
-  //     getstore = res.data
-  //   });
-  //   console.log(getstore)
-
-  //   let dataItems = [];
-  //   let lop='';
-  //   dataCart.forEach((item) => {
-  //     dataItems.push({
-  //       sku: item.id,
-  //       name: item.nameProduct,
-  //       description: item.description,
-  //       quantity: item.quantity,
-  //       price: item.price,
-  //       currency: "USD",
-  //     });
-  //     if(lop == '') lop = item.id.toString() + '-' + item.quantity.toString()
-  //     else {
-  //       lop = lop + ',' + item.id.toString() + '-' + item.quantity.toString()   
-  //     }
-  //   });
-  //   console.log(lop)
-  //   const payload2 = {
-  //     "lop": lop,
-  //     "userId":userId
-  //   }
-  //   let getsuggestion;
-  //   await callApi("getsuggestion", "POST", payload2, token).then(res =>{
-  //     getsuggestion = res.data
-  //   });
-  //   console.log('getsuggestion', getsuggestion)
-  //   if(getsuggestion.length !== 1){
-  //       this.setState({modalShow: true});
-  //   }
-  // }
   get_lop = () => {
     // token = localStorage.getItem("_auth");
     //   if (!token) {
@@ -377,7 +331,7 @@ class CheckOut extends Component {
       // this.setState({
       //   lopOrder : lop
       // })
-      console.log('lop',lop)
+      // console.log('lop',lop)
       return lop
       // const payload2 = {
       // "lop": lop,
@@ -422,8 +376,8 @@ class CheckOut extends Component {
 
   render() {
     // let atStore = 
-    console.log('atstore Checkout', localStorage.getItem('_atStore'))
-    console.log('numberOrders', localStorage.getItem('numOrders'))
+    // console.log('atstore Checkout', localStorage.getItem('_atStore'))
+    // console.log('numberOrders', localStorage.getItem('numOrders'))
     const {
       redirectTo,
       toggleCheckout,

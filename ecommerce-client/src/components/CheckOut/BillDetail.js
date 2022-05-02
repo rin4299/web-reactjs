@@ -15,7 +15,10 @@ export default class BillDetail extends Component {
       email:'',
       provinceData: '01',
       stateData: '001',
+      lat: null,
+      lng: null
     }
+    this.autocomplete = null
   }
 
   async componentDidMount() {
@@ -38,7 +41,25 @@ export default class BillDetail extends Component {
     } catch (err) {
       console.log(err);
     }
+
+    this.autocomplete = new window.google.maps.places.Autocomplete(document.getElementById('autocomplete'), {})
+
+    this.autocomplete.addListener("place_changed", () => {
+      let addressObject = this.autocomplete.getPlace()
+      this.setState({
+        lat : addressObject.geometry.location.lat(),
+        lng : addressObject.geometry.location.lng()
+      })
+      // console.log(addressObject.geometry.location.lat())
+      // console.log(addressObject.geometry.location.lng())
+
+    })
   }
+
+  // handlePlaceSelect() {
+  //   let addressObject = this.autocomplete.getPlace()
+  //   console.log(addressObject)
+  // }
 
   handleChange = (event) => {
     let name = event.target.name;
@@ -47,6 +68,7 @@ export default class BillDetail extends Component {
       [name]: value
     });
   }
+
 
   getBillingState = (event) => {
     return this.state; //ref react
@@ -130,7 +152,7 @@ export default class BillDetail extends Component {
              <div className="col-md-12">
                <div className="checkout-form-list">
                  <label>Address <span className="required">*</span></label>
-                 <input onChange={this.handleChange} placeholder="Street address" type="text" name="address" value={address} />
+                 <input id="autocomplete" onChange={this.handleChange} placeholder="Street address" type="text" name="address" value={address} />
                </div>
              </div>
              <div className="col-md-12">

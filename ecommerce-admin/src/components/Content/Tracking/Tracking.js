@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component , useRef } from 'react'
 import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
@@ -13,13 +13,22 @@ import callApi from '../../../utils/apiCaller';
 import Modal from 'react-bootstrap/Modal'
 import {Steps} from 'antd'
 import { ArrowUpOutlined } from '@ant-design/icons' ;
+import Testcomponent from './Map'
+// import RequestCartItems from './RequestCartItems'
+
+
+import {Container, Card, CardContent, makeStyles, Grid, TextField, Button} from '@material-ui/core';
+import QRCode from 'qrcode';
+import {QrReader} from 'react-qr-reader';
+
 // import "antd/dist/antd.css"
 
 const MySwal = withReactContent(Swal)
 
 let token;
 const {Step} = Steps;
-
+// const qrRef = useRef(null);
+// console.log(qrRef)
 class Tracking extends Component {
 
   constructor(props) {
@@ -34,10 +43,17 @@ class Tracking extends Component {
       quantity: '',
       user: [],
       recUser: '',
-      userdiff: []
-    }
-  }
+      userdiff: [],
+      //
+      text: '',
+      imageUrl:'',
+      scanResultFile:'',
+      scanResultWebCam:'',
+      // qrRef:null
 
+    }
+    this.qrRef = React.createRef()
+  }  
   async componentDidMount() {
     token = localStorage.getItem('_auth');
     if (token) {
@@ -66,7 +82,6 @@ class Tracking extends Component {
         redirect: true
       })    
     }
-    
     // await this.fetch_reload_data(); 
   }
 
@@ -217,6 +232,46 @@ class Tracking extends Component {
     );
   }
 
+  generateQrCode = async () => {
+    console.log(this.state.text)
+    try {
+          const response = await QRCode.toDataURL(this.state.text);
+          // setImageUrl(response);
+          this.setState({
+            imageUrl : response
+          })
+    }catch (error) {
+      console.log(error);
+    }
+  }
+  handleErrorFile = (error) => {
+    console.log(error);
+  }
+  handleScanFile = (result) => {
+      if (result) {
+          // setScanResultFile(result);
+          this.setState({
+            scanResultFile : result
+          })
+      }
+  }
+  onScanFile = () => {
+    console.log(this.qrRef.current)
+    // qrRef.current.openImageDialog();
+
+  }
+  handleErrorWebCam = (error) => {
+    console.log(error);
+  }
+  handleScanWebCam = (result) => {
+    if (result){
+        // setScanResultWebCam(result);
+        this.setState({
+          scanResultWebCam : result
+        })
+    }
+   }
+
   render() {
     let { products } = this.props;
     const { searchText, total } = this.state;
@@ -312,6 +367,7 @@ class Tracking extends Component {
                       />
                   </ul>
                 </nav>
+                {/* <Testcomponent/> */}
                 <ArrowUpOutlined style={{fontsize :'400%'}}/>
                 {/* <Steps 
                   direction='vertical' 
@@ -324,7 +380,40 @@ class Tracking extends Component {
                   <Step title="Finished" description={"somethings"} subTitle="03/02/2022"/>
                   <Step title="process" description={"somethings"} subTitle="03/02/2022"/>
                 </Steps> */}
-                <ArrowUpOutlined style={{fontsize :'400%'}}/>
+                      <Grid item xl={4} lg={4} md={6} sm={12} xs={12}>
+                          <TextField label="Enter Text Here" onChange={(e) => this.setState({text : e.target.value})}/>
+                          <Button  variant="contained" 
+                            color="primary" onClick={() => this.generateQrCode()}>Generate</Button>
+                            <br/>
+                            <br/>
+                            <br/>
+                            {this.state.imageUrl ? (
+                              <a href={this.state.imageUrl} download>
+                                  <img src={this.state.imageUrl} alt="img"/>
+                              </a>) : null}
+                      </Grid>
+                      <Grid item xl={4} lg={4} md={6} sm={12} xs={12}>
+                        <Button variant="contained" color="secondary" onClick={this.onScanFile()}>Scan Qr Code</Button>
+                        <QrReader
+                          ref={this.qrRef}
+                          delay={300}
+                          style={{width: '100%'}}
+                          onError={this.handleErrorFile()}
+                          onScan={this.handleScanFile()}
+                          legacyMode
+                        />
+                        <h3>Scanned Code: {this.state.scanResultFile}</h3>
+                      </Grid>
+                      {/* <Grid item xl={4} lg={4} md={6} sm={12} xs={12}>
+                         <h3>Qr Code Scan by Web Cam</h3>
+                         <QrReader
+                         delay={300}
+                         style={{width: '100%'}}
+                         onError={this.handleErrorWebCam()}
+                         onScan={this.handleScanWebCam()}
+                         />
+                         <h3>Scanned By WebCam Code: {this.state.scanResultWebCam}</h3>
+                      </Grid> */}
               </div>
             </div>
           </div>

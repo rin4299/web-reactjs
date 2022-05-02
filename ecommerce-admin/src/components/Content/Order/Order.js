@@ -29,6 +29,7 @@ class Order extends Component {
       filterStatus: 'All',
       productDetails: 0,
       modalShow: false,
+      Newest : 'Newest',
     }
   }
 
@@ -54,7 +55,9 @@ class Order extends Component {
   async fetch_reload_data(){
     token = localStorage.getItem('_auth');
     this.props.fetch_orders(token, null, this.state.user[0].name).then(res => {
-      console.log('result',res.results)
+      let res2 = res.results.sort((a,b)=> {
+        return new Date(a.createdAt) < new Date(b.createdAt)
+      })
       this.setState({
         total: res.results.sort((a,b)=> {
           return new Date(a.createdAt) < new Date(b.createdAt)
@@ -187,7 +190,7 @@ class Order extends Component {
     // console.log('fetch thanh cong', id)
     token = localStorage.getItem('_auth');
     console.log(item)
-    if (item.status === 'Complete'){
+    if (item.status === 'Complete' || item.status == 'Shipping'){
       await this.props.find_order_product_detail(token, item.id).then(res => {
         this.setState({
           productDetails : res,
@@ -315,8 +318,8 @@ class Order extends Component {
                                                                 this.fetch_reload_data()
                                                               }} >
                       <option value='All'>All</option>
-                      <option value='Unconfirm' >Unconfirm</option>
-                      <option value='Confirm'>Confirm</option>
+                      <option value='Processing' >Processing</option>
+                      {/* <option value='Confirm'>Confirm</option> */}
                       <option value='Shipping' >Shipping</option>
                       <option value='Complete' >Complete</option>
                       <option value='Canceled' >Cancel</option>
@@ -344,7 +347,8 @@ class Order extends Component {
                             {/* <th style={{ textAlign: "center" }}>Payment Online</th> */}
                             <th>Item Amount</th>
                             <th>Shipping Total</th>
-                            <th>Promo Total </th>
+                            {/* <th>Promo Total </th> */}
+                            <th>Desired time</th>
                             <th>Total Amount</th>
                             <th>Note</th>
                             <th>Code</th>

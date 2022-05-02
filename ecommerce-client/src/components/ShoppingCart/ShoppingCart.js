@@ -242,7 +242,7 @@ class ShoppingCart extends Component {
       }
     }
     console.log(numOrders)
-    localStorage.setItem('numOrders', filterStore)
+    localStorage.setItem('numOrders', numOrders)
 
     
     let amount = 0;
@@ -253,7 +253,7 @@ class ShoppingCart extends Component {
         return sum += item.quantity * item.price
       }, 0)
     }
-    else {
+    else if(items.length > 0) {
         let newItems
         if(getsuggestion[0] && getsuggestion[0].length > 0){
             newItems = getsuggestion[0].filter((item)=> {
@@ -326,9 +326,9 @@ class ShoppingCart extends Component {
                                         } */}
                                         {items && items.length && filterStore == 'All' ? items.map((item,index) => {
                                             {/* console.log('local storage',item) */}
-                                            {item.quantity > item.numberAvailable ? item.quantity = item.numberAvailable : item.quantity}
                                             return (
                                                 <tr>
+                                                    {item.quantity > item.numberAvailable ? item.quantity = item.numberAvailable : item.quantity}
                                                     <td className="li-product-remove"><Link to="#"><i style={{fontSize: 20}} 
                                                     onClick={() => this.removeItem(item)} 
                                                     className="fa fa-trash" /></Link></td>
