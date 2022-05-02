@@ -89,38 +89,9 @@ class Routing extends Component {
   }
 
 
-//   pageChange(content){
-//     const limit = 10;
-//     const offset = limit * (content - 1);
-//     this.props.fetch_products(token, offset);
-//     this.setState({
-//       currentPage: content
-//     })
-//     window.scrollTo(0, 0);
-//   }
 
  
 
-  handleRemove = (id) => {
-    MySwal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes'
-    }).then(async (result) => {
-      if (result.value) {
-        await this.props.delete_product(id, token);
-        Swal.fire(
-          'Deleted!',
-          'Your file has been deleted.',
-          'success'
-        )
-      }
-    })
-  }
   handleChange = (event) => {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -130,34 +101,15 @@ class Routing extends Component {
     });
   }
 
-  handleSubmit = (event) => {
+handleSubmit = async (event) => {
     event.preventDefault();
-    const { searchText } = this.state;
-    // console.log('searchText', searchText)
-    this.props.tracking_request(searchText, token).then(res => {
-      if (res && res.length){
-        res.map((item) => {
-          console.log(item.Value.information)
-          let lat = item.Value.information.lat
-          let lng = item.Value.information.lng
-          if(this.state.listMarker !== []){
-            this.setState({
-              listMarker : []
-            })
-          }
-          this.state.listMarker.push({lat,lng})
-        })
-      }
-      this.setState({
-        total: res
-      })
-    })
-    // this.props.find_products(token, searchText).then(res => {
-    //     this.setState({
-    //       total: res.total
-    //     })
-    //   })
-    
+    const { user } = this.state;
+    // console.log('user', user[0].name)
+    let storeName = user[0].name;
+    const res = await callApi('routing/${storeName}', 'GET', null, token);
+    if (res && res.status === 200) {
+    console.log(res)
+    }
   }
 
 
@@ -210,7 +162,7 @@ class Routing extends Component {
                         className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
                         aria-label="Search" />
                     </div>
-                    <button type='button' className='btn btn-primary'>Generate</button>
+                    <button type='button' className='btn btn-primary' onClick={this.handleSubmit}>Generate</button>
 
                   </form>
                   <div className="card-body">
@@ -268,8 +220,7 @@ class Routing extends Component {
                       />
                   </ul>
                 </nav>
-                <Testcomponent path = {this.state.listMarker}/>
-                <ArrowUpOutlined style={{fontsize :'400%'}}/>
+                {/* <Testcomponent path = {this.state.listMarker}/> */}
               </div>
             </div>
           </div>

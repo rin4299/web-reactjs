@@ -4,12 +4,13 @@ import { connect } from 'react-redux'
 
 
 const mapContainerStyle = {
-    height: "400px",
-    width: "800px"
+    height: "500px",
+    width: "800px",
+    "margin-left":"400px"
   };
 
-const center = { lat:  10.7719937, lng: 106.7057951 }
-const onLoad = polyline => {
+  const center = { lat:  10.773392736860279, lng: 106.66067562399535 }
+  const onLoad = polyline => {
     console.log('polyline: ', polyline)
 };
 const destination = {
@@ -66,7 +67,9 @@ class Testcomponent extends Component {
       
     render(){
       let {path} = this.props
+      path = [...path, {lat: center.lat, lng : center.lng}]
       console.log(path)
+      
         // var directionService = new google.maps.directionService;
         // var directionDisplay = new google.maps.dir   ectionDisplay;
         return (

@@ -155,7 +155,12 @@ class Tracking extends Component {
               listMarker : []
             })
           }
-          this.state.listMarker.push({lat,lng})
+          this.setState({
+            listMarker: [...this.state.listMarker, {lat: lat, lng : lng}]
+          })
+          // importList : [...this.state.importList, {pId:item.id,pName:item.nameProduct, quantity: 1}]
+
+          // this.state.listMarker.push({lat,lng})
         })
       }
       this.setState({
@@ -315,8 +320,11 @@ class Tracking extends Component {
                       />
                   </ul>
                 </nav>
-                <Testcomponent path = {this.state.listMarker}/>
-                <ArrowUpOutlined style={{fontsize :'400%'}}/>
+                <div style={{ textAlign: "center" }}>
+                  <Testcomponent id="map" style={{ textAlign: "center" }} path = {this.state.listMarker} total = {total}/>
+                </div>
+                
+                {/* <ArrowUpOutlined style={{fontsize :'400%'}}/> */}
                 {/* <Steps 
                   direction='vertical' 
                   current={3}

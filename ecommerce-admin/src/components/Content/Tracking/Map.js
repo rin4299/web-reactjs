@@ -1,12 +1,19 @@
 import React , { Component } from "react";
-import { GoogleMap , LoadScript, Polyline, Marker, DirectionsService } from "@react-google-maps/api";
+import { GoogleMap , LoadScript, Polyline, Marker, DirectionsService, InfoWindow } from "@react-google-maps/api";
 import { connect } from 'react-redux'
 
 
 const mapContainerStyle = {
-    height: "400px",
-    width: "800px"
+    height: "500px",
+    width: "800px",
+    "margin-left":"400px"
   };
+
+const divStyle = {
+  background: `white`,
+  border: `1px solid #ccc`,
+  padding: 10
+}
 
 const center = { lat:  10.773392736860279, lng: 106.66067562399535 }
 const onLoad = polyline => {
@@ -30,25 +37,6 @@ var lineSymbol = {
     strokeOpacity: 1
 };
   
-// const options = {
-//     strokeColor: '#FF0000',
-//     strokeOpacity: 0.8,
-//     strokeWeight: 3.5,
-//     fillColor: '#FF0000',
-//     fillOpacity: 0.35,
-//     clickable: false,
-//     draggable: false,
-//     editable: false,
-//     visible: true,
-//     radius: 30000,
-//     paths: path,
-//     zIndex: 1,
-//     icons:[{
-//         icon: lineSymbol,
-//         offset: '100%',
-//         repeat: '50px'
-//     }]
-// };
 
 // const opstions2 = { // eslint-disable-line react-perf/jsx-no-new-object-as-prop
 //     destination: destination,
@@ -58,50 +46,110 @@ var lineSymbol = {
 
 class Testcomponent extends Component {
     constructor (props) {
-        super(props)
+      super(props)
 
     
-      }
+    }
+    // async componentDidMount(){
+    //   const map = new window.google.maps.Map(document.getElementById("map"),{
+    //     center : center,
+    //     zoom : 12,
+    //   })
+    // }
 
+    onLoad = infoWindow => {
+      console.log('infoWindow: ', infoWindow)
+    }
       
     render(){
-      let {path} = this.props
+      let {path, total} = this.props
+      path = [...path, {lat: center.lat, lng : center.lng}]
+      path = path.reverse()
       console.log('1',path)
-      path.push(center)
-      console.log('2',path)
+      console.log('total',total)
+
+      const options = {
+        strokeColor: '#FF0000',
+        strokeOpacity: 0.8,
+        strokeWeight: 5,
+        fillColor: '#FF0000',
+        fillOpacity: 0.35,
+        clickable: false,
+        draggable: false,
+        editable: false,
+        visible: true,
+        radius: 30000,
+        paths: path,
+        zIndex: 1,
+        icons:[{
+            icon: lineSymbol,
+            offset: '100%',
+            repeat: '50px'
+        }]
+      };
+      // path.push(center)
         // var directionService = new google.maps.directionService;
         // var directionDisplay = new google.maps.dir   ectionDisplay;
         return (
             // <LoadScript
             //     googleMapsApiKey="AIzaSyCXxL0MBTRrFF9MBlEMZNwkmenz9zMRtZk" libraries={["places"]}
             // >
+              <div id="map">
+                
                 <GoogleMap
-                mapContainerStyle={mapContainerStyle}
-                center={center}
-                zoom={13}
-                >'
-                {console.log('3',path)}
-                    {path.map((position) => {
+                  mapContainerStyle={mapContainerStyle}
+                  center={center}
+                  zoom={12}
+                  >'
+                    {path.map((position,index) => {
                       console.log('position',position)
                         return (
                             <Marker
                             onLoad={onLoad}
                             position={position}
+                            zIndex= {index}
+                            animation={window.google.maps.Animation.BOUNCE}
                             />
                         )
                     })}
-                    <Marker
-                        onLoad={onLoad}
-                        position={center}
-                    />
-                    {/* <Polyline
+                    {total.map((item,index) => {
+                      console.log('position',item)
+                      let lat = item.Value.information.lat
+                      let lng = item.Value.information.lng
+                      let position = {lat: lat, lng : lng}
+                      return (
+                        index+1 === total.length ? 
+                          <InfoWindow
+                            onLoad={onLoad}
+                            position={position}
+                          >
+                            <div style={divStyle}>
+                              <span>Index: {index+1}, Current</span>
+                              <span>{item.Value.ownerName}</span>
+
+                            </div>
+                          </InfoWindow>
+                      : 
+                          <InfoWindow
+                            onLoad={onLoad}
+                            position={position}
+                          >
+                            <div style={divStyle}>
+                              <span>Index: {index+1}</span>
+                              <span>{item.Value.ownerName}</span>
+                            </div>
+                          </InfoWindow>
+                          )
+                        
+                    })}
+                    <Polyline
                         onLoad={onLoad}
                         path={path}
                         options={options}
-                    /> */}
-                    
-                    
+                    />
                 </GoogleMap>
+              </div>
+                
             // {/* </LoadScript> */}
         )
     }
