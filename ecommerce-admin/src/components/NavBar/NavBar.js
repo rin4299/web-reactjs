@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import callApi from '../../utils/apiCaller';
-
+import MenuItem from "@material-ui/core/MenuItem";
+import MenuList from "@material-ui/core/MenuList";
 
 let token;
 class NavBar extends Component {
@@ -70,6 +71,7 @@ class NavBar extends Component {
         }
         <span className="heading">Extras</span>
         <ul className="list-unstyled">
+          <li> <Link to="/routing"> <i className="icon-interface-windows" />Routing </Link></li>
           <li> <Link to="/"> <i className="icon-screen" />Abount </Link></li>
           <li> <Link to="/"> <i className="icon-flask" />Help </Link></li>
         </ul>

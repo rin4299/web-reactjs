@@ -1,35 +1,25 @@
 import React, { Component , useRef } from 'react'
-import './style.css'
+// import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { actFetchProductsRequest, actFindProductsRequest } from '../../../redux/actions/product';
 import {actTrackingRequest} from '../../../redux/actions/tracking';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
-import {exportExcel} from 'utils/exportExcel'
-import Paginator from 'react-js-paginator';
 import callApi from '../../../utils/apiCaller';
-import Modal from 'react-bootstrap/Modal'
-import {Steps} from 'antd'
 import { ArrowUpOutlined } from '@ant-design/icons' ;
 import Testcomponent from './Map'
-// import RequestCartItems from './RequestCartItems'
+import Paginator from 'react-js-paginator';
 
-
-import {Container, Card, CardContent, makeStyles, Grid, TextField, Button} from '@material-ui/core';
-import QRCode from 'qrcode';
-import {QrReader} from 'react-qr-reader';
 
 // import "antd/dist/antd.css"
 
 const MySwal = withReactContent(Swal)
 
 let token;
-const {Step} = Steps;
 // const qrRef = useRef(null);
 // console.log(qrRef)
-class Tracking extends Component {
+class Routing extends Component {
 
   constructor(props) {
     super(props);
@@ -179,46 +169,6 @@ class Tracking extends Component {
 //     this.setState({modalShow: false})
 //   }
 
-  generateQrCode = async () => {
-    console.log(this.state.text)
-    try {
-          const response = await QRCode.toDataURL(this.state.text);
-          // setImageUrl(response);
-          this.setState({
-            imageUrl : response
-          })
-    }catch (error) {
-      console.log(error);
-    }
-  }
-  handleErrorFile = (error) => {
-    console.log(error);
-  }
-  handleScanFile = (result) => {
-      if (result) {
-          // setScanResultFile(result);
-          this.setState({
-            scanResultFile : result
-          })
-      }
-  }
-  onScanFile = () => {
-    console.log(this.qrRef.current)
-    // qrRef.current.openImageDialog();
-
-  }
-  handleErrorWebCam = (error) => {
-    console.log(error);
-  }
-  handleScanWebCam = (result) => {
-    if (result){
-        // setScanResultWebCam(result);
-        this.setState({
-          scanResultWebCam : result
-        })
-    }
-   }
-
   render() {
     let { products } = this.props;
     const { searchText, total } = this.state;
@@ -228,14 +178,14 @@ class Tracking extends Component {
         {/* Page Header*/}
         <header className="page-header">
           <div className="container-fluid">
-            <h2 className="no-margin-bottom">Tracking</h2>
+            <h2 className="no-margin-bottom">Routing</h2>
           </div>
         </header>
         {/* Breadcrumb*/}
         <div className="breadcrumb-holder container-fluid">
           <ul className="breadcrumb">
             <li className="breadcrumb-item"><Link to="/">Home</Link></li>
-            <li className="breadcrumb-item active">Tracking</li>
+            <li className="breadcrumb-item active">Routing</li>
           </ul>
         </div>
         <section className="tables pt-3">
@@ -244,14 +194,14 @@ class Tracking extends Component {
               <div className="col-lg-12" style={{ textAlign: "center" }}>
                 <div className="card">
                   <div className="card-header d-flex align-items-center">
-                    <h3 className="h4">Tracking Sequences</h3>
+                    <h3 className="h4">Routing</h3>
                     
                     {/* <button onClick={()=>this.downloadExcel()} style={{ border: 0, background: "white" }}> <i className="fa fa-file-excel-o"
                         style={{fontSize: 18, color: '#1d7044'}}> Excel</i></button> */}
                   </div>
                   <form onSubmit={(event) => this.handleSubmit(event)}
                     className="form-inline md-form form-sm mt-0" style={{ justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20 }}>
-                    <div>
+                    <div className='btn-group'>
                       <button style={{border: 0, background: 'white'}}> <i className="fa fa-search" aria-hidden="true"></i></button>                  
                       <input
                         name="searchText"
@@ -260,6 +210,8 @@ class Tracking extends Component {
                         className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
                         aria-label="Search" />
                     </div>
+                    <button type='button' className='btn btn-primary'>Generate</button>
+
                   </form>
                   <div className="card-body">
                     <div className="table-responsive">
@@ -279,11 +231,12 @@ class Tracking extends Component {
                         <thead>
                           <tr>
                             <th>Number</th>
-                            <th>TxId</th>
-                            <th>Product Name</th>
-                            <th>Id Product</th>
-                            <th>Owner Name</th>
-                            <th style={{ textAlign: "center" }}>Time</th>
+                            <th>Name recive</th>
+                            <th>Phone</th>
+                            <th>Code order</th>
+                            <th>Total Amount</th>
+                            <th>Address</th>
+                            {/* <th style={{ textAlign: "center" }}>Time</th> */}
                           </tr>
                           
                         </thead>
@@ -317,51 +270,6 @@ class Tracking extends Component {
                 </nav>
                 <Testcomponent path = {this.state.listMarker}/>
                 <ArrowUpOutlined style={{fontsize :'400%'}}/>
-                {/* <Steps 
-                  direction='vertical' 
-                  current={3}
-                  className="site-navigation-steps"
-                  type='navigation'
-                >
-                  <Step title="Finished" description={"somethings"} subTitle="03/02/2022"/>
-                  <Step title="Finished" description={"somethings"} subTitle="03/02/2022"/>
-                  <Step title="Finished" description={"somethings"} subTitle="03/02/2022"/>
-                  <Step title="process" description={"somethings"} subTitle="03/02/2022"/>
-                </Steps> */}
-                      {/* <Grid item xl={4} lg={4} md={6} sm={12} xs={12}>
-                          <TextField label="Enter Text Here" onChange={(e) => this.setState({text : e.target.value})}/>
-                          <Button  variant="contained" 
-                            color="primary" onClick={() => this.generateQrCode()}>Generate</Button>
-                            <br/>
-                            <br/>
-                            <br/>
-                            {this.state.imageUrl ? (
-                              <a href={this.state.imageUrl} download>
-                                  <img src={this.state.imageUrl} alt="img"/>
-                              </a>) : null}
-                      </Grid>
-                      <Grid item xl={4} lg={4} md={6} sm={12} xs={12}>
-                        <Button variant="contained" color="secondary" onClick={this.onScanFile()}>Scan Qr Code</Button>
-                        <QrReader
-                          ref={this.qrRef}
-                          delay={300}
-                          style={{width: '100%'}}
-                          onError={this.handleErrorFile()}
-                          onScan={this.handleScanFile()}
-                          legacyMode
-                        />
-                        <h3>Scanned Code: {this.state.scanResultFile}</h3>
-                      </Grid> */}
-                      {/* <Grid item xl={4} lg={4} md={6} sm={12} xs={12}>
-                         <h3>Qr Code Scan by Web Cam</h3>
-                         <QrReader
-                         delay={300}
-                         style={{width: '100%'}}
-                         onError={this.handleErrorWebCam()}
-                         onScan={this.handleScanWebCam()}
-                         />
-                         <h3>Scanned By WebCam Code: {this.state.scanResultWebCam}</h3>
-                      </Grid> */}
               </div>
             </div>
           </div>
@@ -391,4 +299,4 @@ const mapDispatchToProps = (dispatch) => {
 
 
 
-export default connect(null, mapDispatchToProps)(Tracking)
+export default connect(null, mapDispatchToProps)(Routing)

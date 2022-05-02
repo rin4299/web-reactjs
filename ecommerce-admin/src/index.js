@@ -8,6 +8,7 @@ import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import 'nprogress/nprogress.css'
 import { ToastContainer } from 'react-toastify';
+import {LoadScript } from "@react-google-maps/api";
 
 const store = createStore(appReducers, composeWithDevTools(
   applyMiddleware(thunk)
@@ -22,5 +23,9 @@ ReactDOM.render(
       pauseOnHover={false}
       pauseOnVisibilityChange={false}
     />
+    <LoadScript
+      googleMapsApiKey="AIzaSyCXxL0MBTRrFF9MBlEMZNwkmenz9zMRtZk" libraries={["places"]}
+    >    
+    </LoadScript>
   </Provider>,
   document.getElementById('root'));

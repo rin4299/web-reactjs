@@ -16,7 +16,7 @@
 }
 
 .btn-group .button {
-  /* background-color: #4CAF50; Green */
+  /*background-color: #4CAF50; Green */
   border: 1px solid black;
   color: green;
   padding: 10px 24px;
@@ -28,10 +28,10 @@
   float: right;
   position: relative;
   left: 790px;
-}
+} 
 
-.btn-group .button:not(:last-child) {
-  border-right: none; /* Prevent double borders */
+btn-group .button:not(:last-child) {
+  border-right: none; 
 }
 
 .btn-group .button:hover {

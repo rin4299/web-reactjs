@@ -100,6 +100,7 @@ class Request extends Component {
     this.setState({modalShow: false})
   }
 
+
   MyVerticallyCenteredModal = (props) => {
     return (
       <Modal
@@ -217,12 +218,13 @@ class Request extends Component {
                             <th>From</th>
                             <th>To</th>
                             <th >Number Product</th>
+                            <th>Status</th>
                             <th>Action</th>
                           </tr>
                         </thead>
                         <tbody>
                           {total2 && total2.length ? total2.map((item, index) => {
-                            if(item.isAccepted){
+                            if(item.status === "Shipping"){
                               return null;
                             }
                             else{
@@ -233,6 +235,7 @@ class Request extends Component {
                                 <td><span className="text-truncate" >{item.reqUserName}</span></td>
                                 <td><span className="text-truncate" >{item.recUserName}</span></td>
                                 <td><span>{item.products.length}</span></td>
+                                <td>{item.isAccepted ? item.status : "Unconfirm" }</td>
                                 <td>{item.isAccepted ?
                                   <div className="i-checks">
                                     <input type="checkbox" checked={true} className="checkbox-template" />

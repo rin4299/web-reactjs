@@ -8,7 +8,7 @@ const mapContainerStyle = {
     width: "800px"
   };
 
-const center = { lat:  10.773392736860279, lng: 106.66067562399535 }
+const center = { lat:  10.7719937, lng: 106.7057951 }
 const onLoad = polyline => {
     console.log('polyline: ', polyline)
 };
@@ -66,9 +66,7 @@ class Testcomponent extends Component {
       
     render(){
       let {path} = this.props
-      console.log('1',path)
-      path.push(center)
-      console.log('2',path)
+      console.log(path)
         // var directionService = new google.maps.directionService;
         // var directionDisplay = new google.maps.dir   ectionDisplay;
         return (
@@ -79,10 +77,8 @@ class Testcomponent extends Component {
                 mapContainerStyle={mapContainerStyle}
                 center={center}
                 zoom={13}
-                >'
-                {console.log('3',path)}
+                >
                     {path.map((position) => {
-                      console.log('position',position)
                         return (
                             <Marker
                             onLoad={onLoad}
@@ -102,7 +98,7 @@ class Testcomponent extends Component {
                     
                     
                 </GoogleMap>
-            // {/* </LoadScript> */}
+            // </LoadScript>
         )
     }
 }

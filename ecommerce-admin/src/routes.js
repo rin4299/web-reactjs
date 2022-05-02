@@ -27,6 +27,7 @@ import ImportPage from 'pages/ImportPage';
 import ActionImportPage from 'pages/ActionImportPage';
 import ProductReportPage from 'pages/ProductReportPage';
 import ActionReportProductPage from 'pages/ActionReportProductPage';
+import RoutingPage from 'pages/RoutingPage';
 const routes = [
   {
     path: '/',
@@ -77,6 +78,11 @@ const routes = [
     path: '/tracking',
     exact: true,
     main: () => <TrackingPage />
+  },
+  {
+    path: '/routing',
+    exact: true,
+    main: () => <RoutingPage />
   },
   {
     path: '/discounts',
