@@ -39,6 +39,11 @@ export default class PaypalCheckoutButton extends Component {
     const PayPalButton = paypal.Button.driver("react", { React, ReactDOM });
     const payment = (data, actions) => {
       console.log('orderBill',order.orderBill)
+      console.log('orderBill',order)
+      console.log(typeof order.itemAmount)
+      var TotalAmmount = parseFloat(order.itemAmount.toFixed(2))
+      console.log(TotalAmmount)
+      console.log(typeof TotalAmmount)
       return actions.payment.create({
         intent: "sale",
         payer: {
@@ -49,10 +54,10 @@ export default class PaypalCheckoutButton extends Component {
         transactions: [
           {
             amount: {
-              total: order.totalAmount,
+              total: parseFloat(order.totalAmount.toFixed(2)),
               currency: paypalConf.currency,
               details: {
-                subtotal: order.itemAmount,
+                subtotal: parseFloat(order.itemAmount.toFixed(2)),
                 tax: 0,
                 shipping: order.shippingTotal
               }
@@ -76,43 +81,47 @@ export default class PaypalCheckoutButton extends Component {
           const newOrder = {
             fullName: order.fullName,
             address: order.address,
-            note: order.note,
-            phone: order.phone,
+            note: order.note ? order.note : "",
+            phone: order.phone ? order.phone : "",
             shippingTotal: ship,
-            itemAmount: order.orderBill.total,
+            itemAmount: parseFloat(order.orderBill.total.toFixed(2)),
             promoTotal,
-            status: "Unconfirm",
+            status: "Processing",
             userId: order.orderBill.customer,
             paypalCode: response.id,
             isPaymentOnline: true,
             isPaid: true,
-            totalAmount: ship + order.orderBill.total - promoTotal
+            totalAmount: parseFloat((ship + order.orderBill.total - promoTotal).toFixed(2)),
+            atStore: order.atStore,
+            lop: order.lop,
+            lng: order.lng,
+            lat: order.lat
           };
           const orderDb = await callApi("orders", "POST", newOrder, token);
           console.log(orderDb);
-          var lop = "";
-          order.orderBill.itemsDetails.map(async item => {
-            const resultOrderDetail = {
-              quantity: item.quantity,
-              price: item.price,
-              orderId: orderDb.data.id,
-              productId: item.id,
-              nameProduct: item.nameProduct
-            };
-            lop = lop + item.id + "-" + item.quantity + ",";
-            await callApi("orderDetails", "POST", resultOrderDetail, token);
-          });
-          lop = lop.slice(0, -1);
-          console.log(lop);
-          var addr = order.address.house + ", " + order.address.state + ", " + order.address.province;
-          console.log(addr);
-          const getStore = {
-            address: addr,
-            orderId: orderDb.data.id,
-            lop: lop
-          }
-          const feedback = await callApi("getstore", "POST", getStore, token);
-          console.log(feedback);
+          // var lop = "";
+          // order.orderBill.itemsDetails.map(async item => {
+          //   const resultOrderDetail = {
+          //     quantity: item.quantity,
+          //     price: item.price,
+          //     orderId: orderDb.data.id,
+          //     productId: item.id,
+          //     nameProduct: item.nameProduct
+          //   };
+          //   lop = lop + item.id + "-" + item.quantity + ",";
+          //   await callApi("orderDetails", "POST", resultOrderDetail, token);
+          // });
+          // lop = lop.slice(0, -1);
+          // console.log(lop);
+          // var addr = order.address.house + ", " + order.address.state + ", " + order.address.province;
+          // console.log(addr);
+          // const getStore = {
+          //   address: addr,
+          //   orderId: orderDb.data.id,
+          //   lop: lop
+          // }
+          // const feedback = await callApi("getstore", "POST", getStore, token);
+          // console.log(feedback);
           this.props.changeToggle(true);
           MySwal.fire({
             position: 'top-end',

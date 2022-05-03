@@ -106,10 +106,10 @@ class YourOrder extends Component {
           </div>
           {config.paypal.secretKey ? (
             <div className="mt-2" style={{ textAlign: "center" }}>
-              {/* <PaypalCheckoutButton
+              <PaypalCheckoutButton
                 changeToggle={(result) => this.props.changeToggle(result)}
                 order={order}
-              ></PaypalCheckoutButton> */}
+              ></PaypalCheckoutButton>
             </div>
           ) : (
             <div className="mt-2" style={{ textAlign: "center" }}></div>

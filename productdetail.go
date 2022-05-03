@@ -786,7 +786,11 @@ func (s *SmartContract) createOrder(APIstub shim.ChaincodeStubInterface, args []
 	subLng, _ := strconv.ParseFloat(args[10], 64)
 	subLat, _ := strconv.ParseFloat(args[11], 64)
 	numbers, _ := strconv.Atoi(args[12])
-	var order = Order{ Id: id, FullName: args[0], Address: args[1] , Note: args[2], Phone:args[3], Status: "Processing", AtStore: args[4], PaypalCode:"", IsPaymentOnline: false, IsPaid: false, ShippingTotal: args[5], ItemAmount: args[6], PromoTotal: args[7], TotalAmount: args[8], UserId: args[9], CreatedAt: subT, UpdatedAt:subT, IsActive: true, Lng: subLng, Lat: subLat, TotalQuantity: numbers }
+	Payment := false
+	if args[13] == "true"{
+		Payment = true
+	}
+	var order = Order{ Id: id, FullName: args[0], Address: args[1] , Note: args[2], Phone:args[3], Status: "Processing", AtStore: args[4], PaypalCode:"", IsPaymentOnline: Payment, IsPaid: Payment, ShippingTotal: args[5], ItemAmount: args[6], PromoTotal: args[7], TotalAmount: args[8], UserId: args[9], CreatedAt: subT, UpdatedAt:subT, IsActive: true, Lng: subLng, Lat: subLat, TotalQuantity: numbers }
 
 	orderAsBytes, _ := json.Marshal(order)
 	APIstub.PutState("Order-" + order.Id, orderAsBytes)
@@ -853,6 +857,9 @@ func (s *SmartContract) changeOrderInfor(APIstub shim.ChaincodeStubInterface, ar
 
 	if args[1] == "Status"{
 		order.Status = args[2]
+		if args[2] == "Complete" {
+			order.IsPaid = true
+		}
 		order.UpdatedAt = t.String()
 	} else if args[1] == "Delete" {
 		order.IsActive = false
