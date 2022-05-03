@@ -2,14 +2,14 @@ import React, { Component , useRef } from 'react'
 // import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import {actTrackingRequest} from '../../../redux/actions/tracking';
+import {actGenerateRouting} from '../../../redux/actions/routing';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
 import callApi from '../../../utils/apiCaller';
-import { ArrowUpOutlined } from '@ant-design/icons' ;
 import Testcomponent from './Map'
 import Paginator from 'react-js-paginator';
+import { toast } from "react-toastify";
 
 
 // import "antd/dist/antd.css"
@@ -28,19 +28,11 @@ class Routing extends Component {
       currentPage: 1,
       searchText: '',
       modalShow: false,
-      productName : '',
-      selected:'',
       quantity: '',
       user: [],
-      recUser: '',
-      userdiff: [],
-      //
       text: '',
-      imageUrl:'',
-      scanResultFile:'',
-      scanResultWebCam:'',
       // qrRef:null
-      listMarker: [],
+      listRouting: [],
 
     }
     this.qrRef = React.createRef()
@@ -54,20 +46,6 @@ class Routing extends Component {
           user: res.data.results
         })
       }
-
-    //   const res2 = await callApi(`admindiff/${this.state.user[0].id}`, 'GET', null, token);  
-    //     if (res2 && res2.status === 200) {
-    //       this.setState({
-    //         userdiff: res2.data
-    //       })
-          // console.log("test" , this.state.userdiff)
-        //   this.setState({
-        //     recUser: this.state.userdiff[0] ? this.state.userdiff[0].name : null
-        //   })
-          
-          
-          // console.log("recuser" , this.state.recUser)
-        // }
     } else {
       this.setState({
         redirect: true
@@ -88,8 +66,14 @@ class Routing extends Component {
   
   }
 
-
-
+  async handleChangeStatus(payload){
+    token = localStorage.getItem('_auth');
+    const res = await callApi('order/changestatus',"POST", payload, token)
+    if (res && res.status === 200) {
+      return toast.success(res.data);
+    }
+    // this.fetch_reload_data()
+  }
  
 
   handleChange = (event) => {
@@ -103,13 +87,54 @@ class Routing extends Component {
 
 handleSubmit = async (event) => {
     event.preventDefault();
+    token = localStorage.getItem('_auth');
     const { user } = this.state;
-    // console.log('user', user[0].name)
+    console.log('user', user[0].name)
     let storeName = user[0].name;
-    const res = await callApi('routing/${storeName}', 'GET', null, token);
-    if (res && res.status === 200) {
-    console.log(res)
-    }
+    // const res = await this.props.generate_routing(storeName,token)
+    // console.log('res',res)
+
+    await this.props.generate_routing(storeName, token).then(res => {
+      console.log(res)
+      this.setState({
+        listRouting : res
+      })
+    })
+    // const res = await callApi('routing/${storeName}', 'GET', null, token);
+    // if (res && res.status === 200) {
+    // console.log('res',res)
+    // }
+  }
+
+  handleFinishRouting = async () => {
+    MySwal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes'
+    }).then(async (result) => {
+      if (result.value) {
+          this.state.listRouting && this.state.listRouting.length ? this.state.listRouting.map((item) => {
+            let payload = {
+              orderId : item.id,
+              status:"Complete",
+              atStore : this.state.user[0].name,
+              fullName : item.fullName
+            }
+            // callApi('order/changestatus',"POST", payload, token);
+            toast.success('Your order {'+ item.id +'} has been complete.');
+            // Swal.fire(
+            //   'Deleted!',
+            //   'Your order {'+ item.id +'} has been complete.',
+            //   'success'
+            // )
+          }
+          ):null
+      }
+    })
   }
 
 
@@ -123,7 +148,7 @@ handleSubmit = async (event) => {
 
   render() {
     let { products } = this.props;
-    const { searchText, total } = this.state;
+    const { searchText, total, listRouting } = this.state;
     
     return (
       <div className="content-inner">
@@ -162,7 +187,7 @@ handleSubmit = async (event) => {
                         className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
                         aria-label="Search" />
                     </div>
-                    <button type='button' className='btn btn-primary' onClick={this.handleSubmit}>Generate</button>
+                    <button type='submit' className='btn btn-primary'>Generate</button>
 
                   </form>
                   <div className="card-body">
@@ -187,25 +212,35 @@ handleSubmit = async (event) => {
                             <th>Phone</th>
                             <th>Code order</th>
                             <th>Total Amount</th>
+                            <th>Payment Online</th>
                             <th>Address</th>
                             {/* <th style={{ textAlign: "center" }}>Time</th> */}
                           </tr>
                           
                         </thead>
                         <tbody>
-                          {total && total.length ? total.map((item, index) => {
+                          {listRouting && listRouting.length ? listRouting.map((item, index) => {
                             return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
-                                <td style={{width:'auto'}}>{item.TxId}</td>
-                                <td><span >{item.Value.productName}</span></td>
-                                <td>{item.Value.id}</td>
-                                <td>{item.Value.ownerName}</td>
-                                <td><p1>{item.Timestamp}</p1></td>
+                                <td style={{width:'auto'}}>{item.fullName}</td>
+                                <td><span >{item.phone}</span></td>
+                                <td>{item.id}</td>
+                                <td>{item.totalAmount}</td>
+                                <td style={{ textAlign: "center" }}>{item.isPaymentOnline ?
+                                  <div className="i-checks">
+                                    <input type="checkbox" onChange={()=>{}} checked={true} className="checkbox-template" />
+                                  </div>
+                                  :
+                                  <div className="i-checks">
+                                    <input type="checkbox" onChange={()=>{}} checked={false} className="checkbox-template" />
+                                  </div>}
+                                </td>
+                                <td><p>{item.address}</p></td>
                               </tr>
                             )
                           }) : null}
-                          {console.log(this.state.listMarker)}
+                          {/* {console.log(this.state.listMarker)} */}
                         </tbody>
                       </table>
                     </div>
@@ -220,7 +255,36 @@ handleSubmit = async (event) => {
                       />
                   </ul>
                 </nav>
-                {/* <Testcomponent path = {this.state.listMarker}/> */}
+                <Testcomponent listRouting = {this.state.listRouting}/>
+                <button type="button" className='btn btn-secondary' onClick={() => {
+                  console.log(listRouting)
+                  listRouting && listRouting.length ? listRouting.map((item) => {
+                    let payload = {
+                      orderId : item.id,
+                      status:"Shipping",
+                      atStore : this.state.user[0].name,
+                      fullName : item.fullName
+                    }
+                    console.log(payload)
+                    // this.handleChangeStatus(payload)
+                  }) : null
+
+                }}>Start</button>
+                <button type="button" className='btn btn-success' style={{"margin-left": "10px" }} onClick={() => {
+                  this.handleFinishRouting()
+                  // console.log(listRouting)
+                  // listRouting && listRouting.length ? listRouting.map((item) => {
+                  //   let payload = {
+                  //     orderId : item.id,
+                  //     status:"Complete",
+                  //     atStore : this.state.user[0].name,
+                  //     fullName : item.fullName
+                  //   }
+                  //   console.log(payload)
+                    // this.handleChangeStatus(payload)
+                  // }) : null
+
+                }}>Finish</button>
               </div>
             </div>
           </div>
@@ -240,8 +304,8 @@ handleSubmit = async (event) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    tracking_request: (id, token) => {
-        return dispatch(actTrackingRequest(id, token))
+    generate_routing: (storeName, token) => {
+        return dispatch(actGenerateRouting(storeName, token))
     }
   }
 }

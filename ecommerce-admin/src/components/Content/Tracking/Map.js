@@ -18,10 +18,7 @@ const divStyle = {
 const center = { lat:  10.773392736860279, lng: 106.66067562399535 }
 const onLoad = polyline => {
     console.log('polyline: ', polyline)
-};
-const destination = {
-    lat: 10.781580679125028,lng: 106.66052273809483
-}  
+}; 
 // const path = [
 //     {lat : 10.773392736860279,lng: 106.66067562399535},
 //     {lat: 10.781580679125028,lng: 106.66052273809483},
@@ -125,6 +122,7 @@ class Testcomponent extends Component {
                           >
                             <div style={divStyle}>
                               <span>Index: {index+1}, Current</span>
+                              <br/>
                               <span>{item.Value.ownerName}</span>
 
                             </div>
@@ -136,6 +134,7 @@ class Testcomponent extends Component {
                           >
                             <div style={divStyle}>
                               <span>Index: {index+1}</span>
+                              <br/>
                               <span>{item.Value.ownerName}</span>
                             </div>
                           </InfoWindow>

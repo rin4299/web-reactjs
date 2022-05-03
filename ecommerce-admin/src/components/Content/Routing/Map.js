@@ -1,12 +1,12 @@
 import React , { Component } from "react";
-import { GoogleMap , LoadScript, Polyline, Marker, DirectionsService } from "@react-google-maps/api";
+import { GoogleMap , LoadScript, Polyline, Marker, DirectionsService , InfoWindow, DirectionsRenderer } from "@react-google-maps/api";
 import { connect } from 'react-redux'
 
 
 const mapContainerStyle = {
     height: "500px",
     width: "800px",
-    "margin-left":"400px"
+    "margin-left":"350px"
   };
 
   const center = { lat:  10.773392736860279, lng: 106.66067562399535 }
@@ -16,6 +16,11 @@ const mapContainerStyle = {
 const destination = {
     lat: 10.781580679125028,lng: 106.66052273809483
 }  
+const divStyle = {
+    background: `white`,
+    border: `1px solid #ccc`,
+    padding: 10
+  }
 // const path = [
 //     {lat : 10.773392736860279,lng: 106.66067562399535},
 //     {lat: 10.781580679125028,lng: 106.66052273809483},
@@ -56,20 +61,75 @@ var lineSymbol = {
 //     origin: center,
 //     travelMode: 'DRIVING'
 //   }
-
+let path = []
+let directionService
 class Testcomponent extends Component {
     constructor (props) {
         super(props)
+        this.state = {
+            response: null,
+            travelMode: 'DRIVING',
+            origin: '',
+            destination: ''
+          }
+    }
 
+    async componentDidMount(){
+
+    }
+    directionsCallback (response) {
+        console.log(response)
     
+        if (response !== null) {
+          if (response.status === 'OK') {
+            this.setState(
+              () => ({
+                response
+              })
+            )
+          } else {
+            console.log('response: ', response)
+          }
+        }
       }
-
+    
       
     render(){
-      let {path} = this.props
-      path = [...path, {lat: center.lat, lng : center.lng}]
-      console.log(path)
-      
+        if (window.google) {
+            // All is good! Carry on 
+            directionService = new window.google.maps.DirectionsService();
+          }
+        const { destination } = this.state;
+        let {listRouting} = this.props
+        if(listRouting && listRouting.length) {
+            listRouting.map((item,index) => {
+                path = [...path, {lat: item.lat, lng : item.lng}]
+            })
+            console.log('path',path)
+        }
+    //   path = [...path, {lat: center.lat, lng : center.lng}]
+        console.log('routing',listRouting)
+        
+
+        const options = {
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.8,
+            strokeWeight: 5,
+            fillColor: '#FF0000',
+            fillOpacity: 0.35,
+            clickable: false,
+            draggable: false,
+            editable: false,
+            visible: true,
+            radius: 30000,
+            paths: path,
+            zIndex: 1,
+            icons:[{
+                icon: lineSymbol,
+                offset: '100%',
+                repeat: '50px'
+            }]
+          };
         // var directionService = new google.maps.directionService;
         // var directionDisplay = new google.maps.dir   ectionDisplay;
         return (
@@ -81,23 +141,111 @@ class Testcomponent extends Component {
                 center={center}
                 zoom={13}
                 >
-                    {path.map((position) => {
+                    {path && path.length ? path.map((position) => {
                         return (
                             <Marker
                             onLoad={onLoad}
                             position={position}
                             />
                         )
-                    })}
+                    }): null}
                     <Marker
                         onLoad={onLoad}
                         position={center}
+                        animation={window.google.maps.Animation.BOUNCE}
                     />
-                    {/* <Polyline
+                    {listRouting.map((item,index) => {
+                      console.log('position',item)
+                      let lat = item.lat
+                      let lng = item.lng
+                      let position = {lat: lat, lng : lng}
+                      return (
+                        index+1 === listRouting.length ? 
+                          <InfoWindow
+                            onLoad={onLoad}
+                            position={position}
+                          >
+                            <div style={divStyle}>
+                              <span>Index: {index+1}</span>
+                              <br/>
+                              <span>Order Id : {item.id}</span>
+                              <br/>
+                              <span>{item.fullName}</span>
+
+                            </div>
+                          </InfoWindow>
+                      : 
+                          <InfoWindow
+                            onLoad={onLoad}
+                            position={position}
+                          >
+                            <div style={divStyle}>
+                              <span>Index: {index+1}</span>
+                              <br/>
+                              <span>Order Id : {item.id}</span>
+                              <br/>
+                              <span>{item.fullName}</span>
+                            </div>
+                          </InfoWindow>
+                          )
+                        
+                    })}
+                    <Polyline
                         onLoad={onLoad}
                         path={path}
                         options={options}
-                    /> */}
+                    />
+                    {/* {directionService.route(
+                        {
+                            origin: center,
+                            destination: destination,
+                            travelMode:"DRIVING",
+                        },
+                        (res, status) => {
+                            if ( status == "OK"){
+                                new window.google.map(DirectionsRenderer({
+                                    directions : res,
+                                }))
+                            }
+                        }
+                    )} */}
+                    {/* {   
+                        (
+                            destination !== '' &&
+                            center !== ''
+                        ) && (
+                            <DirectionsService
+                            // required
+                            
+                            options={{ 
+                                destination : destination,
+                                origin: center,
+                                travelMode: "DRIVING"
+                            }}
+                            // required
+                            callback={console.log('testing')}
+                            />
+                        )
+                        }
+
+                        {
+                        this.state.response !== null && (
+                            <DirectionsRenderer
+                            // required
+                            options={{ // eslint-disable-line react-perf/jsx-no-new-object-as-prop
+                                directions: this.state.response
+                            }}
+                            // optional
+                            onLoad={directionsRenderer => {
+                                console.log('DirectionsRenderer onLoad directionsRenderer: ', directionsRenderer)
+                            }}
+                            // optional
+                            onUnmount={directionsRenderer => {
+                                console.log('DirectionsRenderer onUnmount directionsRenderer: ', directionsRenderer)
+                            }}
+                            />
+                        )
+                    } */}
                     
                     
                 </GoogleMap>

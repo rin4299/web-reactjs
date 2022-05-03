@@ -392,8 +392,7 @@ class Order extends Component {
                                                                                                                 fullName: item.fullName
                                                                                                                 })
                                                                                                             }} >
-                                    <option value='Unconfirm'>Unconfirm</option>
-                                    <option value='Confirm'>Confirm</option>
+                                    <option value='Processing'>Processing</option>
                                     <option value='Shipping' >Shipping</option>
                                     <option value='Complete' >Complete</option>
                                     <option value='Canceled' >Cancel</option>
