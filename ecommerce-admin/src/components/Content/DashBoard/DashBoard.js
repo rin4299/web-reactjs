@@ -316,7 +316,7 @@ class DashBoard extends Component {
                       <div role="progressbar" style={{ width: '100%', height: '4px' }} className="progress-bar bg-orange fix-processbar" />
                     </div>
                   </div>
-                  <div className="number"><strong>${dashboard.income}</strong></div>
+                  <div className="number"><strong>${dashboard.income.toFixed(3)}</strong></div>
                 </div>
               </div>
             </div>

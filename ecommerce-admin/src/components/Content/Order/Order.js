@@ -427,7 +427,7 @@ class Order extends Component {
                                 <td>{item.itemAmount}</td>
                                 <td>{item.shippingTotal}</td>
                                 <td>{item.promoTotal}</td>
-                                <td>{item.totalAmount}</td>
+                                <td>{item.totalAmount.toFixed(3)}</td>
                                 <td><p>{item.note}</p></td>
                                 <td>{item.id}</td>
                                 <td>

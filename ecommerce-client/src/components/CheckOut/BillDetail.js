@@ -152,7 +152,7 @@ export default class BillDetail extends Component {
              <div className="col-md-12">
                <div className="checkout-form-list">
                  <label>Address <span className="required">*</span></label>
-                 <input id="autocomplete" onChange={this.handleChange} placeholder="Street address" type="text" name="address" value={address} />
+                 <input id="autocomplete" onChange={this.handleChange} placeholder="Street address" type="text" name="address"  />
                </div>
              </div>
              <div className="col-md-12">

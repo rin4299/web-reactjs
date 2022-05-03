@@ -30,8 +30,7 @@ class CheckOut extends Component {
       result: false,
       // modalShow: false,
       lopOrder :'',
-      lat: null,
-      lng : null,
+      redirectTo: false,
     };
     this.billing = React.createRef();
   }
@@ -183,6 +182,9 @@ class CheckOut extends Component {
         //CLEAR CART AFTER CHECKOUT IF input Available Address
         // if(feedback.status === 200 || feedback.data === "successful" ){
           this.props.reset_cart();
+          this.setState({
+            redirectTo: true
+          })
         // }
       }
     });
@@ -392,6 +394,7 @@ class CheckOut extends Component {
       checkout,
       result,
     } = this.state;
+    console.log('state',this.state)
     if (redirectTo) {
       return <Redirect to="/after-checkout"></Redirect>;
     }
