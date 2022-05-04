@@ -7,6 +7,7 @@ exports.up = function(knex) {
     table.float('lat');
     table.float('lng');
     table.string('address');
+    table.string('phone');
     table.timestamp('createdAt');
     table.timestamp('updatedAt');
   })
