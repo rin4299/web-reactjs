@@ -33,7 +33,8 @@ class Routing extends Component {
       text: '',
       // qrRef:null
       listRouting: [],
-
+      listComplete: [],
+      listCancel : [],
     }
     this.qrRef = React.createRef()
   }  
@@ -80,6 +81,7 @@ class Routing extends Component {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
+    console.log(name, value)
     this.setState({
       [name]: value
     });
@@ -89,7 +91,7 @@ handleSubmit = async (event) => {
     event.preventDefault();
     token = localStorage.getItem('_auth');
     const { user } = this.state;
-    console.log('user', user[0].name)
+    // console.log('user', user[0].name)
     let storeName = user[0].name;
     // const res = await this.props.generate_routing(storeName,token)
     // console.log('res',res)
@@ -97,7 +99,8 @@ handleSubmit = async (event) => {
     await this.props.generate_routing(storeName, token).then(res => {
       console.log(res)
       this.setState({
-        listRouting : res
+        listRouting : res, 
+        listComplete : res.filter((item) => { return item.specialId != null}),
       })
     })
     // const res = await callApi('routing/${storeName}', 'GET', null, token);
@@ -115,17 +118,40 @@ handleSubmit = async (event) => {
       confirmButtonText: 'Yes'
     }).then(async (result) => {
       if (result.value) {
-          this.state.listRouting && this.state.listRouting.length ? this.state.listRouting.map((item) => {
+          this.state.listComplete && this.state.listComplete.length ? this.state.listComplete.map((item) => {
             let payload = {
               orderId : item.id,
               status:"Complete",
               atStore : this.state.user[0].name,
               fullName : item.fullName
             }
-            const res = callApi('order/changestatus',"POST", payload, token);
-            if (res && res.status === 200) {
-              toast.success('Order: {'+ item.id +'} has been complete.');
+            // const res = await callApi('order/changestatus',"POST", payload, token);
+            callApi('order/changestatus',"POST", payload, token).then(async (res) => {
+              if (res && res.status === 200) {
+                toast.success('Order: {'+ item.specialId +'} has been complete.');
+              }
+            })
+            
+            
+          }
+          ):null
+
+          this.state.listCancel && this.state.listCancel.length ? this.state.listCancel.map((item) => {
+            let payload = {
+              orderId : item.id,
+              status:"Processing",
+              atStore : this.state.user[0].name,
+              fullName : item.fullName
             }
+            // const res = await callApi('order/changestatus',"POST", payload, token);
+            // if (res && res.status === 200) {
+            //   toast.success('Order: {'+ item.specialId +'} change to processing.');
+            // }
+            callApi('order/changestatus',"POST", payload, token).then(async (res) => {
+              if (res && res.status === 200) {
+                toast.success('Order: {'+ item.specialId +'} change to processing.');
+              }
+            })
             
           }
           ):null
@@ -136,7 +162,7 @@ handleSubmit = async (event) => {
   handleStartRouting = async () => {
     MySwal.fire({
       title: 'Are you sure?',
-      text: "You won't be able to revert this!",
+      text: "These orders status will change to shipping!",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -144,17 +170,26 @@ handleSubmit = async (event) => {
       confirmButtonText: 'Yes'
     }).then(async (result) => {
       if (result.value) {
-          this.state.listRouting && this.state.listRouting.length ? this.state.listRouting.map((item) => {
+          this.state.listRouting && this.state.listRouting.length ? this.state.listRouting.filter((item) => {
+            return item.specialId != null
+          })
+          .map((item) => {
             let payload = {
               orderId : item.id,
               status:"Shipping",
               atStore : this.state.user[0].name,
               fullName : item.fullName
             }
-            const res = callApi('order/changestatus',"POST", payload, token);
-            if (res && res.status === 200) {
-              toast.success('Order: {'+ item.id +'} is shipping.');
-            }
+            // const res = await callApi('order/changestatus',"POST", payload, token);
+            // if (res && res.status === 200) {
+            //   toast.success('Order: {'+ item.specialId +'} is shipping.');
+            // }
+
+            callApi('order/changestatus',"POST", payload, token).then(async (res) => {
+              if (res && res.status === 200) {
+                toast.success('Order: {'+ item.specialId +'} is shipping.');
+              }
+            })
             
           }
           ):null
@@ -245,13 +280,16 @@ handleSubmit = async (event) => {
                         </thead>
                         <tbody>
                           {listRouting && listRouting.length ? listRouting.map((item, index) => {
-                            return (
+                            {/* console.log(item.isPaymentOnline) */}
+                            if(index == 0) return null 
+                            else {
+                              return (
                               <tr key={index}>
-                                <th scope="row">{index + 1}</th>
-                                <td style={{width:'auto'}}>{item.fullName}</td>
+                                <th scope="row">{index}</th>
+                                <td style={{width:'auto'}}>{item.fullName ? item.fullName : item.reqUserName }</td>
                                 <td><span >{item.phone}</span></td>
-                                <td>{item.id}</td>
-                                <td>{item.totalAmount}</td>
+                                <td>{item.specialId}</td>
+                                <td>{(item.totalAmount && item.isPaymentOnline == false ) ? item.totalAmount : 0}</td>
                                 <td style={{ textAlign: "center" }}>{item.isPaymentOnline ?
                                   <div className="i-checks">
                                     <input type="checkbox" onChange={()=>{}} checked={true} className="checkbox-template" />
@@ -262,8 +300,35 @@ handleSubmit = async (event) => {
                                   </div>}
                                 </td>
                                 <td><p>{item.address}</p></td>
+                                <td>
+                                  <input type="checkbox"
+                                    onChange={(event) => {
+                                      // console.log(item.specialId,event.target.checked)
+                                      if(!event.target.checked){
+                                        this.state.listComplete = this.state.listComplete.filter((item2) => {
+                                          return item2.specialId != item.specialId
+                                        })
+                                        this.setState({
+                                          listCancel: [...this.state.listCancel, item]
+                                        })
+                                      }else{
+                                        this.setState({
+                                          listComplete : [...this.state.listComplete, item]
+                                        })
+                                        this.state.listCancel = this.state.listCancel.filter((item2) => {
+                                          return item2.specialId != item.specialId
+                                        })
+                                      }
+                                    }}
+                                    name="listCancel"
+                                    // checked={true}
+                                    defaultChecked={true}
+                                    className="checkbox-template" />
+                                </td>
                               </tr>
                             )
+                            }
+ 
                           }) : null}
                           {/* {console.log(this.state.listMarker)} */}
                         </tbody>
@@ -299,8 +364,8 @@ handleSubmit = async (event) => {
                   //   console.log(payload)
                     // this.handleChangeStatus(payload)
                   // }) : null
-
                 }}>Finish</button>
+                <button type='button' className='btn btn-warning' onClick={() => {console.log('listComplete',this.state.listComplete) , console.log('listCancel',this.state.listCancel)}} >Click</button>
               </div>
             </div>
           </div>

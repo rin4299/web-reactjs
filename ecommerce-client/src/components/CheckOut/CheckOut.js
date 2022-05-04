@@ -31,6 +31,7 @@ class CheckOut extends Component {
       // modalShow: false,
       lopOrder :'',
       redirectTo: false,
+      // numberOrders:1,
     };
     this.billing = React.createRef();
   }
@@ -100,13 +101,19 @@ class CheckOut extends Component {
         }; // output address
         // console.log('address',addressResult)
         const addressResult2 = res.address + ',' + addressState + ',' + addressProvince;
-        const note = res.note !== "" ? res.note : null;
+        const note = res.note !== "" ? res.note : "";
         // const atStore = localStorage.getItem('_atStore');
         // const { lopOrder } = this.state
         const lopOrder = this.get_lop();
         // const numOrders = localStorage.getItem('numOrders')
         const atStore = localStorage.getItem('_atStore');
-        console.log('res', res)
+        // console.log('res', res)
+        if (!res.lat){
+          res.lat = 10.773392736860279
+        }
+        if (!res.lng){
+          res.lng = 106.66067562399535
+        }
         const resultOrder = {
           fullName: res.name,
           address: addressResult2,
@@ -241,7 +248,7 @@ class CheckOut extends Component {
     }; // output address
     const addressResult2 = res.address + ',' + addressState + ',' + addressProvince;
 
-    const note = res.note !== "" ? res.note : null;
+    const note = res.note !== "" ? res.note : "";
     let amount = 0;
     let dataItems = [];
     dataCart.forEach((item) => {
@@ -262,6 +269,12 @@ class CheckOut extends Component {
     // const numOrders = localStorage.getItem('numOrders')
     const lopOrder = this.get_lop();
     const atStore = localStorage.getItem('_atStore');
+    if (!res.lat){
+      res.lat = 10.773392736860279
+    }
+    if (!res.lng){
+      res.lng = 106.66067562399535
+    }
     // const { lopOrder } = this.state
     resultOrder = {
       fullName: res.name,
@@ -285,6 +298,25 @@ class CheckOut extends Component {
       lng : res.lng,
     };
     console.log('resultOrder',resultOrder)
+    let payload2 = {
+      userId : userId,
+      lop : lopOrder,
+      lat : res.lat,
+      lng : res.lng,
+    }
+    if ( atStore == 'All'){
+      const res3 = await callApi("getparseorder", "POST", payload2, token)
+      if ( res3 && res3.status == 200){
+        // this.setState({
+        //   numberOrders : res3.data
+        // })
+        localStorage.setItem('numOrders', res3.data)
+      }
+      
+      // console.log('numberOrder',res3)
+    }else{
+      localStorage.setItem('numOrders', 1)
+    }   
     this.setState({
       toggleCheckout: !toggleCheckout,
       shippingAddress: !shippingAddress,
@@ -396,7 +428,7 @@ class CheckOut extends Component {
       checkout,
       result,
     } = this.state;
-    console.log('state',this.state)
+    // console.log('state',this.state)
     if (redirectTo) {
       return <Redirect to="/after-checkout"></Redirect>;
     }

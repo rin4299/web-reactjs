@@ -916,7 +916,7 @@ class ExchangeService extends BaseServiceCRUD {
       }
       // console.log(orderOfStore)
       const finalReturn = orderOfStore.filter(order => order['products'].length>0);
-      // console.log(finalReturn)
+      console.log(finalReturn.length)
       return finalReturn.length
   }
 

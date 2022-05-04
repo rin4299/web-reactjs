@@ -41,15 +41,15 @@ class ShoppingCart extends Component {
         // output user id
         const builder = localStorage.getItem("_cart");
         const dataCart = JSON.parse(builder);
-        const payload1 = {
-        address:"268 Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Việt Nam",
-        userId: userId
-        }
-        let getstore
-        await callApi("getstore", "POST", payload1, token).then(res => {
-        getstore = res.data
-        });
-        console.log('getstore',getstore)
+        // const payload1 = {
+        // address:"268 Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh, Việt Nam",
+        // userId: userId
+        // }
+        // let getstore
+        // await callApi("getstore", "POST", payload1, token).then(res => {
+        // getstore = res.data
+        // });
+        // console.log('getstore',getstore)
 
         let dataItems = [];
         let lop='';

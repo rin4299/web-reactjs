@@ -103,7 +103,9 @@ class RoutingService {
         for(var m = 1; m<List_Of_Optimized_Shipping[0].length - 1; m++){
             returnArray.push(Array_Of_Capacity[List_Of_Optimized_Shipping[0][m] - 1])
         }
-        return [returnArray, List_Of_Optimized_Shipping[1]];
+        // return [returnArray, List_Of_Optimized_Shipping[1]];
+        console.log(returnArray)
+        return returnArray
     }
 
     

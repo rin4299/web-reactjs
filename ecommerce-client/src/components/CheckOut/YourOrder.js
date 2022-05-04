@@ -19,6 +19,12 @@ class YourOrder extends Component {
     const { items, order } = this.props;
     console.log('props', this.props)
     const numOrders = localStorage.getItem('numOrders')
+    // let shippingTotal
+    // if(numOrders){
+    //   shippingTotal = 2 * numOrders;
+    // }else {
+    //   shippingTotal = 2;
+    // }
     const shippingTotal = 2 * numOrders;
     let count = 0;
     if (items.length > 0) {
