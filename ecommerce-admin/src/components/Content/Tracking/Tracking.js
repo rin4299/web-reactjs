@@ -327,7 +327,7 @@ class Tracking extends Component {
                           />
                           {total && total.length ? total.map((item, index) => {
                             {/* item.active ? {} : {} */}
-                            return (
+                            {/* return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
                                 <td style={{width:'auto'}}>{item.TxId}</td>
@@ -336,7 +336,43 @@ class Tracking extends Component {
                                 <td>{item.Value.ownerName}</td>
                                 <td><p1>{item.Timestamp}</p1></td>
                               </tr>
-                            )
+                            ) */}
+                            console.log('item',item)
+                            if(!item.Value.active && index+1 == total.length ){
+                              console.log('active',item.Value.active)
+                              return (
+                                <tr key={index} style={{background: '#FFD2D2'}}>
+                                  <th scope="row">{index + 1}</th>
+                                  <td style={{width:'auto'}}>{item.TxId}</td>
+                                  <td><span >{item.Value.productName}</span></td>
+                                  <td>{item.Value.id}</td>
+                                  <td>{item.Value.ownerName}</td>
+                                  <td><p1>{item.Timestamp}</p1></td>
+                                </tr>
+                              )
+                            }else if(index+1 == total.length){
+                              return(
+                                <tr key={index} style={{background: '#d5f4e6'}}>
+                                  <th scope="row">{index + 1}</th>
+                                  <td style={{width:'auto'}}>{item.TxId}</td>
+                                  <td><span >{item.Value.productName}</span></td>
+                                  <td>{item.Value.id}</td>
+                                  <td>{item.Value.ownerName}</td>
+                                  <td><p1>{item.Timestamp}</p1></td>
+                                </tr>
+                              )
+                            }else{
+                                return (
+                                <tr key={index}>
+                                  <th scope="row">{index + 1}</th>
+                                  <td style={{width:'auto'}}>{item.TxId}</td>
+                                  <td><span >{item.Value.productName}</span></td>
+                                  <td>{item.Value.id}</td>
+                                  <td>{item.Value.ownerName}</td>
+                                  <td><p1>{item.Timestamp}</p1></td>
+                                </tr>
+                              )
+                            }
                           }) : null}
                           {console.log(this.state.listMarker)}
                         </tbody>
