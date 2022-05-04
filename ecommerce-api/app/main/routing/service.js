@@ -11,7 +11,7 @@ class RoutingService {
     async getMatrix(listOfOrders){
         
         const a = async () => {
-            const response = await Axios.get(`https://api.mapbox.com/directions-matrix/v1/mapbox/driving/${listOfOrders}?access_token=pk.eyJ1IjoibWluaDI2NzE5OTkiLCJhIjoiY2wyYWNkZWFsMDQwZDNibnpubGo5dDlsNiJ9.wcpp7JlE8d6Ck3Z5CSWNTw`);
+            const response = await Axios.get(`https://api.mapbox.com/directions-matrix/v1/mapbox/cycling/${listOfOrders}?annotations=distance,duration&access_token=pk.eyJ1IjoibWluaDI2NzE5OTkiLCJhIjoiY2wyYWNkZWFsMDQwZDNibnpubGo5dDlsNiJ9.wcpp7JlE8d6Ck3Z5CSWNTw`);
             if(response){
                 return response.data;
             }
@@ -23,9 +23,15 @@ class RoutingService {
     async getListOfOptimized(listOfOrders) {
         var a = await this.getMatrix(listOfOrders);
         const y = async (data) => {
-            const response = await solver.solveTsp(data.durations, true, {});
+            const response = await solver.solveTsp(data.distances, true, {});
             if(response){
-                return response
+                var totalDistance = 0.0
+                console.log(data.distances)
+                for(var i = 0; i < response.length - 1; i++){
+                    console.log(data.distances[i][i+1])
+                    totalDistance = totalDistance + data.distances[response[i]][response[i+1]]
+                }
+                return [response, totalDistance]
             }
        }
 
@@ -94,10 +100,10 @@ class RoutingService {
         console.log("List Of Optimized Shipping Routing: ", List_Of_Optimized_Shipping)
 
         var returnArray = [Store_Information]
-        for(var m = 1; m<List_Of_Optimized_Shipping.length - 1; m++){
-            returnArray.push(Array_Of_Capacity[List_Of_Optimized_Shipping[m] - 1])
+        for(var m = 1; m<List_Of_Optimized_Shipping[0].length - 1; m++){
+            returnArray.push(Array_Of_Capacity[List_Of_Optimized_Shipping[0][m] - 1])
         }
-        return returnArray;
+        return [returnArray, List_Of_Optimized_Shipping[1]];
     }
 
     

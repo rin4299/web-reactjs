@@ -146,6 +146,18 @@ const controller = new ExchangeController();
     }
   };
 
+  exports.getParseOrder = {
+    description: 'Tracking product',
+    notes: 'Return list of history',
+    tags: ['api', 'v1'],
+    handler: controller.getParseOrder.bind(controller),
+    auth: 'jwt',
+    validate: {
+
+    }
+  };
+
+
   exports.getProductbyOwner = {
     description: 'Tracking product',
     notes: 'Return list of history',

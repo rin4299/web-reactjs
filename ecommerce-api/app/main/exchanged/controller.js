@@ -124,6 +124,17 @@ class ExchangeController extends BaseControllerCRUD {
     }
   };
 
+  async getParseOrder(request) {
+    try {
+      const {
+        payload
+      } = request;
+      return await this.service.getParseOrder(payload);
+    } catch (err) {
+      throw err;
+    }
+  };
+
   async getProductbyOwner(request) {
     try {
       const {

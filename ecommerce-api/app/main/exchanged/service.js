@@ -559,20 +559,6 @@ class ExchangeService extends BaseServiceCRUD {
     return users;
   }
 
-
-  async getDistance (lat1, lng1, lat2, lng2) {
-    var R = 6378137; // Earth’s mean radius in meter
-    var dLat = rad(lat2 - lat1);
-    var dLong = rad(lng2 - lng1);
-    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(rad(lat1)) * Math.cos(rad(lat2)) *
-      Math.sin(dLong / 2) * Math.sin(dLong / 2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    var d = R * c;
-    return d; // returns the distance in meter
-  };
-
-
   async getProductbyOwner(query, user){
     const products = Models.Product.queryBuilder(query).eager('[ownership]');
     console.log(products);
@@ -590,29 +576,29 @@ class ExchangeService extends BaseServiceCRUD {
 
   async getStoreDistance(payload){
     
-    let {address, userId} = payload;
-    console.log( address, userId);
+    let {address, userId, lat, lng} = payload;
+    console.log( address, userId, lat, lng);
 
-    var rad = function(x) {
-      return x * Math.PI / 180;
-    };
-    var disCalculate = function getDistance (lat1, lng1, lat2, lng2) {
-      var R = 6378137; // Earth’s mean radius in meter
-      var dLat = rad(lat2 - lat1);
-      var dLong = rad(lng2 - lng1);
-      var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(rad(lat1)) * Math.cos(rad(lat2)) *
-        Math.sin(dLong / 2) * Math.sin(dLong / 2);
-      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      var d = R * c;
-      return d; // returns the distance in meter
-    };
-    var geocoder = NodeGeocoder({
-      provider: 'opencage',
-      apiKey: 'bd94e47e842341c1a497f48a2ad09182'
-    });
+    // var rad = function(x) {
+    //   return x * Math.PI / 180;
+    // };
+    // var disCalculate = function getDistance (lat1, lng1, lat2, lng2) {
+    //   var R = 6378137; // Earth’s mean radius in meter
+    //   var dLat = rad(lat2 - lat1);
+    //   var dLong = rad(lng2 - lng1);
+    //   var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    //     Math.cos(rad(lat1)) * Math.cos(rad(lat2)) *
+    //     Math.sin(dLong / 2) * Math.sin(dLong / 2);
+    //   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    //   var d = R * c;
+    //   return d; // returns the distance in meter
+    // };
+    // var geocoder = NodeGeocoder({
+    //   provider: 'opencage',
+    //   apiKey: 'bd94e47e842341c1a497f48a2ad09182'
+    // });
 
-    geocoder.geocode({address: address}, async function(err,res){
+    // geocoder.geocode({address: address}, async function(err,res){
       //Check xem Address co hop le ko 
       // if(!res || err){
       //   const oS = new OrderService();
@@ -620,8 +606,10 @@ class ExchangeService extends BaseServiceCRUD {
       //   console.log(successfulMessage);
       //   throw Boom.badData(`Your current address ${address} is not available. Please try again with the available address!`)
       // }
-      var lat = res[0]['latitude']
-      var lng = res[0]['longitude']
+      let distance = 0
+      let subString = ""
+      // var lat = res[0]['latitude']
+      // var lng = res[0]['longitude']
       // var listofStore = []
       // var strongestFlag = true;
       // console.log("1111111111111")
@@ -630,23 +618,25 @@ class ExchangeService extends BaseServiceCRUD {
       for(var i = 0; i < stores.length; i++){
         // listofStore.push({'distance': disCalculate(stores[i]['lat'],stores[i]['lng'],lat,lng),'storeName': stores[i]['storeName']})
         var existed = await Models.Distance.query().findOne({userId: userId}).where('storeName',stores[i].storeName)
+        subString = stores[i]['lng'] + "," + stores[i]['lat'] + ";" + lng + "," + lat;
+        console.log(subString)
+        distance = await Axios.get(`https://api.mapbox.com/directions/v5/mapbox/driving/${subString}?access_token=pk.eyJ1IjoibWluaDI2NzE5OTkiLCJhIjoiY2wyYWNkZWFsMDQwZDNibnpubGo5dDlsNiJ9.wcpp7JlE8d6Ck3Z5CSWNTw`)
+        
         if(existed){
-          await Models.Distance.query().update({address: address, distance: disCalculate(stores[i]['lat'],stores[i]['lng'],lat,lng)}).where('userId', userId).where('storeName', stores[i].storeName);
+          await Models.Distance.query().update({address: address, distance: distance.data['routes'][0]['distance']}).where('userId', userId).where('storeName', stores[i].storeName);
         } else {
           var obj = {
             'storeName': stores[i].storeName,
             'address': address,
             'userId': userId,
-            'distance': disCalculate(stores[i]['lat'],stores[i]['lng'],lat,lng)
+            'distance': distance.data['routes'][0]['distance']
           }
           await Models.Distance.query().insert(obj).returning('*');
         }
         
       }
-      // listofStore.sort((a,b) => (a.distance > b.distance) ? 1 : (b.distance > a.distance) ? -1 : 0);
-      // console.log(listofStore)
       
-    })
+    // })
     ///////////////////////////////////////////////////////////////////
 
     return "successful"
@@ -656,15 +646,12 @@ class ExchangeService extends BaseServiceCRUD {
   async getSuggestion(payload){
 
     const {userId, lop} = payload
-    const listofStore = await Models.Distance.query().where('userId', userId);
+    const listofStore = await Models.Store.query();
     console.log("LOS", listofStore)
     if(listofStore.length === 0){
       throw Boom.badData(`ListofStore Not Found Error!`)
     }
-    listofStore.sort(function(a,b){
-      return a['distance'] - b['distance']
-    })
-    console.log("LOS after Sort", listofStore)
+    
     const arrPQ = []
     var proQ  = lop.split(",");
     for(var i = 0; i < proQ.length; i++){
@@ -691,11 +678,11 @@ class ExchangeService extends BaseServiceCRUD {
             if(arrPQ[x]['quantity'] > productInStore[y].quantity){ //quantity yeu cau > quantity co thi store do ko dap ung duoc
               flag1 = false; // Store ko dap ung dc don
               var product = await Models.Product.query().findOne({id: arrPQ[x]['pId']})
-	      product['quantity'] = productInStore[y].quantity
+	            product['quantity'] = productInStore[y].quantity
               shortageShell.push({'pId': arrPQ[x]['pId'], 'product': product})
             } else {
               var product = await Models.Product.query().findOne({id: arrPQ[x]['pId']})
-	      product['quantity'] = arrPQ[x]['quantity']
+	            product['quantity'] = arrPQ[x]['quantity']
               shortageShell.push({'pId': arrPQ[x]['pId'], 'product': product})
             }
           }
@@ -705,7 +692,7 @@ class ExchangeService extends BaseServiceCRUD {
       // Neu ma co store du thi return de tao 1 Order
       if(flag1 === true){
         // await Models.Order.query().update({atStore: listofStore[j]['storeName']} ).where('id', orderId);
-        // console.log(listofStore[j]['storeName']);
+        console.log(listofStore[j]['storeName']);
         return [listofStore[j]['storeName']]
       } else {
         memoryShell[j]['products'] = productMatch;
@@ -723,49 +710,11 @@ class ExchangeService extends BaseServiceCRUD {
     
     // memoryShell chua thong tin hang tai tung store 
     // shortageShell chua so luong thieu neu ko co store nao dap du
-
-    // if(strongestFlag){
-    //   console.log('memoryShell',memoryShell);
-
-    //   await Models.Order.query().update({atStore: listofStore[0]['storeName']} ).where('id', orderId);
-    //   var candidates = {};
-    //   var flagForOneStoreEnough = true;
-    //   var flag2 = true;
-
-    console.log("SUGGESTION:", suggestion);
-    console.log("SUGGESTION:", suggestion[0]['suggestionList']);
-    console.log('memoryShell',memoryShell);
-    console.log('arrPQ',arrPQ);
-    console.log('arrPQ',arrPQ[0]);
-    var orderOfStore = []
-    for(var n = 0; n < memoryShell.length; n++){
-      var inOneStore = {
-        'storeName': memoryShell[n].storeName,
-        'products': []
-      }
-      for(var m = 0; m < arrPQ.length; m++){
-        if(arrPQ[m].quantity > 0 && arrPQ[m].quantity > memoryShell[n]['products'][arrPQ[m].pId]){
-          var product = await Models.Product.query().findOne({id: arrPQ[m].pId})
-	  product['quantity'] = memoryShell[n]['products'][arrPQ[m].pId.toString()]
-          inOneStore['products'].push({'pId': arrPQ[m].pId, 'product': product})
-    
-          arrPQ[m].quantity = arrPQ[m].quantity  - memoryShell[n]['products'][arrPQ[m].pId.toString()];
-        } else {
-          if(arrPQ[m].quantity > 0){
-            var product = await Models.Product.query().findOne({id: arrPQ[m].pId})
-	    product['quantity'] = arrPQ[m].quantity
-            inOneStore['products'].push({'pId': arrPQ[m].pId, 'product': product})
-            arrPQ[m].quantity = 0;
-          }  
-        }
-      }
-      orderOfStore.push(inOneStore);
-    }
     
     var returnObj = 
       [
         suggestion,
-        orderOfStore
+        []
       ] 
     
     return returnObj;
@@ -834,6 +783,142 @@ class ExchangeService extends BaseServiceCRUD {
     // }
   }
 
+  async getParseOrder(payload){
+  
+      const {userId, lop, lat, lng} = payload
+
+      let distance = 0
+      let subString = ""
+      var listofStore = []
+      const stores = await Models.Store.query();
+     
+      for(var i = 0; i < stores.length; i++){
+        // var existed = await Models.Distance.query().findOne({userId: userId}).where('storeName',stores[i].storeName)
+        subString = stores[i]['lng'] + "," + stores[i]['lat'] + ";" + lng + "," + lat;
+        // console.log(subString)
+        distance = await Axios.get(`https://api.mapbox.com/directions/v5/mapbox/driving/${subString}?access_token=pk.eyJ1IjoibWluaDI2NzE5OTkiLCJhIjoiY2wyYWNkZWFsMDQwZDNibnpubGo5dDlsNiJ9.wcpp7JlE8d6Ck3Z5CSWNTw`)
+        stores[i]['distance'] = distance.data['routes'][0]['distance'];
+        listofStore.push(stores[i])
+        // if(existed){
+        //   await Models.Distance.query().update({address: address, distance: distance.data['routes'][0]['distance']}).where('userId', userId).where('storeName', stores[i].storeName);
+        // } else {
+        //   var obj = {
+        //     'storeName': stores[i].storeName,
+        //     'address': address,
+        //     'userId': userId,
+        //     'distance': distance.data['routes'][0]['distance']
+        //   }
+        //   await Models.Distance.query().insert(obj).returning('*');
+        // }
+      }
+      // const listofStore = await Models.Distance.query().where('userId', userId);
+      // console.log("LOS", listofStore)
+      if(listofStore.length === 0){
+        throw Boom.badData(`ListofStore Not Found Error!`)
+      }
+      listofStore.sort(function(a,b){
+        return a['distance'] - b['distance']
+      })
+      // console.log("LOS after Sort", listofStore)
+      const arrPQ = []
+      var proQ  = lop.split(",");
+      for(var i = 0; i < proQ.length; i++){
+        var temp = proQ[i].split("-");
+        arrPQ.push({'pId': parseInt(temp[0]), 'quantity': parseInt(temp[1])});
+      }
+      // var flag1 = true
+      var memoryShell = [];
+      var productMatch = {};
+      // var shortageShell = [];
+      // var suggestion = []
+  
+      for(var j = 0;j < listofStore.length; j++){
+        var productInStore = await Models.Ownership.query().where('storeName', listofStore[j]['storeName'])
+        memoryShell.push({'storeName': listofStore[j]['storeName']})
+        
+        productMatch = {};
+        // shortageShell = [];
+        for(var x = 0; x < arrPQ.length; x++){
+          for(var y = 0; y < productInStore.length; y++){
+            if(arrPQ[x]['pId'] === productInStore[y].pId){
+              productMatch[arrPQ[x]['pId']] = productInStore[y].quantity
+              // productMatch.push({'pId': arrPQ[x]['pId'], 'currentQ': productInStore[y].quantity}); //Luu thong tin cac product matching cua moi store
+              // if(arrPQ[x]['quantity'] > productInStore[y].quantity){ //quantity yeu cau > quantity co thi store do ko dap ung duoc
+              //   // flag1 = false; // Store ko dap ung dc don
+              //   var product = await Models.Product.query().findOne({id: arrPQ[x]['pId']})
+              //   product['quantity'] = productInStore[y].quantity
+              //   shortageShell.push({'pId': arrPQ[x]['pId'], 'product': product})
+              // } else {
+              //   var product = await Models.Product.query().findOne({id: arrPQ[x]['pId']})
+              //   product['quantity'] = arrPQ[x]['quantity']
+              //   shortageShell.push({'pId': arrPQ[x]['pId'], 'product': product})
+              // }
+            }
+          }
+        }
+        // console.log(productMatch)
+        // Neu ma co store du thi return de tao 1 Order
+        // if(flag1 === true){
+        //   // await Models.Order.query().update({atStore: listofStore[j]['storeName']} ).where('id', orderId);
+        //   // console.log(listofStore[j]['storeName']);
+        //   return [listofStore[j]['storeName']]
+        // } else {
+        memoryShell[j]['products'] = productMatch;
+        // var tempObj = {
+        //   'storeName': listofStore[j]['storeName'],
+        //   'suggestionList': shortageShell
+        // }
+        // suggestion.push(tempObj);
+        // shortageShell = []
+        // flag1 = true;
+        // }
+      } // end checking 1 for each store and take the value of matching product in each store
+      
+      // Chia nho Order hoac la tao goi y tai tung store
+      
+      // memoryShell chua thong tin hang tai tung store 
+      // shortageShell chua so luong thieu neu ko co store nao dap du
+  
+      // if(strongestFlag){
+      //   console.log('memoryShell',memoryShell);
+  
+      //   await Models.Order.query().update({atStore: listofStore[0]['storeName']} ).where('id', orderId);
+      //   var candidates = {};
+      //   var flagForOneStoreEnough = true;
+      //   var flag2 = true;
+  
+      // console.log('memoryShell',memoryShell);
+      // console.log('arrPQ',arrPQ);
+      // console.log('arrPQ',arrPQ[0]);
+      var orderOfStore = []
+      for(var n = 0; n < memoryShell.length; n++){
+        var inOneStore = {
+          'storeName': memoryShell[n].storeName,
+          'products': []
+        }
+        for(var m = 0; m < arrPQ.length; m++){
+          if(arrPQ[m].quantity > 0 && arrPQ[m].quantity > memoryShell[n]['products'][arrPQ[m].pId]){
+            var product = await Models.Product.query().findOne({id: arrPQ[m].pId})
+            product['quantity'] = memoryShell[n]['products'][arrPQ[m].pId.toString()]
+            inOneStore['products'].push({'pId': arrPQ[m].pId, 'product': product})
+      
+            arrPQ[m].quantity = arrPQ[m].quantity  - memoryShell[n]['products'][arrPQ[m].pId.toString()];
+          } else {
+            if(arrPQ[m].quantity > 0){
+              var product = await Models.Product.query().findOne({id: arrPQ[m].pId})
+              product['quantity'] = arrPQ[m].quantity
+              inOneStore['products'].push({'pId': arrPQ[m].pId, 'product': product})
+              arrPQ[m].quantity = 0;
+            }  
+          }
+        }
+        orderOfStore.push(inOneStore);
+      }
+      // console.log(orderOfStore)
+      const finalReturn = orderOfStore.filter(order => order['products'].length>0);
+      // console.log(finalReturn)
+      return finalReturn.length
+  }
 
   async loadProductDetailinExchange(str){
     var return_list = {}

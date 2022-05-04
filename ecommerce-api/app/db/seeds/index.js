@@ -754,8 +754,8 @@ const StoreData = [
   },
   {
     storeName: "StoreB",
-    lat: 10.82302,
-    lng: 106.62965,
+    lat: 10.823137690869315,
+    lng: 106.62967162611417,
     address: "",
     createdAt: "2019-12-05T15:03:11.311Z",
     updatedAt: "2019-12-05T15:08:15.904Z",
