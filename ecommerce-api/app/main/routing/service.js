@@ -26,8 +26,10 @@ class RoutingService {
             const response = await solver.solveTsp(data.distances, true, {});
             if(response){
                 var totalDistance = 0.0
-                for(var i = 0; i < response.length - 2; i++){
-                    totalDistance = totalDistance + data.distances[i][i+1]
+                console.log(data.distances)
+                for(var i = 0; i < response.length - 1; i++){
+                    console.log(data.distances[i][i+1])
+                    totalDistance = totalDistance + data.distances[response[i]][response[i+1]]
                 }
                 return [response, totalDistance]
             }
