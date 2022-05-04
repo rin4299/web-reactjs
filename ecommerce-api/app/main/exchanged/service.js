@@ -793,21 +793,33 @@ class ExchangeService extends BaseServiceCRUD {
       const stores = await Models.Store.query();
      
       for(var i = 0; i < stores.length; i++){
+        // var existed = await Models.Distance.query().findOne({userId: userId}).where('storeName',stores[i].storeName)
         subString = stores[i]['lng'] + "," + stores[i]['lat'] + ";" + lng + "," + lat;
-        console.log(subString)
+        // console.log(subString)
         distance = await Axios.get(`https://api.mapbox.com/directions/v5/mapbox/driving/${subString}?access_token=pk.eyJ1IjoibWluaDI2NzE5OTkiLCJhIjoiY2wyYWNkZWFsMDQwZDNibnpubGo5dDlsNiJ9.wcpp7JlE8d6Ck3Z5CSWNTw`)
         stores[i]['distance'] = distance.data['routes'][0]['distance'];
         listofStore.push(stores[i])
+        // if(existed){
+        //   await Models.Distance.query().update({address: address, distance: distance.data['routes'][0]['distance']}).where('userId', userId).where('storeName', stores[i].storeName);
+        // } else {
+        //   var obj = {
+        //     'storeName': stores[i].storeName,
+        //     'address': address,
+        //     'userId': userId,
+        //     'distance': distance.data['routes'][0]['distance']
+        //   }
+        //   await Models.Distance.query().insert(obj).returning('*');
+        // }
       }
       // const listofStore = await Models.Distance.query().where('userId', userId);
-      console.log("LOS", listofStore)
+      // console.log("LOS", listofStore)
       if(listofStore.length === 0){
         throw Boom.badData(`ListofStore Not Found Error!`)
       }
       listofStore.sort(function(a,b){
         return a['distance'] - b['distance']
       })
-      console.log("LOS after Sort", listofStore)
+      // console.log("LOS after Sort", listofStore)
       const arrPQ = []
       var proQ  = lop.split(",");
       for(var i = 0; i < proQ.length; i++){
@@ -875,9 +887,9 @@ class ExchangeService extends BaseServiceCRUD {
       //   var flagForOneStoreEnough = true;
       //   var flag2 = true;
   
-      console.log('memoryShell',memoryShell);
-      console.log('arrPQ',arrPQ);
-      console.log('arrPQ',arrPQ[0]);
+      // console.log('memoryShell',memoryShell);
+      // console.log('arrPQ',arrPQ);
+      // console.log('arrPQ',arrPQ[0]);
       var orderOfStore = []
       for(var n = 0; n < memoryShell.length; n++){
         var inOneStore = {
@@ -902,8 +914,10 @@ class ExchangeService extends BaseServiceCRUD {
         }
         orderOfStore.push(inOneStore);
       }
-      
-      return orderOfStore.length;
+      // console.log(orderOfStore)
+      const finalReturn = orderOfStore.filter(order => order['products'].length>0);
+      // console.log(finalReturn)
+      return finalReturn.length
   }
 
   async loadProductDetailinExchange(str){

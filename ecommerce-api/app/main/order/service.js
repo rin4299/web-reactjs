@@ -26,7 +26,17 @@ class OrderService extends BaseServiceCRUD {
         totalQuantity = totalQuantity + parseInt(temp[1])
       }
     if(atStore === "All"){
-      const listofStore = await Models.Distance.query().where('userId', userId);
+      const stores = await Models.Store.query();
+      // const listofStore = await Models.Distance.query().where('userId', userId);
+      var listofStore = []
+      
+      let subString = ""
+      for(var i = 0; i < stores.length; i++){
+        subString = stores[i]['lng'] + "," + stores[i]['lat'] + ";" + lng + "," + lat;
+        var distance = await Axios.get(`https://api.mapbox.com/directions/v5/mapbox/driving/${subString}?access_token=pk.eyJ1IjoibWluaDI2NzE5OTkiLCJhIjoiY2wyYWNkZWFsMDQwZDNibnpubGo5dDlsNiJ9.wcpp7JlE8d6Ck3Z5CSWNTw`)
+        stores[i]['distance'] = distance.data['routes'][0]['distance'];
+        listofStore.push(stores[i])
+      }
       console.log("LOS", listofStore)
       if(listofStore.length === 0){
         throw Boom.badData(`ListofStore Not Found Error!`)
