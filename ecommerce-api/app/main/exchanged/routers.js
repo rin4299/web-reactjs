@@ -59,6 +59,11 @@ const Routes = [
     config: handler.getSuggestion
   },
   {
+    method: 'POST',
+    path: '/api/v1/getparseorder',
+    config: handler.getParseOrder
+  },
+  {
     method: 'GET',
     path: '/api/v1/getproductbyowner/{user}',
     config: handler.getProductbyOwner

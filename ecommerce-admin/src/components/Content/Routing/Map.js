@@ -227,7 +227,7 @@ class Testcomponent extends Component {
                             />
                         )
                         }
-
+                        
                         {
                         this.state.response !== null && (
                             <DirectionsRenderer
