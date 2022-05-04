@@ -296,12 +296,13 @@ class YourRequest extends Component {
                                   
                                 </td>
                                 
-                                <td>{item.isAccepted ?
+                                <td>
+                                {/* {item.isAccepted ?
                                   null :
-                                  <div>
+                                  <div> */}
                                     <span title='Delete' onClick={() => this.handleRemove(item.id)} className="fix-action"><Link to="#"> <i className="fa fa-trash" style={{ color: '#ff00008f' }}></i></Link></span>
-                                  </div>
-                                  }
+                                  {/* </div>
+                                  } */}
                                 </td>
                               </tr>
                               )
