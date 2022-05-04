@@ -60,10 +60,10 @@ class Testcomponent extends Component {
       
     render(){
       let {path, total} = this.props
-      path = [...path, {lat: center.lat, lng : center.lng}]
+      // path = [...path, {lat: center.lat, lng : center.lng}]
       path = path.reverse()
-      console.log('1',path)
-      console.log('total',total)
+      // console.log('1',path)
+      // console.log('total',total)
 
       const options = {
         strokeColor: '#FF0000',

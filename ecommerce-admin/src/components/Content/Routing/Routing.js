@@ -287,7 +287,7 @@ handleSubmit = async (event) => {
                               <tr key={index}>
                                 <th scope="row">{index}</th>
                                 <td style={{width:'auto'}}>{item.fullName ? item.fullName : item.reqUserName }</td>
-                                <td><span >{item.phone}</span></td>
+                                <td><span >{item.phone ? item.phone : item.information.phone}</span></td>
                                 <td>{item.specialId}</td>
                                 <td>{(item.totalAmount && item.isPaymentOnline == false ) ? item.totalAmount : 0}</td>
                                 <td style={{ textAlign: "center" }}>{item.isPaymentOnline ?
@@ -299,7 +299,7 @@ handleSubmit = async (event) => {
                                     <input type="checkbox" onChange={()=>{}} checked={false} className="checkbox-template" />
                                   </div>}
                                 </td>
-                                <td><p>{item.address}</p></td>
+                                <td><p>{item.address ? item.address : item.information.address}</p></td>
                                 <td>
                                   <input type="checkbox"
                                     onChange={(event) => {

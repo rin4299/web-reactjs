@@ -326,6 +326,7 @@ class Tracking extends Component {
                             onHide={() => this.setState({modalShow: false})}
                           />
                           {total && total.length ? total.map((item, index) => {
+                            {/* item.active ? {} : {} */}
                             return (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
@@ -353,7 +354,7 @@ class Tracking extends Component {
                   </ul>
                 </nav>
                 <div style={{ textAlign: "center" }}>
-                  {/* <Testcomponent id="map" style={{ textAlign: "center" }} path = {this.state.listMarker} total = {total}/> */}
+                  <Testcomponent id="map" style={{ textAlign: "center" }} path = {this.state.listMarker} total = {total}/>
                 </div>
                 
                 {/* <ArrowUpOutlined style={{fontsize :'400%'}}/> */}
