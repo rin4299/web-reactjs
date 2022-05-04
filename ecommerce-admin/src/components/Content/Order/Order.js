@@ -306,11 +306,11 @@ class Order extends Component {
                     isClearable={true}
                     placeholder='Date...'
                   /> */}
-                  <select name="sotring" onChange={(event) => {this.setState({ total : total.reverse()})}} >
+                  <select className="form-control mb-3" name="sotring" onChange={(event) => {this.setState({ total : total.reverse()})}} >
                       <option value='Newest'>Newest</option>
                       <option value='Oldest'>Oldest</option>
                     </select>     
-                  <select name="status" onChange={(event) => {
+                  <select className="form-control mb-3" name="status" onChange={(event) => {
                                                                 // this.setState({
                                                                 //   filterStatus : event.target.value}
                                                                 // )

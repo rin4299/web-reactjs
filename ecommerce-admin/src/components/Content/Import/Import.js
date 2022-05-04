@@ -319,7 +319,7 @@ class Import extends Component {
                       isClearable={true}
                       placeholderText='Date ...'
                     /> */}
-                    <select name="sorting" onChange={(event) => {this.sortNewest(event)}} >
+                    <select className="form-control mb-3" name="sorting" onChange={(event) => {this.sortNewest(event)}} >
                       <option value='Newest'>Newest</option>
                       <option value='Oldest'>Oldest</option>
                     </select>      

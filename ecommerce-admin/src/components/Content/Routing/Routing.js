@@ -10,7 +10,7 @@ import callApi from '../../../utils/apiCaller';
 import Testcomponent from './Map'
 import Paginator from 'react-js-paginator';
 import { toast } from "react-toastify";
-
+import { withScriptjs } from 'react-google-maps'
 
 // import "antd/dist/antd.css"
 
@@ -101,9 +101,7 @@ handleSubmit = async (event) => {
       })
     })
     // const res = await callApi('routing/${storeName}', 'GET', null, token);
-    // if (res && res.status === 200) {
-    // console.log('res',res)
-    // }
+  
   }
 
   handleFinishRouting = async () => {
@@ -124,13 +122,40 @@ handleSubmit = async (event) => {
               atStore : this.state.user[0].name,
               fullName : item.fullName
             }
-            // callApi('order/changestatus',"POST", payload, token);
-            toast.success('Your order {'+ item.id +'} has been complete.');
-            // Swal.fire(
-            //   'Deleted!',
-            //   'Your order {'+ item.id +'} has been complete.',
-            //   'success'
-            // )
+            const res = callApi('order/changestatus',"POST", payload, token);
+            if (res && res.status === 200) {
+              toast.success('Order: {'+ item.id +'} has been complete.');
+            }
+            
+          }
+          ):null
+      }
+    })
+  }
+
+  handleStartRouting = async () => {
+    MySwal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes'
+    }).then(async (result) => {
+      if (result.value) {
+          this.state.listRouting && this.state.listRouting.length ? this.state.listRouting.map((item) => {
+            let payload = {
+              orderId : item.id,
+              status:"Shipping",
+              atStore : this.state.user[0].name,
+              fullName : item.fullName
+            }
+            const res = callApi('order/changestatus',"POST", payload, token);
+            if (res && res.status === 200) {
+              toast.success('Order: {'+ item.id +'} is shipping.');
+            }
+            
           }
           ):null
       }
@@ -149,7 +174,7 @@ handleSubmit = async (event) => {
   render() {
     let { products } = this.props;
     const { searchText, total, listRouting } = this.state;
-    
+    // const Maploader = withScriptjs(Testcomponent)
     return (
       <div className="content-inner">
         {/* Page Header*/}
@@ -179,15 +204,15 @@ handleSubmit = async (event) => {
                   <form onSubmit={(event) => this.handleSubmit(event)}
                     className="form-inline md-form form-sm mt-0" style={{ justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20 }}>
                     <div className='btn-group'>
-                      <button style={{border: 0, background: 'white'}}> <i className="fa fa-search" aria-hidden="true"></i></button>                  
+                      {/* <button style={{border: 0, background: 'white'}}> <i className="fa fa-search" aria-hidden="true"></i></button>                  
                       <input
                         name="searchText"
                         onChange={this.handleChange}
                         value={searchText}
                         className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
-                        aria-label="Search" />
+                        aria-label="Search" /> */}
+                        <button type='submit' className='btn btn-primary'>Generate</button>
                     </div>
-                    <button type='submit' className='btn btn-primary'>Generate</button>
 
                   </form>
                   <div className="card-body">
@@ -255,21 +280,12 @@ handleSubmit = async (event) => {
                       />
                   </ul>
                 </nav>
-                <Testcomponent listRouting = {this.state.listRouting}/>
-                <button type="button" className='btn btn-secondary' onClick={() => {
-                  console.log(listRouting)
-                  listRouting && listRouting.length ? listRouting.map((item) => {
-                    let payload = {
-                      orderId : item.id,
-                      status:"Shipping",
-                      atStore : this.state.user[0].name,
-                      fullName : item.fullName
-                    }
-                    console.log(payload)
-                    // this.handleChangeStatus(payload)
-                  }) : null
-
-                }}>Start</button>
+                {/* <Testcomponent listRouting = {this.state.listRouting}/> */}
+                {/* <Maploader
+                  googleMapURL = "https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyCXxL0MBTRrFF9MBlEMZNwkmenz9zMRtZk"
+                  loadingElement = {<div style={{height : '100%'}}/>}
+                /> */}
+                <button type="button" className='btn btn-secondary' onClick={() => {this.handleStartRouting()}}>Start</button>
                 <button type="button" className='btn btn-success' style={{"margin-left": "10px" }} onClick={() => {
                   this.handleFinishRouting()
                   // console.log(listRouting)

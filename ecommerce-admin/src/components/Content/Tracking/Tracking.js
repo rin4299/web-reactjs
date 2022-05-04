@@ -64,20 +64,6 @@ class Tracking extends Component {
           user: res.data.results
         })
       }
-
-    //   const res2 = await callApi(`admindiff/${this.state.user[0].id}`, 'GET', null, token);  
-    //     if (res2 && res2.status === 200) {
-    //       this.setState({
-    //         userdiff: res2.data
-    //       })
-          // console.log("test" , this.state.userdiff)
-        //   this.setState({
-        //     recUser: this.state.userdiff[0] ? this.state.userdiff[0].name : null
-        //   })
-          
-          
-          // console.log("recuser" , this.state.recUser)
-        // }
     } else {
       this.setState({
         redirect: true
@@ -185,16 +171,38 @@ class Tracking extends Component {
 //   }
 
   generateQrCode = async () => {
-    console.log(this.state.text)
-    try {
-          const response = await QRCode.toDataURL(this.state.text);
-          // setImageUrl(response);
-          this.setState({
-            imageUrl : response
-          })
-    }catch (error) {
-      console.log(error);
+    // console.log(this.state.text)
+    
+    let results
+    let payload = {}
+    const { total } = this.state;
+    total && total.length ? results = total[total.length-1].Value : results = null
+    if(results){
+      // console.log('results',results)
+      payload = {
+        Name : results.productName, 
+        ids : results.id,
+        ownerName : results.ownerName,
+        status : results.status
+      }
+      payload = JSON.stringify(payload)
+      // console.log('payload',payload)
+
+      try {
+        const response = await QRCode.toDataURL(payload);
+        // setImageUrl(response);
+        this.setState({
+          imageUrl : response,
+          modalShow: true,
+        })
+      }catch (error) {
+        console.log(error);
+      }
     }
+    // results = JSON.stringify(results)
+    // console.log('results',results)
+
+    
   }
   handleErrorFile = (error) => {
     console.log(error);
@@ -222,7 +230,37 @@ class Tracking extends Component {
           scanResultWebCam : result
         })
     }
-   }
+  }
+
+  MyVerticallyCenteredModal = (props) => {
+    return (
+      <Modal
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        // dialogClassName="modal-200w"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            QR CODE
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{overflow: 'auto'}}>          
+          <div className='align-items-center' >
+              {this.state.imageUrl ? (
+                  <a href={this.state.imageUrl} download>
+                      <img style={{'margin-left':'200px'}} src={this.state.imageUrl} alt="img"/>
+                  </a>) 
+              : null}
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
 
   render() {
     let { products } = this.props;
@@ -265,21 +303,11 @@ class Tracking extends Component {
                         className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
                         aria-label="Search" />
                     </div>
+                    <Button  variant="contained" 
+                            color="primary" onClick={() => this.generateQrCode()}>Generate</Button>
                   </form>
                   <div className="card-body">
                     <div className="table-responsive">
-                      {/* <table className="table table-hover">
-                      <thead>
-                          <tr>
-                            <th>Number</th>
-                            <th>TxId</th>
-                            <th>Product Name</th>
-                            <th>Id Product</th>
-                            <th>Owner Name</th>
-                            <th style={{ textAlign: "center" }}>Time</th>
-                          </tr>                          
-                        </thead>
-                      </table> */}
                       <table className="table table-hover">
                         <thead>
                           <tr>
@@ -293,6 +321,10 @@ class Tracking extends Component {
                           
                         </thead>
                         <tbody>
+                          <this.MyVerticallyCenteredModal
+                            show={this.state.modalShow}
+                            onHide={() => this.setState({modalShow: false})}
+                          />
                           {total && total.length ? total.map((item, index) => {
                             return (
                               <tr key={index}>
@@ -321,7 +353,7 @@ class Tracking extends Component {
                   </ul>
                 </nav>
                 <div style={{ textAlign: "center" }}>
-                  <Testcomponent id="map" style={{ textAlign: "center" }} path = {this.state.listMarker} total = {total}/>
+                  {/* <Testcomponent id="map" style={{ textAlign: "center" }} path = {this.state.listMarker} total = {total}/> */}
                 </div>
                 
                 {/* <ArrowUpOutlined style={{fontsize :'400%'}}/> */}

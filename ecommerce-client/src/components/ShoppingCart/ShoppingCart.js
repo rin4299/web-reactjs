@@ -233,16 +233,16 @@ class ShoppingCart extends Component {
     }
     console.log('_atStore3',localStorage.getItem('_atStore'))
     let numOrders = 1
-    if (getsuggestion[1] != null ){
-      if (isAccepted && filterStore == 'All'){
-        numOrders = getsuggestion[1].length;
-      }
-      else {
-        numOrders = 1
-      }
-    }
-    console.log(numOrders)
-    localStorage.setItem('numOrders', numOrders)
+    // if (getsuggestion[1] != null ){
+    //   if (isAccepted && filterStore == 'All'){
+    //     numOrders = getsuggestion[1].length;
+    //   }
+    //   else {
+    //     numOrders = 1
+    //   }
+    // }
+    // console.log(numOrders)
+    // localStorage.setItem('numOrders', numOrders)
 
     
     let amount = 0;
@@ -400,6 +400,8 @@ class ShoppingCart extends Component {
                             <ul>
                                 <li>Subtotal <span>{amount ? formatNumber.format(amount) : 0}</span></li>
                                 <li>Shipping <span>{formatNumber.format(amount ? shippingTotal : 0)}</span></li>
+                                <br/>
+                                <span>(*) Shipping total before split if needed</span>
                                 <li style={{ color: 'red' }}>Total <span>{amount ? formatNumber.format(amount + shippingTotal) : 0}</span></li>
                             </ul>
                             <button onClick={() => {this.UpdateOrderSingle()}} className="fix-text-checkout" >Order {filterStore}</button>
@@ -407,7 +409,7 @@ class ShoppingCart extends Component {
                               show={this.state.modalShow}
                               onHide={() => this.setState({modalShow: false})}
                             />
-                            {isAccepted && filterStore == 'All' ? <p style={{color : 'blue' }}>(*) We will split into {numOrders} applications to be able to accommodate</p>
+                            {isAccepted && filterStore == 'All' ? <p style={{color : 'blue' }}>(*) We will split order to be able to accommodate</p>
                             : null}
                             
                             </div>

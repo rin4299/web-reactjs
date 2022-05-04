@@ -347,7 +347,7 @@ class ProductReport extends Component {
                       isClearable={true}
                       placeholderText='Date ...'
                     /> */}
-                    <select name="sorting" defaultChecked={this.state.Newest} onChange={(event) => {
+                    <select className="form-control mb-3" name="sorting" defaultChecked={this.state.Newest} onChange={(event) => {
                                                                                                       this.sortNewest(event)                                                                                                      
                                                                                                   }} >
                       <option name='Newest' value='Newest'>Newest</option>

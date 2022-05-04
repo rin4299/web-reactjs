@@ -1,12 +1,13 @@
 import React , { Component } from "react";
 import { GoogleMap , LoadScript, Polyline, Marker, DirectionsService , InfoWindow, DirectionsRenderer } from "@react-google-maps/api";
+
 import { connect } from 'react-redux'
 
 
 const mapContainerStyle = {
     height: "500px",
     width: "800px",
-    "margin-left":"350px"
+    "marginLeft":"350px"
   };
 
   const center = { lat:  10.773392736860279, lng: 106.66067562399535 }
@@ -35,57 +36,47 @@ var lineSymbol = {
     strokeWeight: 2,
     strokeOpacity: 1
 };
-  
-// const options = {
-//     strokeColor: '#FF0000',
-//     strokeOpacity: 0.8,
-//     strokeWeight: 3.5,
-//     fillColor: '#FF0000',
-//     fillOpacity: 0.35,
-//     clickable: false,
-//     draggable: false,
-//     editable: false,
-//     visible: true,
-//     radius: 30000,
-//     paths: path,
-//     zIndex: 1,
-//     icons:[{
-//         icon: lineSymbol,
-//         offset: '100%',
-//         repeat: '50px'
-//     }]
-// };
-
-// const opstions2 = { // eslint-disable-line react-perf/jsx-no-new-object-as-prop
-//     destination: destination,
-//     origin: center,
-//     travelMode: 'DRIVING'
-//   }
 let path = []
-let directionService
+// let directionService
 class Testcomponent extends Component {
     constructor (props) {
         super(props)
         this.state = {
             response: null,
             travelMode: 'DRIVING',
-            origin: '',
-            destination: ''
           }
     }
 
     async componentDidMount(){
-
+         
+        
     }
+
+    generateDirection = async () => {
+        const directionService = new google.maps.DirectionsService()
+        const results = await directionService.route({
+            origin: center,
+            destination: center,
+            waypoints:path,
+            //eslint-disable-next-line no-undef
+            travelMode: google.maps.TravelMode.DRIVING
+        })
+        console.log('response', results)
+        this.setState({
+            response : results
+        })
+    };
+
     directionsCallback (response) {
+        console.log('response')
         console.log(response)
     
         if (response !== null) {
           if (response.status === 'OK') {
             this.setState(
-              () => ({
-                response
-              })
+              {
+                  response: response
+              }
             )
           } else {
             console.log('response: ', response)
@@ -95,15 +86,19 @@ class Testcomponent extends Component {
     
       
     render(){
-        if (window.google) {
-            // All is good! Carry on 
-            directionService = new window.google.maps.DirectionsService();
-          }
         const { destination } = this.state;
         let {listRouting} = this.props
         if(listRouting && listRouting.length) {
             listRouting.map((item,index) => {
-                path = [...path, {lat: item.lat, lng : item.lng}]
+                // path.push({
+                //     location : {lat : item.lat,lng :item.lng},
+                //     stopover: true,
+
+                // })
+                path = [...path, {
+                    location : {lat : item.lat,lng :item.lng},
+                    stopover: true,
+                }]
             })
             console.log('path',path)
         }
@@ -131,124 +126,124 @@ class Testcomponent extends Component {
             }]
           };
         // var directionService = new google.maps.directionService;
-        // var directionDisplay = new google.maps.dir   ectionDisplay;
+        // var directionDisplay = new google.maps.directionDisplay;
         return (
             // <LoadScript
             //     googleMapsApiKey="AIzaSyCXxL0MBTRrFF9MBlEMZNwkmenz9zMRtZk" libraries={["places"]}
             // >
-                <GoogleMap
-                mapContainerStyle={mapContainerStyle}
-                center={center}
-                zoom={13}
-                >
-                    {path && path.length ? path.map((position) => {
+            <div className="map">
+                <div className="map-container">
+                    <GoogleMap
+                    mapContainerStyle={mapContainerStyle}
+                    center={center}
+                    zoom={13}
+                    >
+                        {/* {path && path.length ? path.map((position) => {
+                            return (
+                                <Marker
+                                onLoad={onLoad}
+                                position={position}
+                                />
+                            )
+                        }): null} */}
+                        {/* <Marker
+                            onLoad={onLoad}
+                            position={center}
+                            // animation={window.google.maps.Animation.BOUNCE}
+                        /> */}
+                        {/* {listRouting.map((item,index) => {
+                        console.log('position',item)
+                        let lat = item.lat
+                        let lng = item.lng
+                        let position = {lat: lat, lng : lng}
                         return (
-                            <Marker
-                            onLoad={onLoad}
-                            position={position}
-                            />
-                        )
-                    }): null}
-                    <Marker
-                        onLoad={onLoad}
-                        position={center}
-                        animation={window.google.maps.Animation.BOUNCE}
-                    />
-                    {listRouting.map((item,index) => {
-                      console.log('position',item)
-                      let lat = item.lat
-                      let lng = item.lng
-                      let position = {lat: lat, lng : lng}
-                      return (
-                        index+1 === listRouting.length ? 
-                          <InfoWindow
-                            onLoad={onLoad}
-                            position={position}
-                          >
-                            <div style={divStyle}>
-                              <span>Index: {index+1}</span>
-                              <br/>
-                              <span>Order Id : {item.id}</span>
-                              <br/>
-                              <span>{item.fullName}</span>
+                            index+1 === listRouting.length ? 
+                            <InfoWindow
+                                onLoad={onLoad}
+                                position={position}
+                            >
+                                <div style={divStyle}>
+                                <span>Index: {index+1}</span>
+                                <br/>
+                                <span>Order Id : {item.id}</span>
+                                <br/>
+                                <span>{item.fullName}</span>
 
-                            </div>
-                          </InfoWindow>
-                      : 
-                          <InfoWindow
-                            onLoad={onLoad}
-                            position={position}
-                          >
-                            <div style={divStyle}>
-                              <span>Index: {index+1}</span>
-                              <br/>
-                              <span>Order Id : {item.id}</span>
-                              <br/>
-                              <span>{item.fullName}</span>
-                            </div>
-                          </InfoWindow>
-                          )
-                        
-                    })}
-                    <Polyline
-                        onLoad={onLoad}
-                        path={path}
-                        options={options}
-                    />
-                    {/* {directionService.route(
-                        {
-                            origin: center,
-                            destination: destination,
-                            travelMode:"DRIVING",
-                        },
-                        (res, status) => {
-                            if ( status == "OK"){
-                                new window.google.map(DirectionsRenderer({
-                                    directions : res,
-                                }))
-                            }
-                        }
-                    )} */}
-                    {/* {   
-                        (
-                            destination !== '' &&
-                            center !== ''
-                        ) && (
-                            <DirectionsService
-                            // required
+                                </div>
+                            </InfoWindow>
+                        : 
+                            <InfoWindow
+                                onLoad={onLoad}
+                                position={position}
+                            >
+                                <div style={divStyle}>
+                                <span>Index: {index+1}</span>
+                                <br/>
+                                <span>Order Id : {item.id}</span>
+                                <br/>
+                                <span>{item.fullName}</span>
+                                </div>
+                            </InfoWindow>
+                            )
                             
-                            options={{ 
-                                destination : destination,
-                                origin: center,
-                                travelMode: "DRIVING"
-                            }}
-                            // required
-                            callback={console.log('testing')}
-                            />
-                        )
-                        }
+                        })} */}
+                        {/* <Polyline
+                            onLoad={onLoad}
+                            path={path}
+                            options={options}
+                        /> */}
+                            {/* {
+                                            (
+                                destination !== '' &&
+                                center !== ''
+                            ) && (
+                                <DirectionsService
+                                // required
+                                
+                                options={{ 
+                                    // eslint-disable-line react-perf/jsx-no-new-object-as-prop
+                                    destination : destination,
+                                    origin: center,
+                                    travelMode: "DRIVING",
+                                    // waypoints: destination,
+                                }}
+                                // required
+                                callback={this.directionsCallback}
+                                onLoad={directionsService => {
+                                    console.log('DirectionsService onLoad directionsService: ', directionsService)
+                                }}
+                                />
+                            )}
 
-                        {
-                        this.state.response !== null && (
-                            <DirectionsRenderer
-                            // required
-                            options={{ // eslint-disable-line react-perf/jsx-no-new-object-as-prop
-                                directions: this.state.response
-                            }}
-                            // optional
-                            onLoad={directionsRenderer => {
-                                console.log('DirectionsRenderer onLoad directionsRenderer: ', directionsRenderer)
-                            }}
-                            // optional
-                            onUnmount={directionsRenderer => {
-                                console.log('DirectionsRenderer onUnmount directionsRenderer: ', directionsRenderer)
-                            }}
-                            />
-                        )
-                    } */}
-                    
-                    
-                </GoogleMap>
+                            {console.log('response', this.state.response)} */}
+
+                            {
+                            this.state.response !== null && 
+                                <DirectionsRenderer
+                                // required
+                                // options={{ 
+                                //     // eslint-disable-line react-perf/jsx-no-new-object-as-prop
+                                //     directions: this.state.response
+                                // }}
+                                directions={this.state.response}
+                                // optional
+                                onLoad={directionsRenderer => {
+                                    console.log('DirectionsRenderer onLoad directionsRenderer: ', directionsRenderer)
+                                }}
+                                // optional
+                                onUnmount={directionsRenderer => {
+                                    console.log('DirectionsRenderer onUnmount directionsRenderer: ', directionsRenderer)
+                                }}
+                                />
+                        }
+                        
+                        
+                    </GoogleMap>
+                    <div>
+                        {/* <button type="button" className="btn btn-warning" onClick={this.generateDirection}>generate</button> */}
+                    </div>
+                </div>
+            </div>
             // </LoadScript>
         )
     }
