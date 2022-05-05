@@ -1,8 +1,9 @@
-import React, { Component , useRef } from 'react'
+import React, { Component } from 'react'
 // import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import {actGenerateRouting , actClearRequest} from '../../../redux/actions/routing';
+import { actFindOrderProductDetail } from '../../../redux/actions/order';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
@@ -10,16 +11,13 @@ import callApi from '../../../utils/apiCaller';
 import Testcomponent from './Map'
 import Paginator from 'react-js-paginator';
 import { toast } from "react-toastify";
-import { withScriptjs } from 'react-google-maps'
-import { stringify } from 'query-string';
+import Modal from 'react-bootstrap/Modal'
 
 // import "antd/dist/antd.css"
 
 const MySwal = withReactContent(Swal)
 
 let token;
-// const qrRef = useRef(null);
-// console.log(qrRef)
 class Routing extends Component {
 
   constructor(props) {
@@ -27,17 +25,13 @@ class Routing extends Component {
     this.state = {
       total: [],
       currentPage: 1,
-      searchText: '',
       modalShow: false,
-      quantity: '',
       user: [],
-      text: '',
-      // qrRef:null
       listRouting: [],
       listComplete: [],
       listCancel : [],
     }
-    this.qrRef = React.createRef()
+
   }  
   async componentDidMount() {
     token = localStorage.getItem('_auth');
@@ -56,17 +50,17 @@ class Routing extends Component {
     // await this.fetch_reload_data(); 
   }
 
-  fetch_reload_data(){
-    token = localStorage.getItem('_auth');
-    this.props.tracking_request(this.state.searchText,token).then(res => {
-      this.setState({
-        total: res
-      });
-    }).catch(err => {
-      console.log(err);  
-    })
+  // fetch_reload_data(){
+  //   token = localStorage.getItem('_auth');
+  //   this.props.tracking_request(this.state.searchText,token).then(res => {
+  //     this.setState({
+  //       total: res
+  //     });
+  //   }).catch(err => {
+  //     console.log(err);  
+  //   })
   
-  }
+  // }
 
   async handleChangeStatus(payload){
     token = localStorage.getItem('_auth');
@@ -98,7 +92,7 @@ handleSubmit = async (event) => {
     // console.log('res',res)
 
     await this.props.generate_routing(storeName, token).then(res => {
-      console.log(res)
+      console.log('res',res)
       this.setState({
         listRouting : res, 
         listComplete : res.filter((item) => { return item.specialId != null}),
@@ -120,19 +114,6 @@ handleSubmit = async (event) => {
     }).then(async (result) => {
       if (result.value) {
           this.state.listComplete && this.state.listComplete.length ? this.state.listComplete.map((item) => {
-            // let payload = {
-            //   orderId : item.id,
-            //   status:"Complete",
-            //   atStore : this.state.user[0].name,
-            //   fullName : item.fullName
-            // }
-            // // const res = await callApi('order/changestatus',"POST", payload, token);
-            // callApi('order/changestatus',"POST", payload, token).then(async (res) => {
-            //   if (res && res.status === 200) {
-            //     toast.success('Order: {'+ item.specialId +'} has been complete.');
-            //   }
-            // })
-            
             let keyword = item.specialId.split("-");
             console.log(keyword)
             if(keyword[0] == "O"){
@@ -208,9 +189,6 @@ handleSubmit = async (event) => {
           ):null
         // console.log('finish')
         const res = await this.props.clear_Routing();
-        // if( res && res.status == 200 ){
-        //   toast.success('Routing Direction is close');
-        // }
       }
       
     })
@@ -277,6 +255,88 @@ handleSubmit = async (event) => {
     })
   }
 
+  async fetch_product_details_Order(item){
+    // console.log('fetch thanh cong', id)
+    token = localStorage.getItem('_auth');
+    console.log(item)
+    if (item.status === 'Complete' || item.status == 'Shipping'){
+      await this.props.find_order_product_detail(token, item.id).then(res => {
+        this.setState({
+          productDetails : res,
+          modalShow : true,
+        })
+      })
+    }
+    
+    // console.log('key',this.state.productDetails)
+  }
+
+  MyVerticallyCenteredModal = (props) => {
+    // let temp = Object.keys(this.state.productDetails)
+    let temp = ''
+    // let detail;
+    // console.log('key',temp)
+    return (
+      <Modal
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Order details
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{overflow: 'auto'}}>
+          
+          {/* {console.log('test',this.state.productDetails)} */}
+          <div >
+            <form >
+              <div className="table-responsive">
+                <table className="table table-hover" style={{ textAlign: "center" }}>
+                  <thead>
+                    <tr>
+                      {/* <th style={{width:'30%'}}>Number</th> */}
+                      <th>Id-product</th>
+                      <th>Name Product</th>
+                      <th>Image</th>
+                      <th>Quantity</th>
+                      <th>ids</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {temp ? temp.map((item,index)=>{
+                      {/* console.log(this.state.productDetails[item]) */}
+                      detail = this.state.productDetails[item]
+                      {/* console.log('detail',detail) */}
+                      return (
+                        <tr key = {index}>
+                          {/* <td scope="row">{index + 1}</td> */}
+                          <td><span className="text-truncate" >{detail.product.id}</span></td>
+                          <td><span className="text-truncate" >{detail.product.nameProduct}</span></td>
+                          <td>
+                              <div className="fix-cart">
+                                <img src={detail.product.image ? detail.product.image : null} className="fix-img" alt="not found" />
+                              </div>
+                            </td>
+                          <td><span className="text-truncate" >{detail.quantity}</span></td>
+                          <td><span className="text-truncate" >{detail.ids}</span></td>
+                        </tr>)
+                    }): null}
+                  </tbody>
+                </table>
+              </div>
+            </form>
+          </div>
+          
+        </Modal.Body>
+        <Modal.Footer>
+          <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
 
 //   createExchange = (payload) => {
 //     token = localStorage.getItem('_auth');
@@ -347,9 +407,10 @@ handleSubmit = async (event) => {
                       <table className="table table-hover">
                         <thead>
                           <tr>
-                            <th>Number</th>
+                            <th>Sequences</th>
                             <th>Name recive</th>
                             <th>Phone</th>
+                            <th>Details</th>
                             <th>Code order</th>
                             <th>Total Amount</th>
                             <th>Payment Online</th>
@@ -359,15 +420,25 @@ handleSubmit = async (event) => {
                           
                         </thead>
                         <tbody>
+                          <this.MyVerticallyCenteredModal
+                            show={this.state.modalShow}
+                            onHide={() => this.setState({modalShow: false})}
+                          />
                           {routing && routing.length ? routing.map((item, index) => {
                             {/* console.log(item.isPaymentOnline) */}
                             if(index == 0) return null 
                             else {
                               return (
                               <tr key={index}>
-                                <th scope="row">{index}</th>
+                                <th scope="row">{String.fromCharCode(index+65)}</th>
                                 <td style={{width:'auto'}}>{item.fullName ? item.fullName : item.reqUserName }</td>
                                 <td><span >{item.phone ? item.phone : item.information.phone}</span></td>
+                                <td>
+                                  <button type="button" className='btn btn-light' onClick={()=>{ 
+                                    // this.fetch_product_details_Order(item)
+                                    console.log('onclick')
+                                    }}>View</button>
+                                </td>
                                 <td>{item.specialId}</td>
                                 <td>{(item.totalAmount && item.isPaymentOnline == false ) ? item.totalAmount : 0}</td>
                                 <td style={{ textAlign: "center" }}>{item.isPaymentOnline ?
@@ -410,7 +481,7 @@ handleSubmit = async (event) => {
                             }
  
                           }) : null}
-                          {/* {console.log(this.state.listMarker)} */}
+                          {console.log(this.state.listMarker)}
                         </tbody>
                       </table>
                     </div>
@@ -425,7 +496,7 @@ handleSubmit = async (event) => {
                       />
                   </ul>
                 </nav>
-                {/* <Testcomponent listRouting = {this.state.listRouting}/> */}
+                <Testcomponent listRouting = {this.state.listRouting}/>
                 {/* <Maploader
                   googleMapURL = "https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyCXxL0MBTRrFF9MBlEMZNwkmenz9zMRtZk"
                   loadingElement = {<div style={{height : '100%'}}/>}
@@ -445,7 +516,7 @@ handleSubmit = async (event) => {
                     // this.handleChangeStatus(payload)
                   // }) : null
                 }}>Finish</button>
-                <button type='button' className='btn btn-warning' onClick={() => {console.log('listComplete',this.state.listComplete) , console.log('listCancel',this.state.listCancel)}} >Click</button>
+                {/* <button type='button' className='btn btn-warning' onClick={() => {console.log('listComplete',this.state.listComplete) , console.log('listCancel',this.state.listCancel)}} >Click</button> */}
               </div>
             </div>
           </div>
@@ -471,6 +542,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     clear_Routing: () => {
       return dispatch(actClearRequest())
+    },
+    find_order_product_detail:(token, id) => {
+      return dispatch(actFindOrderProductDetail(token, id))
     }
   }
 }

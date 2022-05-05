@@ -10,7 +10,7 @@ const mapContainerStyle = {
     "marginLeft":"350px"
   };
 
-  const center = { lat:  10.773392736860279, lng: 106.66067562399535 }
+let center = { lat:  10.773392736860279, lng: 106.66067562399535 }
   const onLoad = polyline => {
     console.log('polyline: ', polyline)
 };
@@ -86,7 +86,7 @@ class Testcomponent extends Component {
     
       
     render(){
-        const { destination } = this.state;
+        // const { destination } = this.state;
         let {listRouting} = this.props
         if(listRouting && listRouting.length) {
             listRouting.map((item,index) => {
@@ -95,12 +95,18 @@ class Testcomponent extends Component {
                 //     stopover: true,
 
                 // })
-                path = [...path, {
-                    location : {lat : item.lat,lng :item.lng},
-                    stopover: true,
-                }]
+                console.log('index',index)
+                if(index == 0){
+                    center = {lat : item.lat,lng :item.lng}
+                }else{
+                    path = [...path, {
+                        location : {lat : item.lat,lng :item.lng},
+                        stopover: true,
+                    }]
+                }
             })
-            console.log('path',path)
+            // console.log('center', center)
+            // console.log('path',path)
         }
     //   path = [...path, {lat: center.lat, lng : center.lng}]
         console.log('routing',listRouting)
@@ -157,34 +163,13 @@ class Testcomponent extends Component {
                         let lng = item.lng
                         let position = {lat: lat, lng : lng}
                         return (
-                            index+1 === listRouting.length ? 
-                            <InfoWindow
+                            <Marker
                                 onLoad={onLoad}
                                 position={position}
-                            >
-                                <div style={divStyle}>
-                                <span>Index: {index+1}</span>
-                                <br/>
-                                <span>Order Id : {item.id}</span>
-                                <br/>
-                                <span>{item.fullName}</span>
-
-                                </div>
-                            </InfoWindow>
-                        : 
-                            <InfoWindow
-                                onLoad={onLoad}
-                                position={position}
-                            >
-                                <div style={divStyle}>
-                                <span>Index: {index+1}</span>
-                                <br/>
-                                <span>Order Id : {item.id}</span>
-                                <br/>
-                                <span>{item.fullName}</span>
-                                </div>
-                            </InfoWindow>
-                            )
+                                onClick={() => console.log(item)}
+                                // visible={false}
+                            />
+                        )
                             
                         })} */}
                         {/* <Polyline
@@ -226,6 +211,7 @@ class Testcomponent extends Component {
                                 //     directions: this.state.response
                                 // }}
                                 directions={this.state.response}
+                                panel={document.getElementById('panel')}
                                 // optional
                                 onLoad={directionsRenderer => {
                                     console.log('DirectionsRenderer onLoad directionsRenderer: ', directionsRenderer)
@@ -242,6 +228,9 @@ class Testcomponent extends Component {
                     <div>
                         {/* <button type="button" className="btn btn-warning" onClick={this.generateDirection}>generate</button> */}
                     </div>
+                </div>
+                <div id='panel'>
+
                 </div>
             </div>
             // </LoadScript>

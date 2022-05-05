@@ -47,20 +47,25 @@ class Testcomponent extends Component {
 
     
     }
-    // async componentDidMount(){
-    //   const map = new window.google.maps.Map(document.getElementById("map"),{
-    //     center : center,
-    //     zoom : 12,
-    //   })
-    // }
+    async componentDidMount(){
+      // const map = new window.google.maps.Map(document.getElementById("map"),{
+      //   mapContainerStyle:{mapContainerStyle},
+      //   center:center,
+      //   zoom:12,
+      // })
+    }
 
     onLoad = infoWindow => {
       console.log('infoWindow: ', infoWindow)
     }
+
+    onClick = (event) => {
+      console.log(event)
+    }
       
     render(){
       let {path, total} = this.props
-      // path = [...path, {lat: center.lat, lng : center.lng}]
+      path = [...path, {lat: center.lat, lng : center.lng}]
       path = path.reverse()
       // console.log('1',path)
       // console.log('total',total)
@@ -93,12 +98,13 @@ class Testcomponent extends Component {
             // >
               <div id="map">
                 
-                <GoogleMap
+                 <GoogleMap
                   mapContainerStyle={mapContainerStyle}
                   center={center}
                   zoom={12}
-                  >'
-                    {path.map((position,index) => {
+                  // onClick={this.onClick}
+                  >
+                    {/* {path.map((position,index) => {
                       console.log('position',position)
                         return (
                             <Marker
@@ -106,8 +112,25 @@ class Testcomponent extends Component {
                             position={position}
                             zIndex= {index}
                             animation={window.google.maps.Animation.BOUNCE}
+                            onClick={() => console.log(index)}
                             />
                         )
+                    })} */}
+                    {total.map((item,index) => {
+                      console.log('position',item)
+                      let lat = item.Value.information.lat
+                      let lng = item.Value.information.lng
+                      let position = {lat: lat, lng : lng}
+                      return (
+                        <Marker
+                            onLoad={onLoad}
+                            position={position}
+                            zIndex= {index}
+                            animation={window.google.maps.Animation.BOUNCE}
+                            onClick={() => console.log(item)}
+                            />
+                          )
+                        
                     })}
                     {total.map((item,index) => {
                       console.log('position',item)
@@ -145,7 +168,12 @@ class Testcomponent extends Component {
                         onLoad={onLoad}
                         path={path}
                         options={options}
+                        // onDblClick={(event) => console.log(event)}
                     />
+
+                    {/* {google.maps.event.addListener(Marker,"click",()=> {
+                                        console.log('somethings')
+                                      })} */}
                 </GoogleMap>
               </div>
                 

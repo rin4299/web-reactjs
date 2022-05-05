@@ -111,10 +111,8 @@ class CheckOut extends Component {
         const atStore = localStorage.getItem('_atStore');
         // console.log('res', res)
         if (!res.lat){
-          res.lat = 10.773392736860279
-        }
-        if (!res.lng){
-          res.lng = 106.66067562399535
+          res.lat = 10.772803247674087
+          res.lng = 106.65764435365183
         }
         const resultOrder = {
           fullName: res.name,
@@ -272,10 +270,8 @@ class CheckOut extends Component {
     const lopOrder = this.get_lop();
     const atStore = localStorage.getItem('_atStore');
     if (!res.lat){
-      res.lat = 10.773392736860279
-    }
-    if (!res.lng){
-      res.lng = 106.66067562399535
+      res.lat = 10.772803247674087
+      res.lng = 106.65764435365183
     }
     // const { lopOrder } = this.state
     resultOrder = {
