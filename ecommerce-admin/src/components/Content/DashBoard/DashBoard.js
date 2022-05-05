@@ -345,7 +345,7 @@ class DashBoard extends Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log(state.dashboard)
+  // console.log(state.dashboard)
   return {
     dashboard: state.dashboard
   }

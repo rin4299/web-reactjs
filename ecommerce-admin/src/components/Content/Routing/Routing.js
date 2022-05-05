@@ -2,7 +2,7 @@ import React, { Component , useRef } from 'react'
 // import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import {actGenerateRouting} from '../../../redux/actions/routing';
+import {actGenerateRouting , actClearRequest} from '../../../redux/actions/routing';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
@@ -206,11 +206,18 @@ handleSubmit = async (event) => {
             
           }
           ):null
+        // console.log('finish')
+        const res = await this.props.clear_Routing();
+        // if( res && res.status == 200 ){
+        //   toast.success('Routing Direction is close');
+        // }
       }
+      
     })
   }
 
   handleStartRouting = async () => {
+    const { routing } = this.props
     MySwal.fire({
       title: 'Are you sure?',
       text: "These orders status will change to shipping!",
@@ -221,7 +228,10 @@ handleSubmit = async (event) => {
       confirmButtonText: 'Yes'
     }).then(async (result) => {
       if (result.value) {
-          this.state.listRouting && this.state.listRouting.length ? this.state.listRouting.filter((item) => {
+          // this.state.listRouting && this.state.listRouting.length ? this.state.listRouting.filter((item) => {
+          //   return item.specialId != null
+          // })
+          routing && routing ? routing.filter((item) => {
             return item.specialId != null
           })
           .map((item) => {
@@ -277,7 +287,7 @@ handleSubmit = async (event) => {
 //   }
 
   render() {
-    let { products } = this.props;
+    let { routing } = this.props;
     const { searchText, total, listRouting } = this.state;
     // const Maploader = withScriptjs(Testcomponent)
     return (
@@ -349,7 +359,7 @@ handleSubmit = async (event) => {
                           
                         </thead>
                         <tbody>
-                          {listRouting && listRouting.length ? listRouting.map((item, index) => {
+                          {routing && routing.length ? routing.map((item, index) => {
                             {/* console.log(item.isPaymentOnline) */}
                             if(index == 0) return null 
                             else {
@@ -447,16 +457,20 @@ handleSubmit = async (event) => {
   }
 }
 
-// const mapStateToProps = (state) => {
-//   return {
-//     products: state.products
-//   }
-// }
+const mapStateToProps = (state) => {
+  // console.log(state)
+  return {
+    routing: state.routing
+  }
+}
 
 const mapDispatchToProps = (dispatch) => {
   return {
     generate_routing: (storeName, token) => {
         return dispatch(actGenerateRouting(storeName, token))
+    },
+    clear_Routing: () => {
+      return dispatch(actClearRequest())
     }
   }
 }
@@ -465,4 +479,4 @@ const mapDispatchToProps = (dispatch) => {
 
 
 
-export default connect(null, mapDispatchToProps)(Routing)
+export default connect(mapStateToProps, mapDispatchToProps)(Routing)

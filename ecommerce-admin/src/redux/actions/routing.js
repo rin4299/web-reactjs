@@ -50,3 +50,17 @@ import 'react-toastify/dist/ReactToastify.css';
             data
         }
       }
+
+
+      export const actClearRequest = () => {
+        return async dispatch => {
+            // localStorage.setItem('_cart', JSON.stringify([]) );
+            dispatch(actClearRouting());
+        };
+    }
+    
+    export const actClearRouting = (clear) => {
+        return {
+            type: Types.CLEAR_ROUTING
+        }
+    }

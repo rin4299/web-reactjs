@@ -14,7 +14,7 @@ import ratings from './ratings';
 import contacts from './contacts';
 import loading from './loading';
 import cart  from  './cart'
-
+import routing from './routing';
 const appReducers = combineReducers({
     auth,
     roles,
@@ -30,7 +30,8 @@ const appReducers = combineReducers({
     ratings,
     contacts,
     loading,
-    cart
+    cart,
+    routing,
 });
 
 export default appReducers;
