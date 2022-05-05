@@ -390,7 +390,7 @@ class Tracking extends Component {
                   </ul>
                 </nav>
                 <div style={{ textAlign: "center" }}>
-                  <Testcomponent id="map" style={{ textAlign: "center" }} path = {this.state.listMarker} total = {total}/>
+                  {/* <Testcomponent id="map" style={{ textAlign: "center" }} path = {this.state.listMarker} total = {total}/> */}
                 </div>
                 
                 {/* <ArrowUpOutlined style={{fontsize :'400%'}}/> */}

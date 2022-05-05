@@ -32,11 +32,11 @@ class HistoryOrder extends Component {
     }
 
     showOrder(status){
-        if (status === 'Unconfirm') { 
-          return (<div className="col-md-auto"><label className="fix-status" style={{background: '#ff9800', textAlign: "center"}} >{status}</label></div>)
+        // if (status === 'Unconfirm') { 
+        //   return (<div className="col-md-auto"><label className="fix-status" style={{background: '#ff9800', textAlign: "center"}} >{status}</label></div>)
         
-        }
-        if (status === 'Confirm') {
+        // }
+        if (status === 'Processing') {
           return (
             <div className="col-md-auto"><label className="fix-status" style={{background: '#337ab7', textAlign: "center"}} >{status}</label></div>
           )
@@ -112,10 +112,7 @@ class HistoryOrder extends Component {
                             {/* <a className="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="all" aria-selected="true">All</a> */}
                         </li>
                         <li className="nav-item" style={{marginLeft: 10}}>
-                            <button className="nav-link btn-lg" name="filterStatus" value="Unconfirm" data-toggle="tab" role="tab" aria-controls="ready" aria-selected="false" onClick={this.handleChange}>UNCONFIRM</button>
-                        </li>
-                        <li className="nav-item" style={{marginLeft: 10}}>
-                            <button className="nav-link btn-lg" name="filterStatus" value="Confirm" data-toggle="tab" role="tab" aria-controls="ready" aria-selected="false" onClick={this.handleChange}>CONFIRM</button>
+                            <button className="nav-link btn-lg" name="filterStatus" value="Processing" data-toggle="tab" role="tab" aria-controls="ready" aria-selected="false" onClick={this.handleChange}>PROCESSING</button>
                         </li>
                         <li className="nav-item" style={{marginLeft: 10}}>
                             <button className="nav-link btn-lg" name="filterStatus" value="Shipping" data-toggle="tab" role="tab" aria-controls="shipping" aria-selected="false" onClick={this.handleChange}>SHIPPING</button>

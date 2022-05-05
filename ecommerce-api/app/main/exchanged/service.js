@@ -260,8 +260,8 @@ class ExchangeService extends BaseServiceCRUD {
       
     } else if (status === "Complete"){ // COMPLETE
       // 1 đơn chỉ được chuyển qua Complete khi status khác Shipping
-      if(order.status === "Canceled" || order.status !== "Shipping"){
-        throw Boom.badRequest(`Can not change the ${order.status} order!`)
+      if(exchangeInfor.status === "Canceled" || exchangeInfor.status !== "Shipping"){
+        throw Boom.badRequest(`Can not change the ${exchangeInfor.status} order!`)
       }
       
       let object = {
@@ -280,8 +280,8 @@ class ExchangeService extends BaseServiceCRUD {
       
     } else if (status === "Canceled") { // CANCEL
       //1 đơn chuyển sang Canceled thì:
-      if(order.status === "Complete"){ //1 đơn chỉ được chuyển qua Canceled khi status khác Complete
-        throw Boom.badRequest(`Can not cancel the ${order.status} order!`)
+      if(exchangeInfor.status === "Complete"){ //1 đơn chỉ được chuyển qua Canceled khi status khác Complete
+        throw Boom.badRequest(`Can not cancel the ${exchangeInfor.status} order!`)
       }
       if (exchangeInfor.status === "Processing" || exchangeInfor.status === "Shipping"){
         // Cap nhat lai Ownership

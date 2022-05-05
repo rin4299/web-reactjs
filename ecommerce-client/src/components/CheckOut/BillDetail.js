@@ -98,7 +98,7 @@ export default class BillDetail extends Component {
          <div className="checkbox-form">
            <h3>Shipping Address</h3>
            <div className="row">
-             <div className="col-md-6">
+             {/* <div className="col-md-6">
                <div className="country-select clearfix">
                  <label>Provinces <span className="required">*</span></label>
                  <select 
@@ -130,7 +130,7 @@ export default class BillDetail extends Component {
                    }
                  </select>
                </div>
-             </div>
+             </div> */}
              <div className="col-md-6">
                <div className="checkout-form-list">
                  <label>Name <span className="required">*</span></label>

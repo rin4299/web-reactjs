@@ -55,6 +55,7 @@ class Order extends Component {
   async fetch_reload_data(){
     token = localStorage.getItem('_auth');
     this.props.fetch_orders(token, null, this.state.user[0].name).then(res => {
+      console.log(res)
       let res2 = res.results.sort((a,b)=> {
         return new Date(a.createdAt) < new Date(b.createdAt)
       })

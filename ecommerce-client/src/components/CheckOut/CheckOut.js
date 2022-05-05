@@ -55,7 +55,7 @@ class CheckOut extends Component {
     }).then(async (result) => {
       const cart = this.props.cartStore;
       if (result.value) {
-        const { provinceData, stateData } = res; //get code
+        // const { provinceData, stateData } = res; //get code
         const resData = await callApi("users/me", "GET", null, token);
         const userId = resData.data.results[0].id;
         const promoTotal = 0;
@@ -70,37 +70,39 @@ class CheckOut extends Component {
             return (sum += item.quantity * item.price);
           }, 0);
         } //output total Amount
-        let addressProvince;
-        if (res.provinces && res.provinces.length) {
-          res.provinces.map((item) => {
-            if (item.code === provinceData) {
-              addressProvince = item.name;
-              return addressProvince;
-            }
-            return { message: "error" };
-          }); //output name province
-        }
+        // let addressProvince;
+        // if (res.provinces && res.provinces.length) {
+        //   res.provinces.map((item) => {
+        //     if (item.code === provinceData) {
+        //       addressProvince = item.name;
+        //       return addressProvince;
+        //     }
+        //     return { message: "error" };
+        //   }); //output name province
+        // }
 
-        let addressState;
-        if (res.states && res.states.length) {
-          res.states.map((item) => {
-            if (item.code === stateData) {
-              addressState = item.name;
-              return addressState;
-            }
-            return { message: "error" };
-          }); //output name state
-        }
+        // let addressState;
+        // if (res.states && res.states.length) {
+        //   res.states.map((item) => {
+        //     if (item.code === stateData) {
+        //       addressState = item.name;
+        //       return addressState;
+        //     }
+        //     return { message: "error" };
+        //   }); //output name state
+        // }
 
-        const addressResult = {
-          province: addressProvince,
-          state: addressState,
-          house: res.address,
-          codeProvince: provinceData,
-          codeState: stateData,
-        }; // output address
+        // const addressResult = {
+        //   province: addressProvince,
+        //   state: addressState,
+        //   house: res.address,
+        //   codeProvince: provinceData,
+        //   codeState: stateData,
+        // }; // output address
         // console.log('address',addressResult)
-        const addressResult2 = res.address + ',' + addressState + ',' + addressProvince;
+        // const addressResult2 = res.address + ',' + addressState + ',' + addressProvince;
+        const addressResult2 = res.address;
+
         const note = res.note !== "" ? res.note : "";
         // const atStore = localStorage.getItem('_atStore');
         // const { lopOrder } = this.state
@@ -210,7 +212,7 @@ class CheckOut extends Component {
     // console.log('billing',this.billing.current)
     res = this.billing.current.getBillingState();
     // console.log('res',res)
-    const { provinceData, stateData } = res; //get code
+    // const { provinceData, stateData } = res; //get code
     const resData = await callApi("users/me", "GET", null, token);
     const userId = resData.data.results[0].id;
     const builder = localStorage.getItem("_cart");
@@ -218,36 +220,36 @@ class CheckOut extends Component {
     if (res.name === "" || res.address === "" || res.phone === "") {
       return toast.error("Please complete form before checkout");
     }
-    let addressProvince;
-    if (res.provinces && res.provinces.length) {
-      res.provinces.map((item) => {
-        if (item.code === provinceData) {
-          addressProvince = item.name;
-          return addressProvince;
-        }
-        return { message: "error" };
-      }); //output name province
-    }
+    // let addressProvince;
+    // if (res.provinces && res.provinces.length) {
+    //   res.provinces.map((item) => {
+    //     if (item.code === provinceData) {
+    //       addressProvince = item.name;
+    //       return addressProvince;
+    //     }
+    //     return { message: "error" };
+    //   }); //output name province
+    // }
 
-    let addressState;
-    if (res.states && res.states.length) {
-      res.states.map((item) => {
-        if (item.code === stateData) {
-          addressState = item.name;
-          return addressState;
-        }
-        return { message: "error" };
-      }); //output name state
-    }
-    const addressResult = {
-      province: addressProvince,
-      state: addressState,
-      house: res.address,
-      codeProvince: provinceData,
-      codeState: stateData,
-    }; // output address
-    const addressResult2 = res.address + ',' + addressState + ',' + addressProvince;
-
+    // let addressState;
+    // if (res.states && res.states.length) {
+    //   res.states.map((item) => {
+    //     if (item.code === stateData) {
+    //       addressState = item.name;
+    //       return addressState;
+    //     }
+    //     return { message: "error" };
+    //   }); //output name state
+    // }
+    // const addressResult = {
+    //   province: addressProvince,
+    //   state: addressState,
+    //   house: res.address,
+    //   codeProvince: provinceData,
+    //   codeState: stateData,
+    // }; // output address
+    // const addressResult2 = res.address + ',' + addressState + ',' + addressProvince;
+    const addressResult2 = res.address ;
     const note = res.note !== "" ? res.note : "";
     let amount = 0;
     let dataItems = [];

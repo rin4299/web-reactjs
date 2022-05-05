@@ -11,6 +11,7 @@ import Testcomponent from './Map'
 import Paginator from 'react-js-paginator';
 import { toast } from "react-toastify";
 import { withScriptjs } from 'react-google-maps'
+import { stringify } from 'query-string';
 
 // import "antd/dist/antd.css"
 
@@ -119,39 +120,89 @@ handleSubmit = async (event) => {
     }).then(async (result) => {
       if (result.value) {
           this.state.listComplete && this.state.listComplete.length ? this.state.listComplete.map((item) => {
-            let payload = {
-              orderId : item.id,
-              status:"Complete",
-              atStore : this.state.user[0].name,
-              fullName : item.fullName
-            }
-            // const res = await callApi('order/changestatus',"POST", payload, token);
-            callApi('order/changestatus',"POST", payload, token).then(async (res) => {
-              if (res && res.status === 200) {
-                toast.success('Order: {'+ item.specialId +'} has been complete.');
+            // let payload = {
+            //   orderId : item.id,
+            //   status:"Complete",
+            //   atStore : this.state.user[0].name,
+            //   fullName : item.fullName
+            // }
+            // // const res = await callApi('order/changestatus',"POST", payload, token);
+            // callApi('order/changestatus',"POST", payload, token).then(async (res) => {
+            //   if (res && res.status === 200) {
+            //     toast.success('Order: {'+ item.specialId +'} has been complete.');
+            //   }
+            // })
+            
+            let keyword = item.specialId.split("-");
+            console.log(keyword)
+            if(keyword[0] == "O"){
+              let payload = {
+                orderId : item.id,
+                status:"Complete",
+                atStore : this.state.user[0].name,
+                fullName : item.fullName
               }
-            })
+              callApi('order/changestatus',"POST", payload, token).then( (res) => {
+                if (res && res.status === 200) {
+                  toast.success('Order: {'+ item.specialId +'} has been complete.');
+                }else {
+                  toast.success('Order: {'+ item.specialId +'} have somethings wrong.');
+                }
+              })
+            }
+            if(keyword[0] == "E"){
+              let payload = {
+                id : item.id,
+                status:"Complete",
+                // atStore : this.state.user[0].name,
+                // fullName : item.fullName
+              }
+              callApi('exchange/changeStatus',"POST", payload, token).then( (res) => {
+                if (res && res.status === 200) {
+                  toast.success('Exchange: {'+ item.specialId +'} has been complete.');
+                }else {
+                  toast.success('Exchange: {'+ item.specialId +'} have somethings wrong.');
+                }
+              })
+            }
             
             
           }
           ):null
 
           this.state.listCancel && this.state.listCancel.length ? this.state.listCancel.map((item) => {
-            let payload = {
-              orderId : item.id,
-              status:"Processing",
-              atStore : this.state.user[0].name,
-              fullName : item.fullName
-            }
-            // const res = await callApi('order/changestatus',"POST", payload, token);
-            // if (res && res.status === 200) {
-            //   toast.success('Order: {'+ item.specialId +'} change to processing.');
-            // }
-            callApi('order/changestatus',"POST", payload, token).then(async (res) => {
-              if (res && res.status === 200) {
-                toast.success('Order: {'+ item.specialId +'} change to processing.');
+            let keyword = item.specialId.split("-");
+            console.log(keyword)
+            if(keyword[0] == "O"){
+              let payload = {
+                orderId : item.id,
+                status:"Processing",
+                atStore : this.state.user[0].name,
+                fullName : item.fullName
               }
-            })
+              callApi('order/changestatus',"POST", payload, token).then( (res) => {
+                if (res && res.status === 200) {
+                  toast.success('Order: {'+ item.specialId +'} is shipping.');
+                }else {
+                  toast.success('Order: {'+ item.specialId +'} have somethings wrong.');
+                }
+              })
+            }
+            if(keyword[0] == "E"){
+              let payload = {
+                id : item.id,
+                status:"Processing",
+                // atStore : this.state.user[0].name,
+                // fullName : item.fullName
+              }
+              callApi('exchange/changeStatus',"POST", payload, token).then( (res) => {
+                if (res && res.status === 200) {
+                  toast.success('Exchange: {'+ item.specialId +'} is shipping.');
+                }else {
+                  toast.success('Exchange: {'+ item.specialId +'} have somethings wrong.');
+                }
+              })
+            }
             
           }
           ):null
@@ -174,23 +225,42 @@ handleSubmit = async (event) => {
             return item.specialId != null
           })
           .map((item) => {
-            let payload = {
-              orderId : item.id,
-              status:"Shipping",
-              atStore : this.state.user[0].name,
-              fullName : item.fullName
-            }
+            
             // const res = await callApi('order/changestatus',"POST", payload, token);
             // if (res && res.status === 200) {
             //   toast.success('Order: {'+ item.specialId +'} is shipping.');
             // }
-
-            callApi('order/changestatus',"POST", payload, token).then(async (res) => {
-              if (res && res.status === 200) {
-                toast.success('Order: {'+ item.specialId +'} is shipping.');
+            let keyword = item.specialId.split("-");
+            console.log(keyword)
+            if(keyword[0] == "O"){
+              let payload = {
+                orderId : item.id,
+                status:"Shipping",
+                atStore : this.state.user[0].name,
+                fullName : item.fullName
               }
-            })
-            
+              callApi('order/changestatus',"POST", payload, token).then(async (res) => {
+                if (res && res.status === 200) {
+                  toast.success('Order: {'+ item.specialId +'} is shipping.');
+                }
+              })
+            }
+            if(keyword[0] == "E"){
+              let payload = {
+                id : item.id,
+                status:"Shipping",
+                // atStore : this.state.user[0].name,
+                // fullName : item.fullName
+              }
+              callApi('exchange/changeStatus',"POST", payload, token).then(async (res) => {
+                if (res && res.status === 200) {
+                  toast.success('Order: {'+ item.specialId +'} is shipping.');
+                }
+              })
+            }
+            else {
+              toast.success('Order: {'+ item.specialId +'} have somethings wrong.');
+            }
           }
           ):null
       }
@@ -351,7 +421,7 @@ handleSubmit = async (event) => {
                   loadingElement = {<div style={{height : '100%'}}/>}
                 /> */}
                 <button type="button" className='btn btn-secondary' onClick={() => {this.handleStartRouting()}}>Start</button>
-                <button type="button" className='btn btn-success' style={{"margin-left": "10px" }} onClick={() => {
+                <button type="button" className='btn btn-success' style={{"marginLeft": "10px" }} onClick={() => {
                   this.handleFinishRouting()
                   // console.log(listRouting)
                   // listRouting && listRouting.length ? listRouting.map((item) => {
