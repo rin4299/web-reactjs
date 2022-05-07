@@ -8,7 +8,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
 import callApi from '../../../utils/apiCaller';
-import Testcomponent from './Map'
+import Map from './Map'
 import Paginator from 'react-js-paginator';
 import { toast } from "react-toastify";
 import Modal from 'react-bootstrap/Modal'
@@ -496,7 +496,7 @@ handleSubmit = async (event) => {
                       />
                   </ul>
                 </nav>
-                <Testcomponent listRouting = {this.state.listRouting}/>
+                {/* <Map listRouting = {this.state.listRouting}/> */}
                 {/* <Maploader
                   googleMapURL = "https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyCXxL0MBTRrFF9MBlEMZNwkmenz9zMRtZk"
                   loadingElement = {<div style={{height : '100%'}}/>}

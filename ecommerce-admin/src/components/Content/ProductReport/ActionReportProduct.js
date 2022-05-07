@@ -2,9 +2,9 @@ import React, { Component } from 'react'
 import MyFooter from '../../MyFooter/MyFooter'
 import 'react-quill/dist/quill.snow.css';
 import {actFetchProductsRequest } from '../../../redux/actions/product';
-import {actCreateReport} from '../../../redux/actions/productreport';
+// import {actCreateReport} from '../../../redux/actions/productreport';
+import { actCreateReportRequest } from '../../../redux/actions/productreport'
 import { connect } from 'react-redux'
-import { Redirect } from 'react-router-dom';
 import callApi from '../../../utils/apiCaller';
 import { css } from '@emotion/core';
 import { Link } from 'react-router-dom'
@@ -13,10 +13,14 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 // import TextField from '@mui/material/TextField';
 // import Autocomplete from '@mui/material/Autocomplete';
-import { DropDownListComponent, AutoCompleteComponent } from '@syncfusion/ej2-react-dropdowns';
+// import { DropDownListComponent, AutoCompleteComponent } from '@syncfusion/ej2-react-dropdowns';
+import TextField from "@mui/material/TextField"
+import AutoComplete from "@mui/material/Autocomplete"
+
 // import {AutoComplete } from 'antd';
 let token;
 let id;
+let listProductName = []
 const override = css`
     display: block;
     margin: 0 auto;
@@ -41,11 +45,14 @@ class ActionReportProduct extends Component {
       type:'',
       note:'',
       reportList: [],
-      image:''
+      image:'',
+      value :'',
+      inputValue:''
     };
-    id = this.props.id
-  }
-
+    // id = this.props.id
+    // const location = useLocation()
+    console.log(location.state)
+  } 
   async componentDidMount() {
     token = localStorage.getItem('_auth');
     // const resCategories = await callApi('categories?limit=100', 'GET', null, token);
@@ -67,6 +74,12 @@ class ActionReportProduct extends Component {
     }
 
     this.props.fetch_products(token,null, this.state.user[0].name).then(res => {
+        if(res && res.length){
+          res.map((item) => {
+            // console.log(item)
+            listProductName = [...listProductName, item.nameProduct]
+          })
+        }
         this.setState({
           product: res,
         });
@@ -121,6 +134,26 @@ class ActionReportProduct extends Component {
         pId: item.id,
         image: item.image
     });    
+  }
+
+  handleInputChange = (newInputValue) =>{
+    let item = this.state.product.filter((item) => {
+      return item.nameProduct == newInputValue
+    })
+    this.setState({
+      inputValue : newInputValue,
+    })
+    if(newInputValue && item[0]){
+      this.setState({
+        pId : item[0].id,
+        image : item[0].image
+      })
+    }else{
+      this.setState({
+        pId : 0,
+        image : ''
+      })
+    }
   }
 
   handleAddToReport = () =>{
@@ -191,8 +224,17 @@ class ActionReportProduct extends Component {
 
   render() {
     const { pId, pdId, type, note, quantity, reportList, product, image} = this.state;
+    console.log(this.state.inputValue)
+    if(this.state.inputValue != ''){
+      console.log('success')
+      console.log(product)
+      console.log(this.state.inputValue)
+      
+    } 
+    
+    // console.log('data',this.props)
     // let test = this.state.reportList;
-    //  console.log('test2',reportList)
+    //  console.log('listProduct',listProductName)
     
     return (
       <div className="content-inner">
@@ -300,11 +342,26 @@ class ActionReportProduct extends Component {
                         <div className="form-group row">
                             <label className="col-sm-3 form-control-label">Name Product</label>
                             <div className="col-sm-6">
-                                <AutoCompleteComponent
+                                {/* <AutoCompleteComponent
                                     dataSource={product}
                                     fields={{value:'nameProduct'}}
                                     onChange={this.handleChangeComplete}
-                                ></AutoCompleteComponent>
+                                ></AutoCompleteComponent> */}
+                                <AutoComplete
+                                  value={this.value}
+                                  onChange={(event, newValue => {
+                                    // console.log('Newvalue',newValue)
+                                    this.setState({value : newValue})
+                                  })}
+                                  inputValue={this.state.inputValue}
+                                  onInputChange={(event, newInputValue) => {
+                                    this.handleInputChange(newInputValue)
+                                  }}
+                                  id="controllable-states"
+                                  options={listProductName}
+                                  sx={{width : 600}}
+                                  renderInput={(params) => <TextField {...params} label="Name Product" />}
+                                />
                                 {/* <input name="nameProduct" onChange={this.handleChange} value={nameProduct} type="text" className="form-control" /> */}
                             </div>
                         </div>

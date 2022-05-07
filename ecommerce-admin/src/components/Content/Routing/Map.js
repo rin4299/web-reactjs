@@ -38,7 +38,7 @@ var lineSymbol = {
 };
 let path = []
 // let directionService
-class Testcomponent extends Component {
+class Map extends Component {
     constructor (props) {
         super(props)
         this.state = {
@@ -239,4 +239,4 @@ class Testcomponent extends Component {
 }
 
 
-export default connect(null, null)(Testcomponent)
+export default connect(null, null)(Map)

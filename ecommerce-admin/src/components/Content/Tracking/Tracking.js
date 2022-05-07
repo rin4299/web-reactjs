@@ -1,6 +1,6 @@
 import React, { Component , useRef } from 'react'
 import './style.css'
-import { Link } from 'react-router-dom'
+import { Link , Route } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { actFetchProductsRequest, actFindProductsRequest } from '../../../redux/actions/product';
 import {actTrackingRequest} from '../../../redux/actions/tracking';
@@ -13,13 +13,14 @@ import callApi from '../../../utils/apiCaller';
 import Modal from 'react-bootstrap/Modal'
 import {Steps} from 'antd'
 import { ArrowUpOutlined } from '@ant-design/icons' ;
-import Testcomponent from './Map'
+import Map from './Map'
 // import RequestCartItems from './RequestCartItems'
 
 
 import {Container, Card, CardContent, makeStyles, Grid, TextField, Button} from '@material-ui/core';
 import QRCode from 'qrcode';
 import {QrReader} from 'react-qr-reader';
+import ActionReportProduct from '../ProductReport/ActionReportProduct';
 
 // import "antd/dist/antd.css"
 
@@ -179,6 +180,9 @@ class Tracking extends Component {
     total && total.length ? results = total[total.length-1].Value : results = null
     if(results){
       // console.log('results',results)
+      this.setState({
+        productName : results.productName
+      })
       payload = {
         Name : results.productName, 
         ids : results.id,
@@ -256,6 +260,11 @@ class Tracking extends Component {
           </div>
         </Modal.Body>
         <Modal.Footer>
+          <button type='button'><Link to='productreport/add' className='btn btn-danger'>Report</Link></button>
+          {/* <button type='button'>
+            <Route className='btn btn-danger' path='productreport/add' render={(match) => <ActionReportProduct data ={{name : this.state.productName}}/>}>Report</Route>
+          </button> */}
+
           <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
         </Modal.Footer>
       </Modal>
@@ -326,18 +335,7 @@ class Tracking extends Component {
                             onHide={() => this.setState({modalShow: false})}
                           />
                           {total && total.length ? total.map((item, index) => {
-                            {/* item.active ? {} : {} */}
-                            {/* return (
-                              <tr key={index}>
-                                <th scope="row">{index + 1}</th>
-                                <td style={{width:'auto'}}>{item.TxId}</td>
-                                <td><span >{item.Value.productName}</span></td>
-                                <td>{item.Value.id}</td>
-                                <td>{item.Value.ownerName}</td>
-                                <td><p1>{item.Timestamp}</p1></td>
-                              </tr>
-                            ) */}
-                            console.log('item',item)
+                            {/* console.log('item',item) */}
                             if(!item.Value.active && index+1 == total.length ){
                               console.log('active',item.Value.active)
                               return (
@@ -390,7 +388,7 @@ class Tracking extends Component {
                   </ul>
                 </nav>
                 <div style={{ textAlign: "center" }}>
-                  {/* <Testcomponent id="map" style={{ textAlign: "center" }} path = {this.state.listMarker} total = {total}/> */}
+                  {/* <Map id="map" style={{ textAlign: "center" }} path = {this.state.listMarker} total = {total}/> */}
                 </div>
                 
                 {/* <ArrowUpOutlined style={{fontsize :'400%'}}/> */}
