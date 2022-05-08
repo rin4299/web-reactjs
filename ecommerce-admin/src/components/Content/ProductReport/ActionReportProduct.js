@@ -51,7 +51,6 @@ class ActionReportProduct extends Component {
     };
     // id = this.props.id
     // const location = useLocation()
-    console.log(location.state)
   } 
   async componentDidMount() {
     token = localStorage.getItem('_auth');
@@ -86,6 +85,17 @@ class ActionReportProduct extends Component {
       }).catch(err => {
         console.log(err);  
       }) 
+    
+    // console.log(localStorage.getItem('_ReportItem'))
+    // let item = localStorage.getItem('_ReportItem')
+    // item = JSON.parse(item)
+    // console.log('item', item)
+    // if(item){
+    //   this.handleInputChange(item.productName);
+    //   this.setState({
+    //     pdId : item.ids
+    //   })
+    // }
 
     // if (id) {
     //   const res = await callApi(`products/${id}`, 'GET', null, token);
@@ -137,12 +147,17 @@ class ActionReportProduct extends Component {
   }
 
   handleInputChange = (newInputValue) =>{
+    console.log('inputChange', newInputValue)
+    console.log('product', this.state.product)
     let item = this.state.product.filter((item) => {
+      console.log('productName', item.nameProduct, newInputValue)
       return item.nameProduct == newInputValue
     })
     this.setState({
       inputValue : newInputValue,
     })
+    console.log('image', item[0])
+
     if(newInputValue && item[0]){
       this.setState({
         pId : item[0].id,
@@ -224,14 +239,14 @@ class ActionReportProduct extends Component {
 
   render() {
     const { pId, pdId, type, note, quantity, reportList, product, image} = this.state;
-    console.log(this.state.inputValue)
-    if(this.state.inputValue != ''){
+    // console.log(this.state.inputValue)
+    if(this.state.inputValue != '' ){
       console.log('success')
       console.log(product)
       console.log(this.state.inputValue)
       
-    } 
-    
+    }
+ 
     // console.log('data',this.props)
     // let test = this.state.reportList;
     //  console.log('listProduct',listProductName)

@@ -40,11 +40,8 @@ class Tracking extends Component {
       searchText: '',
       modalShow: false,
       productName : '',
-      selected:'',
-      quantity: '',
+      ids:null,
       user: [],
-      recUser: '',
-      userdiff: [],
       //
       text: '',
       imageUrl:'',
@@ -181,7 +178,8 @@ class Tracking extends Component {
     if(results){
       // console.log('results',results)
       this.setState({
-        productName : results.productName
+        productName : results.productName,
+        ids : results.id
       })
       payload = {
         Name : results.productName, 
@@ -260,7 +258,12 @@ class Tracking extends Component {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <button type='button'><Link to='productreport/add' className='btn btn-danger'>Report</Link></button>
+          <button type='button' onClick={() => {
+            let payload = {productName : this.state.productName, ids : this.state.ids}
+            console.log(payload)
+            localStorage.setItem('_ReportItem', JSON.stringify(payload))
+             }}
+            ><Link to='productreport/add' className='btn btn-danger'>Report</Link></button>
           {/* <button type='button'>
             <Route className='btn btn-danger' path='productreport/add' render={(match) => <ActionReportProduct data ={{name : this.state.productName}}/>}>Report</Route>
           </button> */}
@@ -274,7 +277,6 @@ class Tracking extends Component {
   render() {
     let { products } = this.props;
     const { searchText, total } = this.state;
-    
     return (
       <div className="content-inner">
         {/* Page Header*/}

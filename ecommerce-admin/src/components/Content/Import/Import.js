@@ -304,7 +304,7 @@ class Import extends Component {
                     <h3 className="h4">Import Table</h3>
                   </div>
                     
-                    <div style={{justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20, marginLeft:"auto" }} class="btn-group">
+                    <div style={{justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20, marginLeft:"auto" }} className="btn-group">
                     {/* <DatePicker
                       style={{width:''}}
                       // selected={startDate}
