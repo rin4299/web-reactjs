@@ -1,20 +1,16 @@
-import React, { Component , useRef } from 'react'
+import React, { Component } from 'react'
 import './style.css'
 import { Link , Route } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { actFetchProductsRequest, actFindProductsRequest } from '../../../redux/actions/product';
 import {actTrackingRequest} from '../../../redux/actions/tracking';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
-import {exportExcel} from 'utils/exportExcel'
 import Paginator from 'react-js-paginator';
 import callApi from '../../../utils/apiCaller';
 import Modal from 'react-bootstrap/Modal'
 import {Steps} from 'antd'
-import { ArrowUpOutlined } from '@ant-design/icons' ;
 import Map from './Map'
-// import RequestCartItems from './RequestCartItems'
 
 
 import {Container, Card, CardContent, makeStyles, Grid, TextField, Button} from '@material-ui/core';
@@ -22,6 +18,7 @@ import QRCode from 'qrcode';
 import {QrReader} from 'react-qr-reader';
 import ActionReportProduct from '../ProductReport/ActionReportProduct';
 
+import BarcodeScannerComponent from "react-qr-barcode-scanner"
 // import "antd/dist/antd.css"
 
 const MySwal = withReactContent(Swal)
@@ -131,7 +128,7 @@ class Tracking extends Component {
     this.props.tracking_request(searchText, token).then(res => {
       if (res && res.length){
         res.map((item) => {
-          console.log(item.Value.information)
+          // console.log(item.Value.information)
           let lat = item.Value.information.lat
           let lng = item.Value.information.lng
           if(this.state.listMarker !== []){
@@ -254,9 +251,29 @@ class Tracking extends Component {
           <div className='align-items-center' >
               {this.state.imageUrl ? (
                   <a href={this.state.imageUrl} download>
-                      <img style={{'margin-left':'200px'}} src={this.state.imageUrl} alt="img"/>
+                      <img style={{'marginLeft':'200px'}} src={this.state.imageUrl} alt="img"/>
                   </a>) 
               : null}
+          </div>
+          <div>
+            <BarcodeScannerComponent
+              width={300}
+              height={300}
+              // torch={}
+              onUpdate={(err,result) => {
+                console.log('result',result)
+                if(result){
+                  this.setState({
+                    scanResultWebCam : result.text
+                  })
+                }else{
+                  this.setState({
+                    scanResultWebCam : "Not found"
+                  })
+                }
+              }}
+            />
+            <span>{this.state.scanResultWebCam}</span>
           </div>
         </Modal.Body>
         <Modal.Footer>
@@ -270,7 +287,7 @@ class Tracking extends Component {
             <Route className='btn btn-danger' path='productreport/add' render={(match) => <ActionReportProduct data ={{name : this.state.productName}}/>}>Report</Route>
           </button> */}
 
-          <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
+          <button type="button" className="btn btn-info" onClick={props.onHide}>Close</button>
         </Modal.Footer>
       </Modal>
     );
@@ -376,7 +393,7 @@ class Tracking extends Component {
                               )
                             }
                           }) : null}
-                          {console.log(this.state.listMarker)}
+                          {/* {console.log(this.state.listMarker)} */}
                         </tbody>
                       </table>
                     </div>

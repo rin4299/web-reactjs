@@ -77,6 +77,9 @@ class RoutingService {
         }
         console.log("LoO", List_Of_Orders)
         console.log("LoE", List_Of_Exchanges)
+        if(List_Of_Exchanges.length === 0 && List_Of_Orders.length === 0){
+            return []
+        }
         listOfData = List_Of_Orders .concat(List_Of_Exchanges);
         console.log("LoData", listOfData)
         listOfData.sort((a,b) => {
@@ -158,8 +161,8 @@ class RoutingService {
         for(var m = 1; m<List_Of_Optimized_Shipping[0].length - 1; m++){
             returnArray.push(Array_Of_Capacity[List_Of_Optimized_Shipping[0][m] - 1])
         }
-        // return [returnArray, listOfDistances]
-        return returnArray
+        return [returnArray, listOfDistances]
+        // return returnArray
     }
 
     

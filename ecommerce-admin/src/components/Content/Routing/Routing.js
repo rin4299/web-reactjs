@@ -30,6 +30,7 @@ class Routing extends Component {
       listRouting: [],
       listComplete: [],
       listCancel : [],
+      prove: []
     }
 
   }  
@@ -94,8 +95,9 @@ handleSubmit = async (event) => {
     await this.props.generate_routing(storeName, token).then(res => {
       console.log('res',res)
       this.setState({
-        listRouting : res, 
-        listComplete : res.filter((item) => { return item.specialId != null}),
+        listRouting : res[0], 
+        listComplete : res[0].filter((item) => { return item.specialId != null}),
+        prove:res[1]
       })
     })
     // const res = await callApi('routing/${storeName}', 'GET', null, token);
@@ -158,13 +160,13 @@ handleSubmit = async (event) => {
             if(keyword[0] == "O"){
               let payload = {
                 orderId : item.id,
-                status:"Processing",
+                status:"Failed",
                 atStore : this.state.user[0].name,
                 fullName : item.fullName
               }
               callApi('order/changestatus',"POST", payload, token).then( (res) => {
                 if (res && res.status === 200) {
-                  toast.success('Order: {'+ item.specialId +'} is shipping.');
+                  toast.success('Order: {'+ item.specialId +'} has Failed.');
                 }else {
                   toast.success('Order: {'+ item.specialId +'} have somethings wrong.');
                 }
@@ -173,13 +175,13 @@ handleSubmit = async (event) => {
             if(keyword[0] == "E"){
               let payload = {
                 id : item.id,
-                status:"Processing",
+                status:"Failed",
                 // atStore : this.state.user[0].name,
                 // fullName : item.fullName
               }
               callApi('exchange/changeStatus',"POST", payload, token).then( (res) => {
                 if (res && res.status === 200) {
-                  toast.success('Exchange: {'+ item.specialId +'} is shipping.');
+                  toast.success('Exchange: {'+ item.specialId +'} has Failed.');
                 }else {
                   toast.success('Exchange: {'+ item.specialId +'} have somethings wrong.');
                 }
@@ -261,14 +263,14 @@ handleSubmit = async (event) => {
     // console.log('fetch thanh cong', id)
     token = localStorage.getItem('_auth');
     console.log(item)
-    if (item.status === 'Complete' || item.status == 'Shipping'){
+    // if (item.status === 'Complete' || item.status == 'Shipping'){
       await this.props.find_order_product_detail(token, item.id).then(res => {
         this.setState({
           productDetails : res,
           modalShow : true,
         })
       })
-    }
+    // }
     
     // console.log('key',this.state.productDetails)
   }
@@ -394,18 +396,6 @@ handleSubmit = async (event) => {
                   </form>
                   <div className="card-body">
                     <div className="table-responsive">
-                      {/* <table className="table table-hover">
-                      <thead>
-                          <tr>
-                            <th>Number</th>
-                            <th>TxId</th>
-                            <th>Product Name</th>
-                            <th>Id Product</th>
-                            <th>Owner Name</th>
-                            <th style={{ textAlign: "center" }}>Time</th>
-                          </tr>                          
-                        </thead>
-                      </table> */}
                       <table className="table table-hover">
                         <thead>
                           <tr>
@@ -430,7 +420,7 @@ handleSubmit = async (event) => {
                             {/* console.log(item.isPaymentOnline) */}
                             if(index == 0) return null 
                             else {
-                              console.log(item)
+                              {/* console.log(item) */}
                               return (
                               <tr key={index}>
                                 <th scope="row">{String.fromCharCode(index+65)}</th>
@@ -499,26 +489,49 @@ handleSubmit = async (event) => {
                       />
                   </ul>
                 </nav>
+                <div>
+                  {/* <Map listRouting = {this.state.listRouting}/> */}
+                </div>
+                <div className='container'>
+                  {this.state.prove && this.state.prove.length ? 
+                    <table className="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>Route</th>
+                          <th>Distance</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {console.log('prove',this.state.prove)}
+                        {this.state.prove.map((item,index) => {
+                          if(index > 5){return null}
+                          else{
+                            return (
+                              <tr>
+                                <td>
+                                  {item.routing_Order}
+                                </td>
+                                <td>
+                                  {item.totalDistance}
+                                </td>
+                              </tr>
+                            )
+                            
+                          }
+                        })}
+                      </tbody>
+                    </table>
+                  : null} 
+                </div>
                 {/* <Map listRouting = {this.state.listRouting}/> */}
                 {/* <Maploader
                   googleMapURL = "https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyCXxL0MBTRrFF9MBlEMZNwkmenz9zMRtZk"
                   loadingElement = {<div style={{height : '100%'}}/>}
                 /> */}
-                <button type="button" className='btn btn-secondary' onClick={() => {this.handleStartRouting()}}>Start</button>
+                {/* <button type="button" className='btn btn-secondary' onClick={() => {this.handleStartRouting()}}>Start</button>
                 <button type="button" className='btn btn-success' style={{"marginLeft": "10px" }} onClick={() => {
                   this.handleFinishRouting()
-                  // console.log(listRouting)
-                  // listRouting && listRouting.length ? listRouting.map((item) => {
-                  //   let payload = {
-                  //     orderId : item.id,
-                  //     status:"Complete",
-                  //     atStore : this.state.user[0].name,
-                  //     fullName : item.fullName
-                  //   }
-                  //   console.log(payload)
-                    // this.handleChangeStatus(payload)
-                  // }) : null
-                }}>Finish</button>
+                }}>Finish</button> */}
                 {/* <button type='button' className='btn btn-warning' onClick={() => {console.log('listComplete',this.state.listComplete) , console.log('listCancel',this.state.listCancel)}} >Click</button> */}
               </div>
             </div>

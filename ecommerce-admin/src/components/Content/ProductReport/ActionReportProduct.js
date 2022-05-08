@@ -82,20 +82,42 @@ class ActionReportProduct extends Component {
         this.setState({
           product: res,
         });
+
+        let item2 = localStorage.getItem('_ReportItem')
+        item2 = JSON.parse(item2)
+        // console.log('item', item2)
+        if(item2 != "empty"){
+          let item = res.filter((item) => {
+            return item.nameProduct == item2.productName
+          })
+          // console.log('res',item)
+          this.setState({
+            inputValue : item2.productName,
+          })
+          // console.log('image', item[0])
+          if(item[0]){
+            this.setState({
+              pId : item[0].id,
+              image : item[0].image,
+              pdId : item2.ids
+            })
+          // }else{
+          //   this.setState({
+          //     pId : 0,
+          //     image : '',
+          //     pdId : 0
+          //   })
+          // localStorage.setItem('_ReportItem', "empty")
+          localStorage.setItem('_ReportItem', JSON.stringify([]) );
+          }
+        }
       }).catch(err => {
         console.log(err);  
       }) 
     
+    
     // console.log(localStorage.getItem('_ReportItem'))
-    // let item = localStorage.getItem('_ReportItem')
-    // item = JSON.parse(item)
-    // console.log('item', item)
-    // if(item){
-    //   this.handleInputChange(item.productName);
-    //   this.setState({
-    //     pdId : item.ids
-    //   })
-    // }
+    
 
     // if (id) {
     //   const res = await callApi(`products/${id}`, 'GET', null, token);
@@ -147,16 +169,13 @@ class ActionReportProduct extends Component {
   }
 
   handleInputChange = (newInputValue) =>{
-    console.log('inputChange', newInputValue)
-    console.log('product', this.state.product)
     let item = this.state.product.filter((item) => {
-      console.log('productName', item.nameProduct, newInputValue)
       return item.nameProduct == newInputValue
     })
     this.setState({
       inputValue : newInputValue,
     })
-    console.log('image', item[0])
+    // console.log('image', item[0])
 
     if(newInputValue && item[0]){
       this.setState({
@@ -166,7 +185,8 @@ class ActionReportProduct extends Component {
     }else{
       this.setState({
         pId : 0,
-        image : ''
+        image : '',
+        pdId : 0
       })
     }
   }
@@ -239,13 +259,6 @@ class ActionReportProduct extends Component {
 
   render() {
     const { pId, pdId, type, note, quantity, reportList, product, image} = this.state;
-    // console.log(this.state.inputValue)
-    if(this.state.inputValue != '' ){
-      console.log('success')
-      console.log(product)
-      console.log(this.state.inputValue)
-      
-    }
  
     // console.log('data',this.props)
     // let test = this.state.reportList;
@@ -363,13 +376,16 @@ class ActionReportProduct extends Component {
                                     onChange={this.handleChangeComplete}
                                 ></AutoCompleteComponent> */}
                                 <AutoComplete
-                                  value={this.value}
+                                  value={this.state.inputValue}
                                   onChange={(event, newValue => {
                                     // console.log('Newvalue',newValue)
                                     this.setState({value : newValue})
                                   })}
                                   inputValue={this.state.inputValue}
                                   onInputChange={(event, newInputValue) => {
+                                    // if(this.state.inputValue != ''){
+                                    //   newInputValue = this.state.inputValue
+                                    // }                                    
                                     this.handleInputChange(newInputValue)
                                   }}
                                   id="controllable-states"
