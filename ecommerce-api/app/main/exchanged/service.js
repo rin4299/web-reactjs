@@ -199,11 +199,24 @@ class ExchangeService extends BaseServiceCRUD {
       args:[id.toString(), "isAccepted"]
     }
     var res = await await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
-    if(res.data){
-      return "Updated!"
-    } else {
+    if(!res.data){
       throw Boom.badRequest('Failed to update!');
     }
+    // Taken PDs
+    let object1 = {
+      fcn: "changeProductDetail",
+      peers:["peer0.org1.example.com","peer0.org2.example.com"],
+      chaincodeName:"productdetail",
+      channelName:"mychannel",
+      args:[id.toString(), "preparing"]
+    }
+      var sres = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object1);
+      if(!sres){
+        throw Boom.badRequest('Failed to update ProuctDetail!');
+      }
+      console.log("Exchange | changeStatus | UpdateShipping: ",sres.data)
+
+    return "Updated!"
   }
 
 
@@ -224,24 +237,24 @@ class ExchangeService extends BaseServiceCRUD {
     var data = res_Exchange_Infor.data.result.data;
     var listofP = Buffer.from(JSON.parse(JSON.stringify(data))).toString();
     var exchangeInfor = JSON.parse(listofP)
-    console.log("ORDER FROM BC: ", exchangeInfor)
+    console.log("Exchange FROM BC: ", exchangeInfor)
     if (status === "Shipping"){ // SHIPPING
       if(exchangeInfor.status === "Complete" || exchangeInfor.status === "Canceled" || exchangeInfor.status !== "Processing"){
-        throw Boom.badRequest(`Can not change the ${exchangeInfor.status} order!`)
+        throw Boom.badRequest(`Can not change the ${exchangeInfor.status} Exchange!`)
       }
-      // Taken PDs
-      let object1 = {
-        fcn: "changeProductDetail",
-        peers:["peer0.org1.example.com","peer0.org2.example.com"],
-        chaincodeName:"productdetail",
-        channelName:"mychannel",
-        args:[id.toString(), "preparing"]
-      }
-        var sres = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object1);
-        if(!sres){
-          throw Boom.badRequest('Failed to update ProuctDetail!');
-        }
-        console.log("Exchange | changeStatus | UpdateShipping: ",sres.data)
+      // // Taken PDs
+      // let object1 = {
+      //   fcn: "changeProductDetail",
+      //   peers:["peer0.org1.example.com","peer0.org2.example.com"],
+      //   chaincodeName:"productdetail",
+      //   channelName:"mychannel",
+      //   args:[id.toString(), "preparing"]
+      // }
+      //   var sres = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object1);
+      //   if(!sres){
+      //     throw Boom.badRequest('Failed to update ProuctDetail!');
+      //   }
+      //   console.log("Exchange | changeStatus | UpdateShipping: ",sres.data)
       // Update Status
 
       let object = {
@@ -253,7 +266,7 @@ class ExchangeService extends BaseServiceCRUD {
       }
       var res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
       if(res.data){
-        return `Successfully change the status of Order ${id} from ${exchangeInfor.status} to ${status}!`
+        return `Successfully change the status of Exchange ${id} from ${exchangeInfor.status} to ${status}!`
       } else {
         throw Boom.badRequest('Failed to update!');
       }
@@ -261,7 +274,7 @@ class ExchangeService extends BaseServiceCRUD {
     } else if (status === "Complete"){ // COMPLETE
       // 1 đơn chỉ được chuyển qua Complete khi status khác Shipping
       if(exchangeInfor.status === "Canceled" || exchangeInfor.status !== "Shipping"){
-        throw Boom.badRequest(`Can not change the ${exchangeInfor.status} order!`)
+        throw Boom.badRequest(`Can not change the ${exchangeInfor.status} Exchange!`)
       }
       
       let object = {
@@ -273,7 +286,7 @@ class ExchangeService extends BaseServiceCRUD {
       }
       var res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
       if(res.data){
-        return `Successfully change the status of Order ${id} from ${exchangeInfor.status} to ${status}!`
+        return `Successfully change the status of Exchange ${id} from ${exchangeInfor.status} to ${status}!`
       } else {
         throw Boom.badRequest('Failed to update!');
       }
@@ -281,7 +294,7 @@ class ExchangeService extends BaseServiceCRUD {
     } else if (status === "Canceled") { // CANCEL
       //1 đơn chuyển sang Canceled thì:
       if(exchangeInfor.status === "Complete"){ //1 đơn chỉ được chuyển qua Canceled khi status khác Complete
-        throw Boom.badRequest(`Can not cancel the ${exchangeInfor.status} order!`)
+        throw Boom.badRequest(`Can not cancel the ${exchangeInfor.status} Exchange!`)
       }
       if (exchangeInfor.status === "Processing" || exchangeInfor.status === "Shipping"){
         // Cap nhat lai Ownership
@@ -293,7 +306,7 @@ class ExchangeService extends BaseServiceCRUD {
           await Models.Ownership.query().update({quantity: productQ.quantity + parseInt(infor[1])} ).where('storeName', storeName).where('pId', productQ.pId);
         }
       }
-      if(exchangeInfor.status === "Shipping") {
+      if(exchangeInfor.status === "Shipping" || exchangeInfor.status === "Processing") {
         // Cap nhat lai isTaken = false 
         let object_Change_IsTaken = {
           fcn: "changeProductDetail",
@@ -317,7 +330,7 @@ class ExchangeService extends BaseServiceCRUD {
       }
       var res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
       if(res.data){
-        return `Successfully change the status of Order ${id} from ${exchangeInfor.status} to ${status}!`
+        return `Successfully change the status of Exchange ${id} from ${exchangeInfor.status} to ${status}!`
       } else {
         throw Boom.badRequest('Failed to update!');
       }
@@ -421,7 +434,7 @@ class ExchangeService extends BaseServiceCRUD {
     var data = res_Exchange_Infor.data.result.data;
     var listofP = Buffer.from(JSON.parse(JSON.stringify(data))).toString();
     var exchangeInfor = JSON.parse(listofP)
-    console.log("ORDER FROM BC: ", exchangeInfor)
+    console.log("Exchange FROM BC: ", exchangeInfor)
     if(exchangeInfor.status === "Complete") {
       throw Boom.badRequest(`Cannot Delete Exchange with Id = ${id} whose status is Complete!`)
     }
@@ -436,7 +449,7 @@ class ExchangeService extends BaseServiceCRUD {
       }
     }
 
-    if(exchangeInfor.status === "Shipping") {
+    if(exchangeInfor.status === "Shipping" || exchangeInfor.status === "Processing") {
       // Cap nhat lai isTaken = false 
       let object_Change_IsTaken = {
         fcn: "changeProductDetail",

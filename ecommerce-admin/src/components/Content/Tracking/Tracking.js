@@ -14,6 +14,8 @@ import Modal from 'react-bootstrap/Modal'
 import {Steps} from 'antd'
 import { ArrowUpOutlined } from '@ant-design/icons' ;
 import Testcomponent from './Map'
+
+
 // import RequestCartItems from './RequestCartItems'
 
 
@@ -30,7 +32,7 @@ const {Step} = Steps;
 // const qrRef = useRef(null);
 // console.log(qrRef)
 class Tracking extends Component {
-
+  
   constructor(props) {
     super(props);
     this.state = {
@@ -224,7 +226,9 @@ class Tracking extends Component {
     console.log(error);
   }
   handleScanWebCam = (result) => {
+    console.log('run')
     if (result){
+      console.log(result)
         // setScanResultWebCam(result);
         this.setState({
           scanResultWebCam : result
@@ -429,16 +433,20 @@ class Tracking extends Component {
                         />
                         <h3>Scanned Code: {this.state.scanResultFile}</h3>
                       </Grid> */}
-                      {/* <Grid item xl={4} lg={4} md={6} sm={12} xs={12}>
-                         <h3>Qr Code Scan by Web Cam</h3>
-                         <QrReader
-                         delay={300}
-                         style={{width: '100%'}}
-                         onError={this.handleErrorWebCam()}
-                         onScan={this.handleScanWebCam()}
-                         />
-                         <h3>Scanned By WebCam Code: {this.state.scanResultWebCam}</h3>
-                      </Grid> */}
+                      {
+                      
+                      // <Grid item xl={4} lg={4} md={6} sm={12} xs={12}>
+                      //    <h3>Qr Code Scan by Web Cam</h3>
+                      //    <QrReader
+                      //    delay={300}
+                      //    style={{width: '100%'}}
+                      //    onError={this.handleErrorWebCam()}
+                      //    onScan={this.handleScanWebCam()}
+                      //    />
+                      //    <h3>Scanned By WebCam Code: {this.state.scanResultWebCam}</h3>
+                      // </Grid> 
+                     
+                      }
               </div>
             </div>
           </div>

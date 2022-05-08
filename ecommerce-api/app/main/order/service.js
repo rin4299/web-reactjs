@@ -99,6 +99,8 @@ class OrderService extends BaseServiceCRUD {
       var newShippingTotal = shippingTotal;
       var newPromoTotal = promoTotal;
       var newTotalAmount = 0;
+      var buffer = "";
+      console.log(orderOfStore);
       for(var m = 0; m < orderOfStore.length; m++){
         // Create Order for one Store
         if(orderOfStore[m].itemAmount > 0){
@@ -108,8 +110,9 @@ class OrderService extends BaseServiceCRUD {
             peers:["peer0.org1.example.com","peer0.org2.example.com"],
             chaincodeName:"productdetail",
             channelName:"mychannel",
-            args:[fullName, address, note.toString(), phone, orderOfStore[m].storeName, newShippingTotal.toString(), orderOfStore[m].itemAmount.toString(), newPromoTotal.toString(), newTotalAmount.toString(), userId.toString(), lng,toString(), lat.toString(), orderOfStore[m].totalQuantity.toString(), isPaymentOnline.toString()]
+            args:[fullName, address, note.toString(), phone, orderOfStore[m].storeName, newShippingTotal.toString(), orderOfStore[m].itemAmount.toString(), newPromoTotal.toString(), newTotalAmount.toString(), userId.toString(), lng.toString(), lat.toString(), orderOfStore[m].totalQuantity.toString(), isPaymentOnline.toString()]
           }
+          console.log(object.args);
           const res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
           if(!res){
             throw Boom.badRequest('Error')
@@ -129,9 +132,36 @@ class OrderService extends BaseServiceCRUD {
               'productId': orderOfStore[m].products[n].id,
               'nameProduct': orderOfStore[m].products[n].nameProduct
             }
+            buffer += orderOfStore[m].products[n].id + "-" + orderOfStore[m].products[n].quantity + ",";
             await Models.OrderDetail.query().insert(payload);
             await Models.Ownership.query().update({quantity: ProductInStore.quantity - orderOfStore[m].products[n].quantity} ).where('pId', orderOfStore[m].products[n].id).where("storeName", orderOfStore[m].storeName);
           }
+          // Blockchain Update Preparing Product
+          buffer = buffer.slice(0, -1);
+          let object_Preparing = {
+            fcn: "preparingProducts",
+            peers:["peer0.org1.example.com","peer0.org2.example.com"],
+            chaincodeName:"productdetail",
+            channelName:"mychannel",
+            args:[buffer, orderOfStore[m].storeName, "true"]
+          }
+          const res_Preparing_Product = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object_Preparing);
+          console.log("Res of Preparing Products: ",result)
+          if(res_Preparing_Product){
+            var stringBuffer = res_Preparing_Product.data.result.data;
+            var pdinOrder = Buffer.from(JSON.parse(JSON.stringify(stringBuffer))).toString();
+            console.log("FinalString in Preparing",pdinOrder);
+            var payload = {
+              "orderId": parseInt(result.id),
+              "listPds": pdinOrder
+            }
+            var result_PD = await Models.ProductDetails.query().insert(payload).returning('*');
+            if(!result_PD){
+              throw Boom.badRequest("Can not create Product Details in Order");
+            }
+          }
+          // reset Buffer to empty string
+          buffer = "";
         }
         
       }
@@ -151,6 +181,7 @@ class OrderService extends BaseServiceCRUD {
       var data = res.data.result.data;
       var listofP = Buffer.from(JSON.parse(JSON.stringify(data))).toString();
       var result = JSON.parse(listofP)
+      var buffer = "";
       console.log("CREATE ORDER RESULT: ", result);
       for(var i = 0; i < arrPQ.length; i++){
         var product = await Models.Product.query().findOne({id: arrPQ[i].pId})
@@ -167,17 +198,38 @@ class OrderService extends BaseServiceCRUD {
           'productId': product.id,
           'nameProduct': product.nameProduct
         }
+        buffer += product.id + "-" + arrPQ[i].quantity + ","
         await Models.OrderDetail.query().insert(payload);
         // console.log(ProductInStore, arrPQ[i])
         await Models.Ownership.query().update({quantity: ProductInStore.quantity - arrPQ[i].quantity} ).where('pId', product.id).where("storeName", atStore);
       }
+      buffer = buffer.slice(0, -1);
+      let object_Preparing_for_one_Order = {
+        fcn: "preparingProducts",
+        peers:["peer0.org1.example.com","peer0.org2.example.com"],
+        chaincodeName:"productdetail",
+        channelName:"mychannel",
+        args:[buffer, atStore, "true"]
+      }
+      const res_Preparing_Product = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object_Preparing_for_one_Order);
+      console.log("Res of Preparing Products for One: ",res_Preparing_Product.data)
+      if(res_Preparing_Product){
+        var stringBuffer = res_Preparing_Product.data.result.data;
+        var pdinOrder = Buffer.from(JSON.parse(JSON.stringify(stringBuffer))).toString();
+        console.log("FinalString in Preparing for One",pdinOrder);
+        var payload = {
+          "orderId": parseInt(result.id),
+          "listPds": pdinOrder
+        }
+        const result = await Models.ProductDetails.query().insert(payload).returning('*');
+        if(!result){
+          throw Boom.badRequest("Can not create Product Details in Order");
+        }
+      }
+      // reset Buffer to empty string
+      buffer = "";
 
-      // const id = payload.userId;
-      // const user = await Models.User.query().findById(id);
-      // if (!user) {
-      //   throw Boom.notFound('user not found')
-      // }
-      // MailUtils.sendEmailCreateOrderEmail(user.email)
+      
       return [result];
     }
   }
@@ -284,70 +336,43 @@ class OrderService extends BaseServiceCRUD {
     var listofP = Buffer.from(JSON.parse(JSON.stringify(data))).toString();
     var order = JSON.parse(listofP)
     console.log("ORDER FROM BC: ", order)
-    // if(status === "Confirm"){ // CONFIRM
-    //   if(order.status === "Shipping" || order.status === "Complete" || order.status === "Canceled"){
-    //     throw Boom.badRequest(`Can not change the ${order.status} order!`)
-    //   }
-    //   var temp = 0;
-    //   const productinOrder = await Models.OrderDetail.query().where("orderId", orderId);
-    //   // 1 đơn chuyển từ Unconfirm -> Confirm thì cập nhật trừ Ownership
-    //   for(var i = 0; i < productinOrder.length; i++){
-    //     var currentP = await Models.Ownership.query().findOne({pId: productinOrder[i].productId}).where("storeName", atStore);
-    //     temp = currentP.quantity - productinOrder[i].quantity;
-    //     if(temp < 0){
-    //       throw Boom.badRequest(`Can not change status to from unconfirm to ${status} because ${atStore} has not enough products to sastify the Order!`)
-    //     }
-    //     console.log("CHANGE", temp, productinOrder[i].productId)
-    //     await Models.Ownership.query().update({quantity: temp} ).where('pId', productinOrder[i].productId).where("storeName", atStore);
-    //   }
-    //   // await Models.Order.query().update({status: status} ).where('id', orderId);
-    //   let object = {
-    //     fcn: "changeOrderInfor",
-    //     peers:["peer0.org1.example.com","peer0.org2.example.com"],
-    //     chaincodeName:"productdetail",
-    //     channelName:"mychannel",
-    //     args:[orderId.toString(), "Status", status]
-    //   }
-    //   await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
-    //   return `Successfully change the status of Order ${orderId} from ${order.status} to ${status}!`
-    // } else 
     
     if (status === "Shipping"){ // SHIPPING
       if(order.status === "Complete" || order.status === "Canceled" || order.status !== "Processing"){
         throw Boom.badRequest(`Can not change the ${order.status} order!`)
       }
       // Blockchain Update
-      const lopd = await Models.OrderDetail.query().where("orderId", orderId);
-      var buffer = "";
-      console.log(lopd)
-      for(var p = 0; p < lopd.length; p++){
-        buffer += lopd[p].productId + "-" + lopd[p].quantity + ",";
-      }
-      buffer = buffer.slice(0,-1);
-      console.log(buffer)
-      let object = {
-        fcn: "preparingProducts",
-        peers:["peer0.org1.example.com","peer0.org2.example.com"],
-        chaincodeName:"productdetail",
-        channelName:"mychannel",
-        args:[buffer, atStore, "true"]
-      }
-      const res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
-      console.log(res.data)
-      if(res){
-        var stringBuffer = res.data.result.data;
-        var pdinOrder = Buffer.from(JSON.parse(JSON.stringify(stringBuffer))).toString();
-        console.log("FinalString",pdinOrder);
-        var payload = {
-          "orderId": orderId,
-          "listPds": pdinOrder
-        }
-        const result = await Models.ProductDetails.query().insert(payload).returning('*');
-        if(!result){
-          throw Boom.badRequest("Can not create Product Details in Order");
-        }
+      // const lopd = await Models.OrderDetail.query().where("orderId", orderId);
+      // var buffer = "";
+      // console.log(lopd)
+      // for(var p = 0; p < lopd.length; p++){
+      //   buffer += lopd[p].productId + "-" + lopd[p].quantity + ",";
+      // }
+      // buffer = buffer.slice(0,-1);
+      // console.log(buffer)
+      // let object = {
+      //   fcn: "preparingProducts",
+      //   peers:["peer0.org1.example.com","peer0.org2.example.com"],
+      //   chaincodeName:"productdetail",
+      //   channelName:"mychannel",
+      //   args:[buffer, atStore, "true"]
+      // }
+      // const res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+      // console.log(res.data)
+      // if(res){
+      //   var stringBuffer = res.data.result.data;
+      //   var pdinOrder = Buffer.from(JSON.parse(JSON.stringify(stringBuffer))).toString();
+      //   console.log("FinalString",pdinOrder);
+      //   var payload = {
+      //     "orderId": orderId,
+      //     "listPds": pdinOrder
+      //   }
+      //   const result = await Models.ProductDetails.query().insert(payload).returning('*');
+      //   if(!result){
+      //     throw Boom.badRequest("Can not create Product Details in Order");
+      //   }
 
-      }
+      // }
       // 1 đơn chuyển từ Confirm -> Shipping thì ko cập nhật gì thêm trừ Status
       // await Models.Order.query().update({status: status} ).where('id', orderId);
       let objectShipping = {
@@ -390,7 +415,7 @@ class OrderService extends BaseServiceCRUD {
       }
       await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", objectChangeStatus);
       return `Successfully change the status of Order ${orderId} from ${order.status} to ${status}!`
-    } else if (status === "Canceled") { // CANCEL
+    } else if (status === "Canceled" || status === "Failed") { // CANCEL || Failed
       //1 đơn chuyển sang Canceled thì:
       if(order.status === "Complete"){ //1 đơn chỉ được chuyển qua Canceled khi status khác Complete
         throw Boom.badRequest(`Can not cancel the ${order.status} order!`)
@@ -411,7 +436,7 @@ class OrderService extends BaseServiceCRUD {
         }
       }
       // Update BC va xoa ProductDetails
-      if(order.status === "Shipping"){
+      if(order.status === "Shipping" || order.status === "Processing"){
           var buffer = await Models.ProductDetails.query().findOne("orderId", orderId);
           console.log(buffer)
           let object = {
@@ -493,8 +518,8 @@ class OrderService extends BaseServiceCRUD {
       }
     }
     // Cap nhat lai thong tin ProductDetail tren BC
-    if(order.status === "Shipping"){
-      var buffer = await Models.ProductDetails.query().findOne("orderId", orderId);
+    if(order.status === "Shipping" || order.status === "Processing"){
+      var buffer = await Models.ProductDetails.query().findOne("orderId", id);
       console.log(buffer)
       let object = {
         fcn: "sellingProducts",

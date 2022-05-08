@@ -38,6 +38,7 @@
     "react-google-maps": "^9.4.5",
     "react-js-paginator": "^0.1.10",
     "react-moment": "^0.9.6",
+    "react-qr-barcode-scanner": "^1.0.6",
     "react-qr-reader": "^3.0.0-beta-1",
     "react-quill": "^1.3.3",
     "react-range-picker": "^1.0.1",

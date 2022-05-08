@@ -53,6 +53,7 @@ class Testcomponent extends Component {
     }
 
     generateDirection = async () => {
+        // eslint-disable-next-line no-undef
         const directionService = new google.maps.DirectionsService()
         const results = await directionService.route({
             origin: center,

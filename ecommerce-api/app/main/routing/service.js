@@ -31,7 +31,7 @@ class RoutingService {
                 //     console.log(data.distances[i][i+1])
                 //     totalDistance = totalDistance + data.distances[response[i]][response[i+1]]
                 // }
-                return response
+                return [response, data.distances]
             }
        }
 
@@ -41,7 +41,7 @@ class RoutingService {
     async routing(storeName){
         
         var Store_Information = await Models.Store.query().findOne('storeName', storeName);
-        var capacity = 30;
+        var capacity = 7;
         var List_Of_Orders = []
         var List_Of_Exchanges = []
         var listOfData = []
@@ -102,9 +102,63 @@ class RoutingService {
         console.log("List Of Optimized Shipping Routing: ", List_Of_Optimized_Shipping)
 
         var returnArray = [Store_Information]
-        for(var m = 1; m<List_Of_Optimized_Shipping.length - 1; m++){
-            returnArray.push(Array_Of_Capacity[List_Of_Optimized_Shipping[m] - 1])
+        
+        // Proving List of Distances
+        var distance_Matrix = List_Of_Optimized_Shipping[1]
+        console.log("?",distance_Matrix)
+        const permutations = arr => {
+            if (arr.length <= 2) return arr.length === 2 ? [arr, [arr[1], arr[0]]] : arr;
+            return arr.reduce(
+              (acc, item, i) =>
+                acc.concat(
+                  permutations([...arr.slice(0, i), ...arr.slice(i + 1)]).map(val => [
+                    item,
+                    ...val,
+                  ])
+                ),
+              []
+            );
+          };
+        var listOFNumbers = [...Array(Array_Of_Capacity.length + 1).keys()]
+        // console.log("L", listOFNumbers)
+        var Array_Of_Permutations = []
+        
+        Array_Of_Permutations = permutations(listOFNumbers).filter(each => each[0] == 0)
+        // console.log("L", Array_Of_Permutations)
+        var listOfDistances = []
+        var totalDistance = 0.0;
+        var Distance_Infor = {}
+        var string_of_Routing = storeName + "->";
+        for(var z = 0 ; z < Array_Of_Permutations.length; z++){
+            Array_Of_Permutations[z].push(0)
+            Distance_Infor = {
+                'option': Array_Of_Permutations[z]
+            }
+            console.log(Array_Of_Permutations[z])
+            for(var q = 0; q < Array_Of_Permutations[z].length - 1; q++){
+                if(q > 0 && q < Array_Of_Permutations[z].length - 1){
+                    console.log(true)
+                    string_of_Routing = string_of_Routing + Array_Of_Capacity[Array_Of_Permutations[z][q] - 1]['specialId'] + "->" 
+                }
+               
+                totalDistance = totalDistance + distance_Matrix[Array_Of_Permutations[z][q]][Array_Of_Permutations[z][q+1]]
+            }
+            Distance_Infor['totalDistance'] = totalDistance;
+            Distance_Infor['routing_Order'] = string_of_Routing + storeName;
+            listOfDistances.push(Distance_Infor);
+            Distance_Infor = {}
+            totalDistance = 0.0
+            string_of_Routing = storeName + "->";
         }
+        listOfDistances.sort((a,b)=>{
+            return a['totalDistance'] - b['totalDistance'];
+        })
+        // Take Order/Exchange Infor
+        console.log(List_Of_Optimized_Shipping[0])
+        for(var m = 1; m<List_Of_Optimized_Shipping[0].length - 1; m++){
+            returnArray.push(Array_Of_Capacity[List_Of_Optimized_Shipping[0][m] - 1])
+        }
+        // return [returnArray, listOfDistances]
         return returnArray
     }
 
