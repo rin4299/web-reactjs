@@ -191,7 +191,7 @@ class Order extends Component {
     // console.log('fetch thanh cong', id)
     token = localStorage.getItem('_auth');
     console.log(item)
-    if (item.status === 'Complete' || item.status == 'Shipping'){
+    if (item.status === 'Complete' || item.status == 'Shipping' || item.status === 'Processing'){
       await this.props.find_order_product_detail(token, item.id).then(res => {
         this.setState({
           productDetails : res,

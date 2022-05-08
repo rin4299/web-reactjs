@@ -113,6 +113,7 @@ handleSubmit = async (event) => {
       confirmButtonText: 'Yes'
     }).then(async (result) => {
       if (result.value) {
+        // eslint-disable-next-line no-unused-expressions
           this.state.listComplete && this.state.listComplete.length ? this.state.listComplete.map((item) => {
             let keyword = item.specialId.split("-");
             console.log(keyword)
@@ -150,7 +151,7 @@ handleSubmit = async (event) => {
             
           }
           ):null
-
+          // eslint-disable-next-line no-unused-expressions
           this.state.listCancel && this.state.listCancel.length ? this.state.listCancel.map((item) => {
             let keyword = item.specialId.split("-");
             console.log(keyword)
@@ -209,6 +210,7 @@ handleSubmit = async (event) => {
           // this.state.listRouting && this.state.listRouting.length ? this.state.listRouting.filter((item) => {
           //   return item.specialId != null
           // })
+          // eslint-disable-next-line no-unused-expressions
           routing && routing ? routing.filter((item) => {
             return item.specialId != null
           })
@@ -274,7 +276,7 @@ handleSubmit = async (event) => {
   MyVerticallyCenteredModal = (props) => {
     // let temp = Object.keys(this.state.productDetails)
     let temp = ''
-    // let detail;
+    let detail;
     // console.log('key',temp)
     return (
       <Modal
@@ -428,6 +430,7 @@ handleSubmit = async (event) => {
                             {/* console.log(item.isPaymentOnline) */}
                             if(index == 0) return null 
                             else {
+                              console.log(item)
                               return (
                               <tr key={index}>
                                 <th scope="row">{String.fromCharCode(index+65)}</th>

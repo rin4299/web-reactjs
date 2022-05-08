@@ -3,7 +3,6 @@ import {Container, Card, CardContent, makeStyles, Grid, TextField, Button} from 
 import QRCode from 'qrcode';
 import QrReader from 'react-qr-reader';
 
-
 function Qrcode() { 
   const [text, setText] = useState('');
   const [imageUrl, setImageUrl] = useState('');
@@ -11,7 +10,6 @@ function Qrcode() {
   const [scanResultWebCam, setScanResultWebCam] =  useState('');
   const classes = useStyles();
   const qrRef = useRef(null);
-
 
   const generateQrCode = async () => {
     try {
@@ -82,7 +80,7 @@ function Qrcode() {
                       </Grid>
                   </Grid>
               </CardContent>
-          </Card>
+          </Card>    
     </Container>
   );
 }
