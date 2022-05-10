@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import MyFooter from '../../MyFooter/MyFooter'
 import 'react-quill/dist/quill.snow.css';
 import {actFetchProductsRequest } from '../../../redux/actions/product';
-// import {actCreateReport} from '../../../redux/actions/productreport';
 import { actCreateReportRequest } from '../../../redux/actions/productreport'
 import { connect } from 'react-redux'
 import callApi from '../../../utils/apiCaller';
@@ -16,6 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // import { DropDownListComponent, AutoCompleteComponent } from '@syncfusion/ej2-react-dropdowns';
 import TextField from "@mui/material/TextField"
 import AutoComplete from "@mui/material/Autocomplete"
+import Modal from 'react-bootstrap/Modal'
 
 // import {AutoComplete } from 'antd';
 let token;
@@ -47,7 +47,8 @@ class ActionReportProduct extends Component {
       reportList: [],
       image:'',
       value :'',
-      inputValue:''
+      inputValue:'',
+      modalShow: false,
     };
     // id = this.props.id
     // const location = useLocation()
@@ -257,6 +258,63 @@ class ActionReportProduct extends Component {
     toast.success('New Report is created');
   }
 
+  MyVerticallyCenteredModal = (props) => {
+    let payload;
+    return (
+      <Modal
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        // dialogClassName="modal-200w"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            QR CODE
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{overflow: 'auto'}}>          
+          <div>
+            <BarcodeScannerComponent
+              width={300}
+              height={300}
+              // torch={}
+              onUpdate={(err,result) => {
+                console.log('result',result)
+                if(result){
+                  payload = JSON.parse(result.text)
+                  this.setState({
+                    scanResultWebCam : result.text,
+                    searchText : payload.ids,
+                  })
+                  // localStorage.setItem('_ReportItem', result.text)
+                  // return <Redirect to='/productreport/add'></Redirect>
+                }else{
+                  this.setState({
+                    scanResultWebCam : "Not found"
+                  })
+                }
+              }}
+            />
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          {/* <button type='button'>
+            <Route className='btn btn-danger' path='productreport/add' render={(match) => <ActionReportProduct data ={{name : this.state.productName}}/>}>Report</Route>
+          </button> */}
+
+          <button type="submit" className="btn btn-info" onClick={(event) => {
+                                                                  // this.handleSubmit(event)
+                                                                  this.setState({
+                                                                    modalShow: false,  
+                                                                  })
+                                                                  // props.onHide
+                                                                  }}>Close</button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
+
   render() {
     const { pId, pdId, type, note, quantity, reportList, product, image} = this.state;
  
@@ -303,6 +361,10 @@ class ActionReportProduct extends Component {
                           </tr>
                         </thead>
                         <tbody>
+                          <this.MyVerticallyCenteredModal
+                            show={this.state.modalShow}
+                            onHide={() => this.setState({modalShow: false})}
+                          />
                           {reportList && reportList.length ? reportList.map((item,index)=>{
                             return(
                                 <tr key={index}>
@@ -433,6 +495,7 @@ class ActionReportProduct extends Component {
                             <div className="form-group row">
                                 <Link to="/productreport"><button type="reset" className="btn btn-secondary" style={{ marginRight: 2 }}>Cancel</button></Link>
                                 <div className="col-sm-4 offset-sm-3">
+                                    <button style={{ marginRight: 6 }} className="btn btn-info" onClick={() => this.setState({modalShow: true})}>Scan</button>
                                     {/* <Link to="/import"><button type="reset" className="btn btn-secondary" style={{ marginRight: 2 }}>Cancel</button></Link> */}
                                     <button style={{ marginRight: 6 }} className="btn btn-dark" onClick={() => this.handleAddToReport()}>Add </button>
                                     {/* <button type="reset" className="btn btn-secondary" style={{ marginRight: 2 }}>Cancel</button> */}
@@ -465,7 +528,7 @@ const mapDispatchToProps = (dispatch) => {
         return dispatch(actFetchProductsRequest(token, offset, storename))
     },
     create_report: (payload, token) => {
-        return dispatch(actCreateReport(payload, token))
+        return dispatch(actCreateReportRequest(payload, token))
     }
   }
 }
