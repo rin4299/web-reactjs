@@ -377,6 +377,7 @@ class ActionReportProduct extends Component {
                                 ></AutoCompleteComponent> */}
                                 <AutoComplete
                                   value={this.state.inputValue}
+                                  //eslint-disable-next-line no-restricted-globals
                                   onChange={(event, newValue => {
                                     // console.log('Newvalue',newValue)
                                     this.setState({value : newValue})
@@ -464,7 +465,9 @@ const mapDispatchToProps = (dispatch) => {
     fetch_products: (token, offset, storename) => {
         return dispatch(actFetchProductsRequest(token, offset, storename))
     },
+    
     create_report: (payload, token) => {
+      //eslint-disable-next-line no-undef
         return dispatch(actCreateReport(payload, token))
     }
   }
