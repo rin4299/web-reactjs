@@ -16,6 +16,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import TextField from "@mui/material/TextField"
 import AutoComplete from "@mui/material/Autocomplete"
 import Modal from 'react-bootstrap/Modal'
+import BarcodeScannerComponent from "react-qr-barcode-scanner"
 
 // import {AutoComplete } from 'antd';
 let token;

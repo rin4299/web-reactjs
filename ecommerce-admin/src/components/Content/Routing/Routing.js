@@ -33,7 +33,7 @@ class Routing extends Component {
       listComplete: [],
       listCancel : [],
       prove: [],
-      productDetails:null,
+      productDetails:'',
     }
 
   }  
@@ -94,7 +94,7 @@ handleSubmit = async (event) => {
     let storeName = user[0].name;
     // const res = await this.props.generate_routing(storeName,token)
     // console.log('res',res)
-
+    console.log('submit')
     await this.props.generate_routing(storeName, token).then(res => {
       console.log('res',res)
       this.setState({
@@ -270,18 +270,20 @@ handleSubmit = async (event) => {
     console.log(keyword)
     if(keyword[0] == "O"){
       await this.props.find_order_product_detail(token, keyword[1]).then(res => {
-        this.setState({
-          productDetails : res,
-          modalShow : true,
-        })
+        console.log('details',res)
+        // this.setState({
+        //   productDetails : res,
+        //   modalShow : true,
+        // })
       })
     }
     if(keyword[0] == "E"){
       this.props.fetchProductDetail_Exchange(str, item.listofProductDetail).then(res => {
-        this.setState({
-          productDetails : res,
-          modalShow : true
-        })
+        console.log('details',res)
+        // this.setState({
+        //   productDetails : res,
+        //   modalShow : true
+        // })
       })
     }
     // if (item.status === 'Complete' || item.status == 'Shipping'){
@@ -423,8 +425,8 @@ handleSubmit = async (event) => {
                             show={this.state.modalShow}
                             onHide={() => this.setState({modalShow: false})}
                           />
-                          {routing && routing.length ? routing.map((item, index) => {
-                            {/* console.log(item.isPaymentOnline) */}
+                          {routing[0] && routing[0].length ? routing[0].map((item, index) => {
+                            console.log(item)
                             if(index == 0) return null 
                             else {
                               {/* console.log(item) */}
@@ -433,6 +435,7 @@ handleSubmit = async (event) => {
                                 <th scope="row">{String.fromCharCode(index+65)}</th>
                                 <td style={{width:'auto'}}>{item.fullName ? item.fullName : item.reqUserName }</td>
                                 <td><span >{item.phone ? item.phone : item.information.phone}</span></td>
+                                {/* <td style={{width:'auto'}}>{item.fullName ? item.fullName : item.reqUserName }</td> */}
                                 <td>
                                   <button type="button" className='btn btn-light' onClick={()=>{ 
                                     this.fetch_product_details(item)
@@ -481,7 +484,7 @@ handleSubmit = async (event) => {
                             }
  
                           }) : null}
-                          {console.log(this.state.listMarker)}
+                          {/* {console.log(this.state.listMarker)} */}
                         </tbody>
                       </table>
                     </div>
@@ -510,7 +513,7 @@ handleSubmit = async (event) => {
                       </thead>
                       <tbody>
                         {console.log('prove',this.state.prove)}
-                        {this.state.prove.map((item,index) => {
+                        {routing[1].map((item,index) => {
                           if(index > 5){return null}
                           else{
                             return (

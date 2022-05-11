@@ -232,7 +232,7 @@ class Map extends Component {
                             {/* <button type="button" className="btn btn-warning" onClick={this.generateDirection}>generate</button> */}
                         </div>
                         <div className="col">
-                            <div id='panel' style={{"overflow-y" :"scroll", height: "500px"}}></div>
+                            <div id='panel' style={{"overflowY" :"scroll", height: "500px"}}></div>
                         </div>
                     </div>
                 </div>
