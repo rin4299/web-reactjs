@@ -6,7 +6,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { toast } from 'react-toastify';
 
 
-
     export const actFetchReportRequest = (storeName, token) => {
         return dispatch => {
         dispatch(actShowLoading());
@@ -38,9 +37,7 @@ import { toast } from 'react-toastify';
         }
     }
 
-
-
-    export const actCreateReport = (payload, token) => {
+    export const actCreateReportRequest = (payload, token) => {
         return dispatch => {
         dispatch(actShowLoading());
         return new Promise((resolve, reject) => {
@@ -101,3 +98,28 @@ import { toast } from 'react-toastify';
             data
         }
     }
+
+    // export const actFetchReportRequest = () => {
+    //     return async dispatch => {
+    //         if (localStorage.length === 1) {
+    //             localStorage.setItem('_productReport', JSON.stringify([]));
+    //         }
+    //         for (let i = 0; i < localStorage.length; i++) {
+    //             if (localStorage.key(i) === '_productReport') {
+    //                 const res = localStorage.getItem('_productReport');
+    //                 // console.log('fetch_cart2', JSON.parse(res))
+    //                 dispatch(actFetchReport(JSON.parse(res)));
+    //             }
+    //         }
+    //     };
+    // }
+
+    // export const actFetchReport = (data) => {
+    //     return {
+    //         type: Types.FETCH_REPORT,
+    //         data
+    //     }
+    // }
+////////////////////////////////////////////////////////////////////////////////////////
+
+

@@ -41,7 +41,7 @@ var lineSymbol = {
 //     travelMode: 'DRIVING'
 //   }
 
-class Testcomponent extends Component {
+class Map extends Component {
     constructor (props) {
       super(props)
 
@@ -183,4 +183,4 @@ class Testcomponent extends Component {
 }
 
 
-export default connect(null, null)(Testcomponent)
+export default connect(null, null)(Map)

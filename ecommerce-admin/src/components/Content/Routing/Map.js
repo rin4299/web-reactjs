@@ -6,8 +6,9 @@ import { connect } from 'react-redux'
 
 const mapContainerStyle = {
     height: "500px",
-    width: "800px",
-    "marginLeft":"350px"
+    width: "700px",
+    "marginLeft":"100px"
+    // "marginRight":"100px"
   };
 
 let center = { lat:  10.773392736860279, lng: 106.66067562399535 }
@@ -38,7 +39,7 @@ var lineSymbol = {
 };
 let path = []
 // let directionService
-class Testcomponent extends Component {
+class Map extends Component {
     constructor (props) {
         super(props)
         this.state = {
@@ -140,98 +141,100 @@ class Testcomponent extends Component {
             // >
             <div className="map">
                 <div className="map-container">
-                    <GoogleMap
-                    mapContainerStyle={mapContainerStyle}
-                    center={center}
-                    zoom={13}
-                    >
-                        {/* {path && path.length ? path.map((position) => {
-                            return (
-                                <Marker
-                                onLoad={onLoad}
-                                position={position}
-                                />
-                            )
-                        }): null} */}
-                        {/* <Marker
-                            onLoad={onLoad}
-                            position={center}
-                            // animation={window.google.maps.Animation.BOUNCE}
-                        /> */}
-                        {/* {listRouting.map((item,index) => {
-                        console.log('position',item)
-                        let lat = item.lat
-                        let lng = item.lng
-                        let position = {lat: lat, lng : lng}
-                        return (
-                            <Marker
-                                onLoad={onLoad}
-                                position={position}
-                                onClick={() => console.log(item)}
-                                // visible={false}
-                            />
-                        )
-                            
-                        })} */}
-                        {/* <Polyline
-                            onLoad={onLoad}
-                            path={path}
-                            options={options}
-                        /> */}
-                            {/* {
-                                            (
-                                destination !== '' &&
-                                center !== ''
-                            ) && (
-                                <DirectionsService
-                                // required
+                    <div className="row">
+                        <div className="col-8 " >
+                            <GoogleMap
+                            mapContainerStyle={mapContainerStyle}
+                            center={center}
+                            zoom={13}
+                            >
+                                {/* {path && path.length ? path.map((position) => {
+                                    return (
+                                        <Marker
+                                        onLoad={onLoad}
+                                        position={position}
+                                        />
+                                    )
+                                }): null} */}
+                                {/* <Marker
+                                    onLoad={onLoad}
+                                    position={center}
+                                    // animation={window.google.maps.Animation.BOUNCE}
+                                /> */}
+                                {/* {listRouting.map((item,index) => {
+                                console.log('position',item)
+                                let lat = item.lat
+                                let lng = item.lng
+                                let position = {lat: lat, lng : lng}
+                                return (
+                                    <Marker
+                                        onLoad={onLoad}
+                                        position={position}
+                                        onClick={() => console.log(item)}
+                                        // visible={false}
+                                    />
+                                )
+                                    
+                                })} */}
+                                {/* <Polyline
+                                    onLoad={onLoad}
+                                    path={path}
+                                    options={options}
+                                /> */}
+                                    {/* {
+                                                    (
+                                        destination !== '' &&
+                                        center !== ''
+                                    ) && (
+                                        <DirectionsService
+                                        // required
+                                        
+                                        options={{ 
+                                            // eslint-disable-line react-perf/jsx-no-new-object-as-prop
+                                            destination : destination,
+                                            origin: center,
+                                            travelMode: "DRIVING",
+                                            // waypoints: destination,
+                                        }}
+                                        // required
+                                        callback={this.directionsCallback}
+                                        onLoad={directionsService => {
+                                            console.log('DirectionsService onLoad directionsService: ', directionsService)
+                                        }}
+                                        />
+                                    )}
+
+                                    {console.log('response', this.state.response)} */}
+
+                                    {
+                                    this.state.response !== null && 
+                                        <DirectionsRenderer
+                                        // required
+                                        // options={{ 
+                                        //     // eslint-disable-line react-perf/jsx-no-new-object-as-prop
+                                        //     directions: this.state.response
+                                        // }}
+                                        directions={this.state.response}
+                                        panel={document.getElementById('panel')}
+                                        // optional
+                                        onLoad={directionsRenderer => {
+                                            console.log('DirectionsRenderer onLoad directionsRenderer: ', directionsRenderer)
+                                        }}
+                                        // optional
+                                        onUnmount={directionsRenderer => {
+                                            console.log('DirectionsRenderer onUnmount directionsRenderer: ', directionsRenderer)
+                                        }}
+                                        />
+                                }
                                 
-                                options={{ 
-                                    // eslint-disable-line react-perf/jsx-no-new-object-as-prop
-                                    destination : destination,
-                                    origin: center,
-                                    travelMode: "DRIVING",
-                                    // waypoints: destination,
-                                }}
-                                // required
-                                callback={this.directionsCallback}
-                                onLoad={directionsService => {
-                                    console.log('DirectionsService onLoad directionsService: ', directionsService)
-                                }}
-                                />
-                            )}
-
-                            {console.log('response', this.state.response)} */}
-
-                            {
-                            this.state.response !== null && 
-                                <DirectionsRenderer
-                                // required
-                                // options={{ 
-                                //     // eslint-disable-line react-perf/jsx-no-new-object-as-prop
-                                //     directions: this.state.response
-                                // }}
-                                directions={this.state.response}
-                                panel={document.getElementById('panel')}
-                                // optional
-                                onLoad={directionsRenderer => {
-                                    console.log('DirectionsRenderer onLoad directionsRenderer: ', directionsRenderer)
-                                }}
-                                // optional
-                                onUnmount={directionsRenderer => {
-                                    console.log('DirectionsRenderer onUnmount directionsRenderer: ', directionsRenderer)
-                                }}
-                                />
-                        }
-                        
-                        
-                    </GoogleMap>
-                    <div>
-                        {/* <button type="button" className="btn btn-warning" onClick={this.generateDirection}>generate</button> */}
+                                
+                            </GoogleMap>
+                            {/* <button type="button" className="btn btn-warning" onClick={this.generateDirection}>generate</button> */}
+                        </div>
+                        <div className="col">
+                            <div id='panel' style={{"overflow-y" :"scroll", height: "500px"}}></div>
+                        </div>
                     </div>
-                </div>
-                <div id='panel'>
-
                 </div>
             </div>
             // </LoadScript>
@@ -240,4 +243,4 @@ class Testcomponent extends Component {
 }
 
 
-export default connect(null, null)(Testcomponent)
+export default connect(null, null)(Map)

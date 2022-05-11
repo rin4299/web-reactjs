@@ -1,28 +1,24 @@
-import React, { Component , useRef } from 'react'
+import React, { Component } from 'react'
 import './style.css'
-import { Link } from 'react-router-dom'
+import { Link , Route } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { actFetchProductsRequest, actFindProductsRequest } from '../../../redux/actions/product';
 import {actTrackingRequest} from '../../../redux/actions/tracking';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
-import {exportExcel} from 'utils/exportExcel'
 import Paginator from 'react-js-paginator';
 import callApi from '../../../utils/apiCaller';
 import Modal from 'react-bootstrap/Modal'
 import {Steps} from 'antd'
-import { ArrowUpOutlined } from '@ant-design/icons' ;
-import Testcomponent from './Map'
-
-
-// import RequestCartItems from './RequestCartItems'
+import Map from './Map'
 
 
 import {Container, Card, CardContent, makeStyles, Grid, TextField, Button} from '@material-ui/core';
 import QRCode from 'qrcode';
 import {QrReader} from 'react-qr-reader';
+import ActionReportProduct from '../ProductReport/ActionReportProduct';
 
+import BarcodeScannerComponent from "react-qr-barcode-scanner"
 // import "antd/dist/antd.css"
 
 const MySwal = withReactContent(Swal)
@@ -41,11 +37,8 @@ class Tracking extends Component {
       searchText: '',
       modalShow: false,
       productName : '',
-      selected:'',
-      quantity: '',
+      ids:null,
       user: [],
-      recUser: '',
-      userdiff: [],
       //
       text: '',
       imageUrl:'',
@@ -135,7 +128,7 @@ class Tracking extends Component {
     this.props.tracking_request(searchText, token).then(res => {
       if (res && res.length){
         res.map((item) => {
-          console.log(item.Value.information)
+          // console.log(item.Value.information)
           let lat = item.Value.information.lat
           let lng = item.Value.information.lng
           if(this.state.listMarker !== []){
@@ -181,6 +174,10 @@ class Tracking extends Component {
     total && total.length ? results = total[total.length-1].Value : results = null
     if(results){
       // console.log('results',results)
+      this.setState({
+        productName : results.productName,
+        ids : results.id
+      })
       payload = {
         Name : results.productName, 
         ids : results.id,
@@ -254,13 +251,43 @@ class Tracking extends Component {
           <div className='align-items-center' >
               {this.state.imageUrl ? (
                   <a href={this.state.imageUrl} download>
-                      <img style={{'margin-left':'200px'}} src={this.state.imageUrl} alt="img"/>
+                      <img style={{'marginLeft':'200px'}} src={this.state.imageUrl} alt="img"/>
                   </a>) 
               : null}
           </div>
+          <div>
+            <BarcodeScannerComponent
+              width={300}
+              height={300}
+              // torch={}
+              onUpdate={(err,result) => {
+                console.log('result',result)
+                if(result){
+                  this.setState({
+                    scanResultWebCam : result.text
+                  })
+                }else{
+                  this.setState({
+                    scanResultWebCam : "Not found"
+                  })
+                }
+              }}
+            />
+            <span>{this.state.scanResultWebCam}</span>
+          </div>
         </Modal.Body>
         <Modal.Footer>
-          <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
+          <button type='button' onClick={() => {
+            let payload = {productName : this.state.productName, ids : this.state.ids}
+            console.log(payload)
+            localStorage.setItem('_ReportItem', JSON.stringify(payload))
+             }}
+            ><Link to='productreport/add' className='btn btn-danger'>Report</Link></button>
+          {/* <button type='button'>
+            <Route className='btn btn-danger' path='productreport/add' render={(match) => <ActionReportProduct data ={{name : this.state.productName}}/>}>Report</Route>
+          </button> */}
+
+          <button type="button" className="btn btn-info" onClick={props.onHide}>Close</button>
         </Modal.Footer>
       </Modal>
     );
@@ -269,7 +296,6 @@ class Tracking extends Component {
   render() {
     let { products } = this.props;
     const { searchText, total } = this.state;
-    
     return (
       <div className="content-inner">
         {/* Page Header*/}
@@ -330,18 +356,7 @@ class Tracking extends Component {
                             onHide={() => this.setState({modalShow: false})}
                           />
                           {total && total.length ? total.map((item, index) => {
-                            {/* item.active ? {} : {} */}
-                            {/* return (
-                              <tr key={index}>
-                                <th scope="row">{index + 1}</th>
-                                <td style={{width:'auto'}}>{item.TxId}</td>
-                                <td><span >{item.Value.productName}</span></td>
-                                <td>{item.Value.id}</td>
-                                <td>{item.Value.ownerName}</td>
-                                <td><p1>{item.Timestamp}</p1></td>
-                              </tr>
-                            ) */}
-                            console.log('item',item)
+                            {/* console.log('item',item) */}
                             if(!item.Value.active && index+1 == total.length ){
                               console.log('active',item.Value.active)
                               return (
@@ -378,7 +393,7 @@ class Tracking extends Component {
                               )
                             }
                           }) : null}
-                          {console.log(this.state.listMarker)}
+                          {/* {console.log(this.state.listMarker)} */}
                         </tbody>
                       </table>
                     </div>
@@ -394,7 +409,7 @@ class Tracking extends Component {
                   </ul>
                 </nav>
                 <div style={{ textAlign: "center" }}>
-                  {/* <Testcomponent id="map" style={{ textAlign: "center" }} path = {this.state.listMarker} total = {total}/> */}
+                  {/* <Map id="map" style={{ textAlign: "center" }} path = {this.state.listMarker} total = {total}/> */}
                 </div>
                 
                 {/* <ArrowUpOutlined style={{fontsize :'400%'}}/> */}
