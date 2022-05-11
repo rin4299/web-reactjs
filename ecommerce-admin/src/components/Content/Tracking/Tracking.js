@@ -313,22 +313,24 @@ class Tracking extends Component {
                     <td>{payload.status}</td>
                 </tbody>
               </table>
-            :null}
-            {/* {this.setState({
-              searchText : 
-            })} */}
+            :
+            <h3>
+              {this.state.scanResultWebCam}
+            </h3>
+            }
           </div>
         </Modal.Body>
         <Modal.Footer>
-          {this.state.scanResultWebCam ? <button type='button' onClick={() => localStorage.setItem('_ReportItem', this.state.scanResultWebCam)}><Link to='productreport/add' className='btn btn-danger'>Report</Link></button> : null}
+          {this.state.scanResultWebCam != "Not found" ? <button type='button' onClick={() => localStorage.setItem('_ReportItem', this.state.scanResultWebCam)}><Link to='productreport/add' className='btn btn-danger'>Report</Link></button> : null}
           {/* <button type='button'>
             <Route className='btn btn-danger' path='productreport/add' render={(match) => <ActionReportProduct data ={{name : this.state.productName}}/>}>Report</Route>
           </button> */}
 
           <button type="submit" className="btn btn-info" onClick={(event) => {
-                                                                  // this.handleSubmit(event)
-                                                                  this.setState({
-                                                                    modalShow: false,  
+                                                                  this.handleSubmit(event).then(()=>{
+                                                                    this.setState({
+                                                                      modalShow: false,  
+                                                                    })
                                                                   })
                                                                   // props.onHide
                                                                   }}>Close</button>

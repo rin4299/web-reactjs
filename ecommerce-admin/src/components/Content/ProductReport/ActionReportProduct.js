@@ -49,6 +49,7 @@ class ActionReportProduct extends Component {
       value :'',
       inputValue:'',
       modalShow: false,
+      scanResultWebCam:'',
     };
     // id = this.props.id
     // const location = useLocation()
@@ -87,67 +88,35 @@ class ActionReportProduct extends Component {
         let item2 = localStorage.getItem('_ReportItem')
         item2 = JSON.parse(item2)
         // console.log('item', item2)
-        if(item2 != "empty"){
+        if(item2 != ""){
           let item = res.filter((item) => {
-            return item.nameProduct == item2.productName
+            return item.nameProduct == item2.Name
           })
           // console.log('res',item)
-          this.setState({
-            inputValue : item2.productName,
-          })
           // console.log('image', item[0])
           if(item[0]){
             this.setState({
+              inputValue : item2.Name,
               pId : item[0].id,
               image : item[0].image,
               pdId : item2.ids
             })
-          // }else{
-          //   this.setState({
-          //     pId : 0,
-          //     image : '',
-          //     pdId : 0
-          //   })
+          }else{
+            this.setState({
+              pId : 0,
+              image : '',
+              pdId : 0
+            })
           // localStorage.setItem('_ReportItem', "empty")
-          localStorage.setItem('_ReportItem', JSON.stringify([]) );
+          localStorage.setItem('_ReportItem', JSON.stringify([]));
           }
         }
       }).catch(err => {
         console.log(err);  
       }) 
-    
-    
-    // console.log(localStorage.getItem('_ReportItem'))
-    
-
-    // if (id) {
-    //   const res = await callApi(`products/${id}`, 'GET', null, token);
-    //   if (res && res.status === 200){
-    //     const resProducer =  await callApi(`category/${res.data.categoryId}/producers`, 'GET', null);
-    //     const convertProperties = JSON.stringify(res.data.properties)
-    //     var temp = 0;
-    //     for(let i = 0 ; i < res.data.ownership.length; i++){
-    //       if(res.data.ownership[i].storeName === this.state.user[0].name){
-    //         temp = res.data.ownership[i].quantity;
-    //       }
-    //     }
-    //     this.setState({
-    //       dataProducer: resProducer.data,
-    //       nameProduct: res.data.nameProduct,
-    //       price: res.data.price,
-    //       numberAvailable: temp,
-    //       categoryId: res.data.categoryId,
-    //       desc: res.data.description,
-    //       isActive: res.data.isActive,
-    //       image: res.data.image,
-    //       properties: convertProperties,
-    //       producerId: res.data.producerId,
-    //       dataGallery: res.data.gallery
-    //     })
-    //   }
-    //   }
 
   }
+
 
 
   handleChange = (event) => {
@@ -285,10 +254,31 @@ class ActionReportProduct extends Component {
                   payload = JSON.parse(result.text)
                   this.setState({
                     scanResultWebCam : result.text,
-                    searchText : payload.ids,
                   })
-                  // localStorage.setItem('_ReportItem', result.text)
-                  // return <Redirect to='/productreport/add'></Redirect>
+                  /////////////////////////////////
+                  let item = this.state.product.filter((item) => {
+                    return item.nameProduct == payload.Name
+                  })
+                  // console.log('res',item)
+                  // console.log('image', item[0])
+                  if(item[0]){
+                    this.setState({
+                      inputValue : payload.Name,
+                      pId : item[0].id,
+                      image : item[0].image,
+                      pdId : payload.ids
+                    })
+                  }else{
+                    this.setState({
+                      inputValue :'',
+                      pId : 0,
+                      image : '',
+                      pdId : 0
+                    })
+                  /////////////////////////////////////////////
+                  // localStorage.setItem('_ReportItem', "empty")
+                  localStorage.setItem('_ReportItem', JSON.stringify([]));
+                }
                 }else{
                   this.setState({
                     scanResultWebCam : "Not found"
@@ -305,10 +295,10 @@ class ActionReportProduct extends Component {
 
           <button type="submit" className="btn btn-info" onClick={(event) => {
                                                                   // this.handleSubmit(event)
-                                                                  this.setState({
-                                                                    modalShow: false,  
-                                                                  })
-                                                                  // props.onHide
+                                                                  // this.setState({
+                                                                  //   modalShow: false,  
+                                                                  // })
+                                                                  props.onHide
                                                                   }}>Close</button>
         </Modal.Footer>
       </Modal>
