@@ -183,7 +183,7 @@ class HistoryRequest extends Component {
   find_product_detail (str){
     token = localStorage.getItem('_auth');
     // console.log('fetch thanh cong', str)
-    this.props.fetchProductDetail(str, token).then(res => {
+    this.props.fetchProductDetail_Exchange(str, token).then(res => {
       // console.log('result',res)
       this.setState({
         productDetails : res
@@ -460,7 +460,7 @@ const mapDispatchToProps = (dispatch) => {
     update_Accept: (id, token) => {
       return dispatch(actUpdateAccept(id, token))
     },
-    fetchProductDetail: (str , token) => {
+    fetchProductDetail_Exchange: (str , token) => {
       return dispatch(actFetchProductDetail(str, token))
     }
   }
