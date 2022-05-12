@@ -30,6 +30,7 @@ import 'react-toastify/dist/ReactToastify.css';
             callApi(`routing/${storeName}`, "GET", null, token)
               .then(res => {
                 if (res && res.status === 200) {
+                  console.log('result',res.data)
                   dispatch(actGenerateRoutingDispatch(res.data));
                   resolve(res.data);
                   setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
