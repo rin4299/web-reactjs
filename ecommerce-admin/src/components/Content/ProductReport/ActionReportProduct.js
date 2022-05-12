@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import MyFooter from '../../MyFooter/MyFooter'
 import 'react-quill/dist/quill.snow.css';
 import {actFetchProductsRequest } from '../../../redux/actions/product';
-// import {actCreateReport} from '../../../redux/actions/productreport';
 import { actCreateReportRequest } from '../../../redux/actions/productreport'
 import { connect } from 'react-redux'
 import callApi from '../../../utils/apiCaller';
@@ -16,7 +15,8 @@ import 'react-toastify/dist/ReactToastify.css';
 // import { DropDownListComponent, AutoCompleteComponent } from '@syncfusion/ej2-react-dropdowns';
 import TextField from "@mui/material/TextField"
 import AutoComplete from "@mui/material/Autocomplete"
-
+import Modal from 'react-bootstrap/Modal'
+import BarcodeScannerComponent from "react-qr-barcode-scanner"
 // import {AutoComplete } from 'antd';
 let token;
 let id;
@@ -47,7 +47,9 @@ class ActionReportProduct extends Component {
       reportList: [],
       image:'',
       value :'',
-      inputValue:''
+      inputValue:'',
+      modalShow: false,
+      scanResultWebCam:'',
     };
     // id = this.props.id
     // const location = useLocation()
@@ -86,67 +88,35 @@ class ActionReportProduct extends Component {
         let item2 = localStorage.getItem('_ReportItem')
         item2 = JSON.parse(item2)
         // console.log('item', item2)
-        if(item2 != "empty"){
+        if(item2 != ""){
           let item = res.filter((item) => {
-            return item.nameProduct == item2.productName
+            return item.nameProduct == item2.Name
           })
           // console.log('res',item)
-          this.setState({
-            inputValue : item2.productName,
-          })
           // console.log('image', item[0])
           if(item[0]){
             this.setState({
+              inputValue : item2.Name,
               pId : item[0].id,
               image : item[0].image,
               pdId : item2.ids
             })
-          // }else{
-          //   this.setState({
-          //     pId : 0,
-          //     image : '',
-          //     pdId : 0
-          //   })
+          }else{
+            this.setState({
+              pId : 0,
+              image : '',
+              pdId : 0
+            })
           // localStorage.setItem('_ReportItem', "empty")
-          localStorage.setItem('_ReportItem', JSON.stringify([]) );
+          localStorage.setItem('_ReportItem', JSON.stringify([]));
           }
         }
       }).catch(err => {
         console.log(err);  
       }) 
-    
-    
-    // console.log(localStorage.getItem('_ReportItem'))
-    
-
-    // if (id) {
-    //   const res = await callApi(`products/${id}`, 'GET', null, token);
-    //   if (res && res.status === 200){
-    //     const resProducer =  await callApi(`category/${res.data.categoryId}/producers`, 'GET', null);
-    //     const convertProperties = JSON.stringify(res.data.properties)
-    //     var temp = 0;
-    //     for(let i = 0 ; i < res.data.ownership.length; i++){
-    //       if(res.data.ownership[i].storeName === this.state.user[0].name){
-    //         temp = res.data.ownership[i].quantity;
-    //       }
-    //     }
-    //     this.setState({
-    //       dataProducer: resProducer.data,
-    //       nameProduct: res.data.nameProduct,
-    //       price: res.data.price,
-    //       numberAvailable: temp,
-    //       categoryId: res.data.categoryId,
-    //       desc: res.data.description,
-    //       isActive: res.data.isActive,
-    //       image: res.data.image,
-    //       properties: convertProperties,
-    //       producerId: res.data.producerId,
-    //       dataGallery: res.data.gallery
-    //     })
-    //   }
-    //   }
 
   }
+
 
 
   handleChange = (event) => {
@@ -257,6 +227,87 @@ class ActionReportProduct extends Component {
     toast.success('New Report is created');
   }
 
+  MyVerticallyCenteredModal = (props) => {
+    let payload;
+    //eslint-disable
+    return (
+      <Modal
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        // dialogClassName="modal-200w"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            QR CODE
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{overflow: 'auto'}}>          
+          <div>
+            {/* eslint-disable */}
+            <BarcodeScannerComponent
+              width={300}
+              height={300}
+              // torch={}
+              onUpdate={(err,result) => {
+                console.log('result',result)
+                if(result){
+                  payload = JSON.parse(result.text)
+                  this.setState({
+                    scanResultWebCam : result.text,
+                  })
+                  /////////////////////////////////
+                  let item = this.state.product.filter((item) => {
+                    return item.nameProduct == payload.Name
+                  })
+                  // console.log('res',item)
+                  // console.log('image', item[0])
+                  if(item[0]){
+                    this.setState({
+                      inputValue : payload.Name,
+                      pId : item[0].id,
+                      image : item[0].image,
+                      pdId : payload.ids
+                    })
+                  }else{
+                    this.setState({
+                      inputValue :'',
+                      pId : 0,
+                      image : '',
+                      pdId : 0
+                    })
+                  /////////////////////////////////////////////
+                  // localStorage.setItem('_ReportItem', "empty")
+                  localStorage.setItem('_ReportItem', JSON.stringify([]));
+                }
+                }else{
+                  this.setState({
+                    scanResultWebCam : "Not found"
+                  })
+                }
+              }}
+            />
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          {/* <button type='button'>
+            <Route className='btn btn-danger' path='productreport/add' render={(match) => <ActionReportProduct data ={{name : this.state.productName}}/>}>Report</Route>
+          </button> */}
+
+          <button type="submit" className="btn btn-info" onClick={(event) => {
+                                                                  // this.handleSubmit(event)
+                                                                  // this.setState({
+                                                                  //   modalShow: false,  
+                                                                  // })
+                                                                  //eslint-disable-next-line no-unused-expressions  
+                                                                  props.onHide
+                                                                  }}>Close</button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
+
   render() {
     const { pId, pdId, type, note, quantity, reportList, product, image} = this.state;
  
@@ -303,6 +354,10 @@ class ActionReportProduct extends Component {
                           </tr>
                         </thead>
                         <tbody>
+                          <this.MyVerticallyCenteredModal
+                            show={this.state.modalShow}
+                            onHide={() => this.setState({modalShow: false})}
+                          />
                           {reportList && reportList.length ? reportList.map((item,index)=>{
                             return(
                                 <tr key={index}>
@@ -434,6 +489,7 @@ class ActionReportProduct extends Component {
                             <div className="form-group row">
                                 <Link to="/productreport"><button type="reset" className="btn btn-secondary" style={{ marginRight: 2 }}>Cancel</button></Link>
                                 <div className="col-sm-4 offset-sm-3">
+                                    <button style={{ marginRight: 6 }} className="btn btn-info" onClick={() => this.setState({modalShow: true})}>Scan</button>
                                     {/* <Link to="/import"><button type="reset" className="btn btn-secondary" style={{ marginRight: 2 }}>Cancel</button></Link> */}
                                     <button style={{ marginRight: 6 }} className="btn btn-dark" onClick={() => this.handleAddToReport()}>Add </button>
                                     {/* <button type="reset" className="btn btn-secondary" style={{ marginRight: 2 }}>Cancel</button> */}

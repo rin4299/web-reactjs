@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import {actGenerateRouting , actClearRequest} from '../../../redux/actions/routing';
 import { actFindOrderProductDetail } from '../../../redux/actions/order';
+import { actFetchProductDetail} from '../../../redux/actions/exchange';
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import MyFooter from 'components/MyFooter/MyFooter'
@@ -30,7 +32,8 @@ class Routing extends Component {
       listRouting: [],
       listComplete: [],
       listCancel : [],
-      prove: []
+      prove: [],
+      productDetails:"",
     }
 
   }  
@@ -259,17 +262,31 @@ handleSubmit = async (event) => {
     })
   }
 
-  async fetch_product_details_Order(item){
+  async fetch_product_details(item){
     // console.log('fetch thanh cong', id)
     token = localStorage.getItem('_auth');
-    console.log(item)
-    // if (item.status === 'Complete' || item.status == 'Shipping'){
-      await this.props.find_order_product_detail(token, item.id).then(res => {
+    console.log("item",item)
+    let keyword = item.specialId.split("-");
+    console.log('key',keyword)
+    if(keyword[0] == "O"){
+      await this.props.find_order_product_detail(token, keyword[1]).then(res => {
         this.setState({
           productDetails : res,
           modalShow : true,
         })
       })
+    }
+    if(keyword[0] == "E"){
+      //eslint-disable-next-line no-undef
+      this.props.fetchProductDetail_Exchange(str, item.listofProductDetail).then(res => {
+        this.setState({
+          productDetails : res,
+          modalShow : true
+        })
+      })
+    }
+    // if (item.status === 'Complete' || item.status == 'Shipping'){
+      
     // }
     
     // console.log('key',this.state.productDetails)
@@ -277,7 +294,8 @@ handleSubmit = async (event) => {
 
   MyVerticallyCenteredModal = (props) => {
     // let temp = Object.keys(this.state.productDetails)
-    let temp = ''
+    console.log(this.state.productDetails);
+    let temp = Object.keys(this.state.productDetails);
     let detail;
     // console.log('key',temp)
     return (
@@ -376,20 +394,10 @@ handleSubmit = async (event) => {
                 <div className="card">
                   <div className="card-header d-flex align-items-center">
                     <h3 className="h4">Routing</h3>
-                    
-                    {/* <button onClick={()=>this.downloadExcel()} style={{ border: 0, background: "white" }}> <i className="fa fa-file-excel-o"
-                        style={{fontSize: 18, color: '#1d7044'}}> Excel</i></button> */}
                   </div>
                   <form onSubmit={(event) => this.handleSubmit(event)}
                     className="form-inline md-form form-sm mt-0" style={{ justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20 }}>
                     <div className='btn-group'>
-                      {/* <button style={{border: 0, background: 'white'}}> <i className="fa fa-search" aria-hidden="true"></i></button>                  
-                      <input
-                        name="searchText"
-                        onChange={this.handleChange}
-                        value={searchText}
-                        className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
-                        aria-label="Search" /> */}
                         <button type='submit' className='btn btn-primary'>Generate</button>
                     </div>
 
@@ -407,6 +415,7 @@ handleSubmit = async (event) => {
                             <th>Total Amount</th>
                             <th>Payment Online</th>
                             <th>Address</th>
+                            <th>Action</th>
                             {/* <th style={{ textAlign: "center" }}>Time</th> */}
                           </tr>
                           
@@ -428,8 +437,8 @@ handleSubmit = async (event) => {
                                 <td><span >{item.phone ? item.phone : item.information.phone}</span></td>
                                 <td>
                                   <button type="button" className='btn btn-light' onClick={()=>{ 
-                                    // this.fetch_product_details_Order(item)
-                                    console.log('onclick')
+                                    this.fetch_product_details(item)
+                                    // console.log('onclick')
                                     }}>View</button>
                                 </td>
                                 <td>{item.specialId}</td>
@@ -445,7 +454,7 @@ handleSubmit = async (event) => {
                                 </td>
                                 <td><p>{item.address ? item.address : item.information.address}</p></td>
                                 <td>
-                                  <input type="checkbox"
+                                  <input type="checkbox" 
                                     onChange={(event) => {
                                       // console.log(item.specialId,event.target.checked)
                                       if(!event.target.checked){
@@ -466,7 +475,7 @@ handleSubmit = async (event) => {
                                     }}
                                     name="listCancel"
                                     // checked={true}
-                                    defaultChecked={true}
+                                    defaultChecked={false}
                                     className="checkbox-template" />
                                 </td>
                               </tr>
@@ -561,6 +570,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     find_order_product_detail:(token, id) => {
       return dispatch(actFindOrderProductDetail(token, id))
+    },
+    fetchProductDetail_Exchange: (str , token) => {
+      return dispatch(actFetchProductDetail(str, token))
     }
   }
 }

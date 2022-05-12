@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './style.css'
-import { Link , Route } from 'react-router-dom'
+import { Link , Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import {actTrackingRequest} from '../../../redux/actions/tracking';
 import Swal from 'sweetalert2'
@@ -121,11 +121,12 @@ class Tracking extends Component {
     });
   }
 
-  handleSubmit = (event) => {
+  handleSubmit = async (event) => {
+    // console.log(event)
     event.preventDefault();
     const { searchText } = this.state;
     // console.log('searchText', searchText)
-    this.props.tracking_request(searchText, token).then(res => {
+    this.props.tracking_request(searchText, token).then(async res =>  {
       if (res && res.length){
         res.map((item) => {
           // console.log(item.Value.information)
@@ -143,16 +144,43 @@ class Tracking extends Component {
 
           // this.state.listMarker.push({lat,lng})
         })
+        //////////////////////////
+        let results
+        let payload = {}
+        res && res.length ? results = res[res.length-1].Value : results = null
+        if(results){
+          // console.log('results',results)
+          this.setState({
+            productName : results.productName,
+            ids : results.id
+          })
+          payload = {
+            Name : results.productName, 
+            ids : results.id,
+            ownerName : results.ownerName,
+            status : results.status
+          }
+          payload = JSON.stringify(payload)
+          console.log('payload',payload)
+
+          try {
+            const response = await QRCode.toDataURL(payload);
+            // setImageUrl(response);
+            this.setState({
+              imageUrl : response,
+            })
+          }catch (error) {
+            console.log(error);
+          }
+        }
+        
       }
       this.setState({
         total: res
       })
     })
-    // this.props.find_products(token, searchText).then(res => {
-    //     this.setState({
-    //       total: res.total
-    //     })
-    //   })
+    
+    
     
   }
 
@@ -165,9 +193,7 @@ class Tracking extends Component {
 //     this.setState({modalShow: false})
 //   }
 
-  generateQrCode = async () => {
-    // console.log(this.state.text)
-    
+  generateQrCode = async () => {    
     let results
     let payload = {}
     const { total } = this.state;
@@ -203,37 +229,38 @@ class Tracking extends Component {
 
     
   }
-  handleErrorFile = (error) => {
-    console.log(error);
-  }
-  handleScanFile = (result) => {
-      if (result) {
-          // setScanResultFile(result);
-          this.setState({
-            scanResultFile : result
-          })
-      }
-  }
-  onScanFile = () => {
-    console.log(this.qrRef.current)
-    // qrRef.current.openImageDialog();
+  // handleErrorFile = (error) => {
+  //   console.log(error);
+  // }
+  // handleScanFile = (result) => {
+  //     if (result) {
+  //         // setScanResultFile(result);
+  //         this.setState({
+  //           scanResultFile : result
+  //         })
+  //     }
+  // }
+  // onScanFile = () => {
+  //   console.log(this.qrRef.current)
+  //   // qrRef.current.openImageDialog();
 
-  }
-  handleErrorWebCam = (error) => {
-    console.log(error);
-  }
-  handleScanWebCam = (result) => {
-    console.log('run')
-    if (result){
-      console.log(result)
-        // setScanResultWebCam(result);
-        this.setState({
-          scanResultWebCam : result
-        })
-    }
-  }
+  // }
+  // handleErrorWebCam = (error) => {
+  //   console.log(error);
+  // }
+  // handleScanWebCam = (result) => {
+  //   console.log('run')
+  //   if (result){
+  //     console.log(result)
+  //       // setScanResultWebCam(result);
+  //       this.setState({
+  //         scanResultWebCam : result
+  //       })
+  //   }
+  // }
 
   MyVerticallyCenteredModal = (props) => {
+    let payload;
     return (
       <Modal
         {...props}
@@ -248,13 +275,6 @@ class Tracking extends Component {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{overflow: 'auto'}}>          
-          <div className='align-items-center' >
-              {this.state.imageUrl ? (
-                  <a href={this.state.imageUrl} download>
-                      <img style={{'marginLeft':'200px'}} src={this.state.imageUrl} alt="img"/>
-                  </a>) 
-              : null}
-          </div>
           <div>
             <BarcodeScannerComponent
               width={300}
@@ -263,9 +283,13 @@ class Tracking extends Component {
               onUpdate={(err,result) => {
                 console.log('result',result)
                 if(result){
+                  payload = JSON.parse(result.text)
                   this.setState({
-                    scanResultWebCam : result.text
+                    scanResultWebCam : result.text,
+                    searchText : payload.ids,
                   })
+                  // localStorage.setItem('_ReportItem', result.text)
+                  // return <Redirect to='/productreport/add'></Redirect>
                 }else{
                   this.setState({
                     scanResultWebCam : "Not found"
@@ -273,28 +297,49 @@ class Tracking extends Component {
                 }
               }}
             />
-            <span>{this.state.scanResultWebCam}</span>
+            {this.state.scanResultWebCam != "Not found" && payload ? 
+              <table className="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Product Name</th>
+                    <th>Id Product</th>
+                    <th>Owner Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    <td>{payload.Name}</td>
+                    <td>{payload.ids}</td>
+                    <td>{payload.ownerName}</td>
+                    <td>{payload.status}</td>
+                </tbody>
+              </table>
+            :
+            <h3>
+              {this.state.scanResultWebCam}
+            </h3>
+            }
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <button type='button' onClick={() => {
-            let payload = {productName : this.state.productName, ids : this.state.ids}
-            console.log(payload)
-            localStorage.setItem('_ReportItem', JSON.stringify(payload))
-             }}
-            ><Link to='productreport/add' className='btn btn-danger'>Report</Link></button>
+          {this.state.scanResultWebCam != "Not found" ? <button type='button' onClick={() => localStorage.setItem('_ReportItem', this.state.scanResultWebCam)}><Link to='productreport/add' className='btn btn-danger'>Report</Link></button> : null}
           {/* <button type='button'>
             <Route className='btn btn-danger' path='productreport/add' render={(match) => <ActionReportProduct data ={{name : this.state.productName}}/>}>Report</Route>
           </button> */}
 
-          <button type="button" className="btn btn-info" onClick={props.onHide}>Close</button>
+          <button type="submit" className="btn btn-info" onClick={(event) => {
+                                                                  this.handleSubmit(event).then(()=>{
+                                                                    this.setState({
+                                                                      modalShow: false,  
+                                                                    })
+                                                                  })
+                                                                  // props.onHide
+                                                                  }}>Close</button>
         </Modal.Footer>
       </Modal>
     );
   }
-
   render() {
-    let { products } = this.props;
+    let { tracking } = this.props;
     const { searchText, total } = this.state;
     return (
       <div className="content-inner">
@@ -324,17 +369,28 @@ class Tracking extends Component {
                   </div>
                   <form onSubmit={(event) => this.handleSubmit(event)}
                     className="form-inline md-form form-sm mt-0" style={{ justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20 }}>
-                    <div>
-                      <button style={{border: 0, background: 'white'}}> <i className="fa fa-search" aria-hidden="true"></i></button>                  
-                      <input
-                        name="searchText"
-                        onChange={this.handleChange}
-                        value={searchText}
-                        className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
-                        aria-label="Search" />
-                    </div>
-                    <Button  variant="contained" 
-                            color="primary" onClick={() => this.generateQrCode()}>Generate</Button>
+                      <div className='btn btn-group'>
+                        <div>
+                          {this.state.imageUrl ? (
+                            <a href={this.state.imageUrl} download>
+                                <img style={{'marginLeft':'200px'}} src={this.state.imageUrl} alt="img"/>
+                            </a>) 
+                        : null}
+                        </div>
+                      </div>
+                      <div>
+                        <button style={{border: 0, background: 'white'}}> <i className="fa fa-search" aria-hidden="true"></i></button>    
+                        <input
+                          name="searchText"
+                          onChange={this.handleChange}
+                          value={searchText}
+                          className="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search"
+                          aria-label="Search" />
+                      </div>
+                      <div>
+                        <Button  variant="contained" 
+                              color="primary" onClick={() => this.setState({modalShow: true})}>Scan</Button>
+                      </div>
                   </form>
                   <div className="card-body">
                     <div className="table-responsive">
@@ -355,10 +411,10 @@ class Tracking extends Component {
                             show={this.state.modalShow}
                             onHide={() => this.setState({modalShow: false})}
                           />
-                          {total && total.length ? total.map((item, index) => {
+                          {tracking && tracking.length ? tracking.map((item, index) => {
                             {/* console.log('item',item) */}
-                            if(!item.Value.active && index+1 == total.length ){
-                              console.log('active',item.Value.active)
+                            if(!item.Value.active && index+1 == tracking.length ){
+                              {/* console.log('active',item.Value.active) */}
                               return (
                                 <tr key={index} style={{background: '#FFD2D2'}}>
                                   <th scope="row">{index + 1}</th>
@@ -369,7 +425,7 @@ class Tracking extends Component {
                                   <td><p1>{item.Timestamp}</p1></td>
                                 </tr>
                               )
-                            }else if(index+1 == total.length){
+                            }else if(index+1 == tracking.length){
                               return(
                                 <tr key={index} style={{background: '#d5f4e6'}}>
                                   <th scope="row">{index + 1}</th>
@@ -473,11 +529,12 @@ class Tracking extends Component {
   }
 }
 
-// const mapStateToProps = (state) => {
-//   return {
-//     products: state.products
-//   }
-// }
+const mapStateToProps = (state) => {
+  // console.log(state.tracking)
+  return {
+    tracking: state.tracking
+  }
+}
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -491,4 +548,4 @@ const mapDispatchToProps = (dispatch) => {
 
 
 
-export default connect(null, mapDispatchToProps)(Tracking)
+export default connect(mapStateToProps, mapDispatchToProps)(Tracking)

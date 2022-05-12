@@ -14,7 +14,7 @@ import 'react-toastify/dist/ReactToastify.css';
             callApi(`tracking/${id}`, 'GET', null, token)
             .then(res => {
                 if (res && res.status === 200) { 
-                // dispatch(actHistoryRequest(res.data));
+                dispatch(actTrackingRequestDispatch(res.data));
                 resolve(res.data);
                 // console.log(res.data)
                 setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
@@ -30,7 +30,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
     };
 
-    export const actHistoryRequestDispatch = (data) => {
+    export const actTrackingRequestDispatch = (data) => {
         return {
         type : Types.TRACKING_REQUEST,
         data
