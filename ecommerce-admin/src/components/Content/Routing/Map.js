@@ -229,7 +229,7 @@ class Map extends Component {
                                 
                                 
                             </GoogleMap>
-                            {/* <button type="button" className="btn btn-warning" onClick={this.generateDirection}>generate</button> */}
+                            <button type="button" className="btn btn-warning" onClick={this.generateDirection}>generate</button>
                         </div>
                         <div className="col">
                             <div id='panel' style={{"overflowY" :"scroll", height: "500px"}}></div>

@@ -332,48 +332,48 @@ class ActionOrder extends Component {
                       </div>
                       <div className="line" />
                       {
-                        id ? <div>
-                       <div className="line" />
+                      id ? <div>
+                      <div className="line" />
                       <div className="form-group row">
                         <label className="col-sm-3 form-control-label" style={{paddingTop: 50}}>Items</label>
                         <div className="col-sm-9">
-                        <div className="card-body">
-                    <div className="table-responsive">
-                      <table className="table table-hover">
-                        <thead>
-                          <tr>
-                            <th>Number</th>
-                            <th>Product</th>
-                            <th>Image</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {dataOrderDetails && dataOrderDetails.length ? dataOrderDetails.map((item, index) => {
-                            return (
-                              <tr key={index}>
-                                <th scope="row">{index + 1}</th>
-                                <td>{item.nameProduct}</td>
-                                <td>
-                                  <div className="fix-cart">
-                                    <img src={item && item.product ? item.product.image : null} className="fix-img" alt="not found" />
-                                  </div>
-                                </td>
-                                <td>{item.quantity}</td>
-                                <td>{item.quantity * item.price}</td>
-                              </tr>
-                            )
-                          }) : null}
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td><b style={{fontSize: 16}}>Item Amount: </b></td>
-                        <td><b style={{fontSize: 16}}>${orderDetailAmount}</b></td>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
+                          <div className="card-body">
+                            <div className="table-responsive">
+                              <table className="table table-hover">
+                                <thead>
+                                  <tr>
+                                    <th>Number</th>
+                                    <th>Product</th>
+                                    <th>Image</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {dataOrderDetails && dataOrderDetails.length ? dataOrderDetails.map((item, index) => {
+                                    return (
+                                      <tr key={index}>
+                                        <th scope="row">{index + 1}</th>
+                                        <td>{item.nameProduct}</td>
+                                        <td>
+                                          <div className="fix-cart">
+                                            <img src={item && item.product ? item.product.image : null} className="fix-img" alt="not found" />
+                                          </div>
+                                        </td>
+                                        <td>{item.quantity}</td>
+                                        <td>{item.quantity * item.price}</td>
+                                      </tr>
+                                    )
+                                  }) : null}
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td><b style={{fontSize: 16}}>Item Amount: </b></td>
+                                <td><b style={{fontSize: 16}}>${orderDetailAmount}</b></td>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
                         </div>
                       </div>
                           <div className="line" />

@@ -43,8 +43,8 @@ class ActionReportProduct extends Component {
       product:[],
       productAdd:{},
       pdId:'',
-      type:'',
-      note:'',
+      type:"Broken",
+      note:"",
       reportList: [],
       image:'',
       value :'',
@@ -89,7 +89,7 @@ class ActionReportProduct extends Component {
         let item2 = localStorage.getItem('_ReportItem')
         item2 = JSON.parse(item2)
         // console.log('item', item2)
-        if(item2 != ""){
+        if(item2 != null){
           let item = res.filter((item) => {
             return item.nameProduct == item2.Name
           })
@@ -172,7 +172,8 @@ class ActionReportProduct extends Component {
         // })
     // }
     const {pId, pdId, type, note} = this.state
-    if (pId && pdId && type && note){
+    if (pId && pdId && type){
+      console.log('problem')
       let ids='';
       let count = pdId.split(",");
       pdId.split(",").forEach((item) =>{
@@ -379,7 +380,7 @@ class ActionReportProduct extends Component {
                                     </td>
                                     {/* <td>{item.quantity}</td> */}
                                     <td>
-                                      <input name="type" onChange={(event)=>{
+                                      <select  className="form-control" value={item.type} name="type" onChange={(event)=>{
                                           console.log(item.pId)
                                           const value = event.target.value;
                                           // let temp_state = this.state.reportList
@@ -392,7 +393,25 @@ class ActionReportProduct extends Component {
                                                   }
                                               }else return object;})
                                           })
-                                      }} value={item.type} type="string" className="form-control" />
+                                      }} >
+                                        <option value='Broken'>Broken</option>
+                                        <option value='Missing' >Missing</option>
+                                        <option value='Other' >Other</option>
+                                      </select>
+                                      {/* <input name="type" onChange={(event)=>{
+                                          console.log(item.pId)
+                                          const value = event.target.value;
+                                          // let temp_state = this.state.reportList
+                                          this.setState({
+                                            reportList : reportList.map((object)=>{
+                                              if(object.pId === item.pId){
+                                                  return {
+                                                      ...object,
+                                                      type: value
+                                                  }
+                                              }else return object;})
+                                          })
+                                      }} value={item.type} type="string" className="form-control" /> */}
                                     </td>
                                     <td>
                                       <input name="note" onChange={(event)=>{
@@ -470,7 +489,13 @@ class ActionReportProduct extends Component {
                           </div>
                           <label className="col-sm-3 form-control-label" style={{textAlign: 'center'}}>Type</label>
                           <div className="col-sm-3">
-                            <input name="type" onChange={this.handleChange} value={type} type="string" className="form-control" />
+
+                            <select  className="form-control mb-3" value={type} name="type" onChange={this.handleChange} >
+                              <option value='Broken'>Broken</option>
+                              <option value='Missing' >Missing</option>
+                              <option value='Other' >Other</option>
+                            </select>
+                            {/* <input name="type" onChange={this.handleChange} value={type} type="string" className="form-control" /> */}
                           </div>
                         </div>  
                         <div className="line" />

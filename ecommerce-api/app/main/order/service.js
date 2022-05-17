@@ -221,8 +221,8 @@ class OrderService extends BaseServiceCRUD {
           "orderId": parseInt(result.id),
           "listPds": pdinOrder
         }
-        const result = await Models.ProductDetails.query().insert(payload).returning('*');
-        if(!result){
+        const result_Pds = await Models.ProductDetails.query().insert(payload).returning('*');
+        if(!result_Pds){
           throw Boom.badRequest("Can not create Product Details in Order");
         }
       }
