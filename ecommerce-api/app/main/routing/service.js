@@ -80,7 +80,7 @@ class RoutingService {
         if(List_Of_Exchanges.length === 0 && List_Of_Orders.length === 0){
             return []
         }
-        listOfData = List_Of_Orders .concat(List_Of_Exchanges);
+        listOfData = List_Of_Orders.concat(List_Of_Exchanges);
         console.log("LoData", listOfData)
         listOfData.sort((a,b) => {
             return a['createdAt'] - b['createdAt'];

@@ -17,7 +17,6 @@ import TextField from "@mui/material/TextField"
 import AutoComplete from "@mui/material/Autocomplete"
 import Modal from 'react-bootstrap/Modal'
 import BarcodeScannerComponent from "react-qr-barcode-scanner"
-
 // import {AutoComplete } from 'antd';
 let token;
 let id;
@@ -231,6 +230,7 @@ class ActionReportProduct extends Component {
 
   MyVerticallyCenteredModal = (props) => {
     let payload;
+    //eslint-disable
     return (
       <Modal
         {...props}
@@ -246,6 +246,7 @@ class ActionReportProduct extends Component {
         </Modal.Header>
         <Modal.Body style={{overflow: 'auto'}}>          
           <div>
+            {/* eslint-disable */}
             <BarcodeScannerComponent
               width={300}
               height={300}
@@ -300,6 +301,7 @@ class ActionReportProduct extends Component {
                                                                   // this.setState({
                                                                   //   modalShow: false,  
                                                                   // })
+                                                                  //eslint-disable-next-line no-unused-expressions  
                                                                   props.onHide
                                                                   }}>Close</button>
         </Modal.Footer>
@@ -449,6 +451,7 @@ class ActionReportProduct extends Component {
                                 ></AutoCompleteComponent> */}
                                 <AutoComplete
                                   value={this.state.inputValue}
+                                  //eslint-disable-next-line no-restricted-globals
                                   onChange={(event, newValue => {
                                     // console.log('Newvalue',newValue)
                                     this.setState({value : newValue})
@@ -543,8 +546,10 @@ const mapDispatchToProps = (dispatch) => {
     fetch_products: (token, offset, storename) => {
         return dispatch(actFetchProductsRequest(token, offset, storename))
     },
+    
     create_report: (payload, token) => {
-        return dispatch(actCreateReportRequest(payload, token))
+      //eslint-disable-next-line no-undef
+        return dispatch(actCreateReport(payload, token))
     }
   }
 }

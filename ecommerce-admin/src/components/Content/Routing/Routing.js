@@ -33,7 +33,7 @@ class Routing extends Component {
       listComplete: [],
       listCancel : [],
       prove: [],
-      productDetails:'',
+      productDetails:"",
     }
 
   }  
@@ -265,9 +265,9 @@ handleSubmit = async (event) => {
   async fetch_product_details(item){
     // console.log('fetch thanh cong', id)
     token = localStorage.getItem('_auth');
-    console.log(item)
+    console.log("item",item)
     let keyword = item.specialId.split("-");
-    console.log(keyword)
+    console.log('key',keyword)
     if(keyword[0] == "O"){
       await this.props.find_order_product_detail(token, keyword[1]).then(res => {
         console.log('details',res)
@@ -278,6 +278,7 @@ handleSubmit = async (event) => {
       })
     }
     if(keyword[0] == "E"){
+      //eslint-disable-next-line no-undef
       this.props.fetchProductDetail_Exchange(str, item.listofProductDetail).then(res => {
         console.log('details',res)
         // this.setState({
@@ -295,6 +296,7 @@ handleSubmit = async (event) => {
 
   MyVerticallyCenteredModal = (props) => {
     // let temp = Object.keys(this.state.productDetails)
+    console.log(this.state.productDetails);
     let temp = Object.keys(this.state.productDetails);
     let detail;
     // console.log('key',temp)

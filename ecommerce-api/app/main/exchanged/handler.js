@@ -191,3 +191,13 @@ const controller = new ExchangeController();
     }
   };
 
+  exports.getDetailForAnExchange = {
+    description: 'Update Order',
+    notes: 'Return updated Order by id',
+    tags: ['api', 'v1'],
+    handler: controller.getDetailForAnExchange.bind(controller),
+//     auth: {},
+    validate: {
+
+    }
+  };

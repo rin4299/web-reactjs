@@ -157,7 +157,16 @@ class ExchangeController extends BaseControllerCRUD {
     }
   };
 
-
+   async getDetailForAnExchange(request) {
+    try {
+      const {id} = request.params;
+      return await this.service.getDetailForAnExchange(id);
+    } catch (err) {
+      throw err;
+    }
+  };
+  
+  
   async initProductDetails(request) {
     try {
       return await this.service.initProductDetails();
