@@ -249,7 +249,7 @@ class YourRequest extends Component {
                         </thead>
                         <tbody>
                           {total2 && total2.length ? total2.map((item, index) => {
-                            console.log('item',item)
+                            {/* console.log('item',item) */}
                             if(item.isReceived){
                               return null;
                             }
