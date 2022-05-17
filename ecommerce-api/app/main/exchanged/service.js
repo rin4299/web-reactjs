@@ -955,6 +955,48 @@ class ExchangeService extends BaseServiceCRUD {
     }
     return return_list;
   }
+	
+	async getDetailForAnExchange(id) {
+
+		let objectExchange = {
+		      fcn: "queryExchange",
+		      peers:["peer0.org1.example.com","peer0.org2.example.com"],
+		      chaincodeName:"productdetail",
+		      channelName:"mychannel",
+		      args:[id.toString()]
+		    }
+		const res_Exchange_Infor = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", objectExchange);
+		if(!res_Exchange_Infor){
+		   throw Boom.badRequest('Error in BC!')
+		}
+		var data = res_Exchange_Infor.data.result.data;
+		var listofP = Buffer.from(JSON.parse(JSON.stringify(data))).toString();
+		var exchangeInfor = JSON.parse(listofP)
+		console.log("Exchange FROM BC: ", exchangeInfor)
+
+		var str = exchangeInfor.listofProductDetail
+		console.log("STR", str);
+		var return_list = {}
+		    var shell = [];
+		    var listofProduct = str.split(",");
+		    for(var l = 0; l < listofProduct.length; l++){
+			var split_data = listofProduct[l].split("-");
+			if(shell.includes(split_data[0])){
+			  return_list[split_data[0]]['ids'] += "," + split_data[1];
+			  return_list[split_data[0]]['quantity'] += 1;
+			} else{
+			  shell.push(split_data[0]);
+			  var product_infor = await Models.Product.query().findOne({id: parseInt(split_data[0])})
+			  var obj = {
+			    'ids': split_data[1],
+			    'quantity': 1,
+			    'product': product_infor
+			  }
+			  return_list[split_data[0]] = obj;
+			}
+		    }
+		return return_list;
+	}
 
 
   async initProductDetails(){
