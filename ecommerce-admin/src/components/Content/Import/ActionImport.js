@@ -141,11 +141,13 @@ class ActionImport extends Component {
     })
     if(newInputValue && item[0]){
       this.setState({
+        productAdd: item,
         pId : item[0].id,
         image : item[0].image
       })
     }else{
       this.setState({
+        productAdd: {},
         pId : 0,
         image : ''
       })
@@ -154,11 +156,12 @@ class ActionImport extends Component {
 
   handleAddToImport = () =>{
     let item = this.state.productAdd
+    console.log(item)
     if (item){
         // let newList = [...this.state.importList, {pId:item.id,pName:item.nameProduct, quantity: 1}]
         // console.log('newList',newList)
         this.setState({
-            importList : [...this.state.importList, {pId:item.id,pName:item.nameProduct, quantity: 1}]
+            importList : [...this.state.importList, {pId:item[0].id,pName:item[0].nameProduct, quantity: 1}]
         })
     }
   }

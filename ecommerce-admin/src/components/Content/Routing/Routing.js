@@ -33,7 +33,7 @@ class Routing extends Component {
       listComplete: [],
       listCancel : [],
       prove: [],
-      productDetails:'',
+      productDetails:"",
     }
 
   }  
@@ -535,6 +535,7 @@ handleSubmit = async (event) => {
                     </table>
                   : null} 
                 </div>
+                {/* {routing[0] ? <Map listRouting = {routing[0]}/> : null } */}
                 {/* <Map listRouting = {this.state.listRouting}/> */}
                 {/* <Maploader
                   googleMapURL = "https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyCXxL0MBTRrFF9MBlEMZNwkmenz9zMRtZk"

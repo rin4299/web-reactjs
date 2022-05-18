@@ -301,7 +301,7 @@ class Order extends Component {
                   <div>
                     
                     </div>
-                  <div style={{witdh:"30px", justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20, marginLeft:"auto" }} class="btn-group">
+                  <div style={{witdh:"30px", justifyContent: 'flex-end', paddingTop: 5, paddingRight: 20, marginLeft:"auto" }} className="btn-group">
                   {/* <RangePicker
                     dateFormat='dd/MM/yyyy'
                     isClearable={true}

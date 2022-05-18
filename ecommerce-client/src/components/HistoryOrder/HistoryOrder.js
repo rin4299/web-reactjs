@@ -108,7 +108,7 @@ class HistoryOrder extends Component {
                 <div className="row justify-content-md-center">
                     <ul className="nav nav-tabs" style={{ paddingTop: 30, marginLeft: 100}} id="myTab" role="tablist">
                         <li className="nav-item">
-                            <button className="nav-link active btn-lg" name="status" value="All" data-toggle="tab" role="tab" aria-controls="all" aria-selected="true" onClick={this.handleChange}>ALL</button>
+                            <button className="nav-link active btn-lg" name="filterStatus" value="All" data-toggle="tab" role="tab" aria-controls="all" aria-selected="true" onClick={this.handleChange}>ALL</button>
                             {/* <a className="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="all" aria-selected="true">All</a> */}
                         </li>
                         <li className="nav-item" style={{marginLeft: 10}}>
@@ -153,7 +153,8 @@ class HistoryOrder extends Component {
                                     {
                                         historyBooking && historyBooking.length ? historyBooking
                                         .filter((item,index) => {
-                                            if(this.state.filterStatus === 'All'){
+                                            {/* console.log(item) */}
+                                            if(this.state.filterStatus == 'All'){
                                             return true
                                             }
                                             return item.status == this.state.filterStatus

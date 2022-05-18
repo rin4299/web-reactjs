@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import './style.css'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { actFetchProductsRequest, actDeleteProductRequest } from '../../../redux/actions/product';
 import { actFetchExchangeReceive, actUpdateConfirm, actDeleteRequest} from '../../../redux/actions/exchange';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -71,7 +70,6 @@ class YourRequest extends Component {
   pageChange(content){
     const limit = 10;
     const offset = limit * (content - 1);
-    this.props.fetch_products(token, offset);
     this.setState({
       currentPage: content,
       total2: this.state.total.slice(offset, offset + 10),
@@ -275,15 +273,17 @@ class YourRequest extends Component {
                                 <td>{item.isAccepted ? item.status : "Unconfirm" }</td>
                                 <td>{item.isAccepted ?
                                 <div className="i-checks">
-                                    <button class="btn btn-info" onClick={() => {this.setState({modalShow: true,receive : item, id : item.id, nameProduct: item.products[0].nameProduct, quantityRequest: item.products[0].quantity} )}}>Confirm</button>
+                                    <Link to={`/yourrequest/confirm/${item.id}`}><button className="btn btn-info" style={{ marginRight: 2 }}>Confirm</button></Link>                                    {/* <button class="btn btn-info" onClick={() => {this.setState({modalShow: true,receive : item, id : item.id, nameProduct: item.products[0].nameProduct, quantityRequest: item.products[0].quantity} )}}>Confirm</button>
                                     <this.MyVerticallyCenteredModal
                                       show={this.state.modalShow}
                                       onHide={() => this.setState({modalShow: false})}
                                       receive ={{name: this.state.nameProduct,from :this.state.receive.reqUserName, to:this.state.receive.recUserName, Quantity:this.state.quantityRequest, indexExchange : this.state.id, listofProduct:this.state.receive.listofProduct }}
-                                    />
+                                    /> */}
                                   </div>
                                   :
                                   <div className="i-checks">
+                                    {/* <Link to={`/yourrequest/confirm/${item.id}`}><button className="btn btn-info" style={{ marginRight: 2 }}>Confirm</button></Link> */}
+
                                     <button class="btn btn-secondary" onClick={() => {this.setState({modalShow: true,receive : item, id : item.id, nameProduct: item.products[0].nameProduct, quantityRequest: item.products[0].quantity} )}}>Waiting</button>
                                     <this.MyVerticallyCenteredModal
                                       show={this.state.modalShow}
@@ -342,12 +342,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetch_products: (token, offset) => {
-       return dispatch(actFetchProductsRequest(token, offset))
-    },
-    delete_product: (id, token) => {
-      dispatch(actDeleteProductRequest(id, token))
-    },
     fetch_exchange_receive : (id, token) => {
       return dispatch(actFetchExchangeReceive(id, token))
     },

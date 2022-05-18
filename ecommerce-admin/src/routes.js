@@ -7,6 +7,13 @@ import CategoryPage from './pages/CategoryPage';
 import ProductPage from './pages/ProductPage';
 import DiscountPage from './pages/DiscountPage';
 import UserPage from './pages/UserPage';
+import RequestPage from 'pages/RequestPage'
+import YourRequestPage from 'pages/YourRequestPage';
+import HistoryRequestPage from 'pages/HistoryRequestPage';
+import TrackingPage from 'pages/TrackingPage';
+import RequestCartPage from 'pages/RequestCartPage';
+import ImportPage from 'pages/ImportPage';
+import RoutingPage from 'pages/RoutingPage';
 import ActionRolePage from './pages/ActionRolePage';
 import ActionUserPage from './pages/ActionUserPage';
 import ActionDiscountPage from './pages/ActionDiscountPage';
@@ -15,19 +22,15 @@ import ActionCategoryPage from './pages/ActionCategoryPage';
 import ActionOrderPage from './pages/ActionOrderPage';
 import ProducerPage from './pages/ProducerPage';
 import ActionProducerPage from './pages/ActionProducerPage';
-import RatingPage from './pages/RatingPage';
-import ContactPage from './pages/ContactPage';
-import AboutPage from './pages/AboutPage';
-import RequestPage from 'pages/RequestPage'
-import YourRequestPage from 'pages/YourRequestPage';
-import HistoryRequestPage from 'pages/HistoryRequestPage';
-import TrackingPage from 'pages/TrackingPage';
-import RequestCartPage from 'pages/RequestCartPage';
-import ImportPage from 'pages/ImportPage';
 import ActionImportPage from 'pages/ActionImportPage';
 import ProductReportPage from 'pages/ProductReportPage';
 import ActionReportProductPage from 'pages/ActionReportProductPage';
-import RoutingPage from 'pages/RoutingPage';
+import ActionYourRequestPage from 'pages/ActionYourRequestPage';
+
+import RatingPage from './pages/RatingPage';
+import ContactPage from './pages/ContactPage';
+import AboutPage from './pages/AboutPage';
+
 const routes = [
   {
     path: '/',
@@ -208,6 +211,11 @@ const routes = [
     path: '/producers/edit/:id',
     exact: false,
     main: ({ match, history }) => <ActionProducerPage match={match} history={history} />
+  },
+  {
+    path: '/yourrequest/confirm/:id',
+    exact: false,
+    main: ({ match, history }) => <ActionYourRequestPage match={match} history={history} />
   }
 
 ]
