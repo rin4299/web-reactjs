@@ -341,6 +341,13 @@ class ExchangeService extends BaseServiceCRUD {
 
   async updateConfirmWrong(payload){
     let {id, storeName, listofTrue, listofFalse} = payload
+    listofTrue = listofTrue.filter(each => {
+      return each["id"] = each["product"]["id"]
+    })
+    listofFalse = listofFalse.filter(every => {
+      return every["id"] = every["product"]["id"]
+    })
+    console.log("Afterrrrrr", listofFalse, listofTrue);
     let manageObj = {}
     for(var num_of_true = 0; num_of_true < listofTrue.length; num_of_true++){
       if(manageObj[listofTrue[num_of_true]["id"]] === undefined){
@@ -375,7 +382,7 @@ class ExchangeService extends BaseServiceCRUD {
     if(Object.keys(manageObj).length > 0){
       for(var eachT in manageObj){
         var productQ = await Models.Ownership.query().where('storeName', storeName).findOne({pId: manageObj[eachT]["pid"]});
-        // await Models.Ownership.query().update({quantity: productQ.quantity + manageObj[eachT]["quantity"]} ).where('storeName', storeName).where('pId', manageObj[eachT]["pid"]);
+        await Models.Ownership.query().update({quantity: productQ.quantity + manageObj[eachT]["quantity"]} ).where('storeName', storeName).where('pId', manageObj[eachT]["pid"]);
         strTrue = strTrue + manageObj[eachT]["str_of_ids"] + ","
       } 
     }
@@ -404,6 +411,7 @@ class ExchangeService extends BaseServiceCRUD {
     } else {
       throw Boom.badData(`Can not update new Exchange with id ${id.toString()}`)
     }
+    // return "ok"
   }
 
   async updateConfirm(payload) {

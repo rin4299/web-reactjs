@@ -413,6 +413,7 @@ func (s *SmartContract) changeProductDetail(APIstub shim.ChaincodeStubInterface,
 			
 				json.Unmarshal(productDetailAsBytes, &productDetail)
 				productDetail.OwnerName = exchange.ReqUserName
+				productDetail.IsTaken = false
 				productDetail.LatestUpdate = t.String()
 			
 				productDetailAsBytes, _ = json.Marshal(productDetail)
@@ -451,6 +452,7 @@ func (s *SmartContract) changeProductDetail(APIstub shim.ChaincodeStubInterface,
 		
 			json.Unmarshal(productDetailAsBytes, &productDetail)
 			productDetail.OwnerName = exchange.ReqUserName
+			productDetail.IsTaken = false
 			productDetail.LatestUpdate = t.String()
 		
 			productDetailAsBytes, _ = json.Marshal(productDetail)
