@@ -65,6 +65,34 @@ import { toast } from 'react-toastify';
         }
     }
 
+    export const actCreateNew = (payload, token) => {
+        return dispatch => {
+        dispatch(actShowLoading());
+        return new Promise((resolve, reject) => {
+            callApi(`productreport/createnew`, 'POST', payload, token)
+            .then(res => {
+                if (res && res.status === 200) { 
+                dispatch(actCreateNewDispatch(res.data));
+                resolve(res.data);
+                setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                reject(err);
+                setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+            });
+        });
+        };
+    };
+    
+    export const actCreateNewDispatch = (data) => {
+        return {
+            type: Types.CREATE_REPORT_NEW,
+            data
+        }
+    }
+
     export const actFetchReportDetail = (id, token) => {
         // return async dispatch => {
         //     const res = callApi(`productreport/getInformation?id=${id}`, "GET", null, token);

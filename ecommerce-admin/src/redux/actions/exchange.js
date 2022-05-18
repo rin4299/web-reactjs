@@ -134,7 +134,7 @@ export const actUpdateAccept = (payload, token) => {
           callApi(`exchange/confirm`, 'POST', payload, token)
             .then(res => {
               if (res && res.status === 200) { 
-                dispatch(actFetchExchangeReq(res.data));
+                dispatch(actUpdateConfirmDispatch(res.data));
                 resolve(res.data);
                 setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
               }
@@ -154,6 +154,35 @@ export const actUpdateAccept = (payload, token) => {
         data
     }
   }
+
+
+  export const actupdateConfirmWrong = (payload, token) => {
+    return dispatch => {
+      dispatch(actShowLoading());
+      return new Promise((resolve, reject) => {
+        callApi(`exchange/confirmwrong`, 'POST', payload, token)
+          .then(res => {
+            if (res && res.status === 200) { 
+              dispatch(actupdateConfirmWrongDispatch(res.data));
+              resolve(res.data);
+              setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            reject(err);
+            setTimeout(function(){ dispatch(actHiddenLoading()) }, 200);
+          });
+      });
+    };
+  };
+
+export const actupdateConfirmWrongDispatch = (data) => {
+  return {
+      type: Types.UPDATE_CONFIRM_WRONG,
+      data
+  }
+}
 
   export const actGetManyDiff = (id, token) => {
     return dispatch => {

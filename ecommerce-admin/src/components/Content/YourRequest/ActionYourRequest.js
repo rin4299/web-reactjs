@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import MyFooter from '../../MyFooter/MyFooter'
 import { actAddProducerRequest, actGetProducerRequest, actEditProducerRequest } from '../../../redux/actions/producer';
+import { actupdateConfirmWrong , actUpdateConfirm } from '../../../redux/actions/exchange'
+import { actCreateNew } from '../../../redux/actions/productreport'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router-dom';
 import callApi from '../../../utils/apiCaller';
@@ -119,6 +121,43 @@ class ActionYourRequest extends Component {
     // window.location.reload()
   }
 
+  // reportMissing
+  reportMissing = (listMissing) => {
+    token = localStorage.getItem('_auth');
+    const payload = {
+      "storeName": this.state.user[0].name,
+      "userName" : "admin " + this.state.user[0].name,
+      "listofFalse" : listMissing
+    }
+    this.props.report_missing(payload, token).then(res =>{
+      console.log(res)
+      toast.success("Report Products Missing")
+      this.setState({
+        modalShow: false,
+        redirectToYourRequest:true,
+      })
+    })
+  }
+
+  updateConfirmWrong = (listSuccess , listMissing) => {
+    token = localStorage.getItem('_auth');
+    const payload = {
+      "id": id,
+      "storeName" : this.state.user[0].name,
+      "listTrue" : listSuccess,
+      "listFalse" : listMissing
+    }
+    this.props.update_confirm_wrong(payload , token).then(res => {
+      console.log(res)
+      toast.success("Your Request is done")
+      this.reportMissing(listMissing)
+    })
+    // this.setState({
+    //   modalShow: false,
+    //   redirectToYourRequest:true,
+    // })
+  }
+
   MyVerticallyCenteredModal = (props) => {
     let payload;
     //eslint-disable
@@ -199,6 +238,8 @@ class ActionYourRequest extends Component {
                 return item.isChecked === false
               }) 
             })
+            this.updateConfirmWrong(this.state.listSuccess, this.state.listMissing)
+            // this.reportMissing(this.state.listMissing)
           }}>Finish</button>
           <button type="submit" className="btn btn-info" onClick={(event) => {
                                                                   // this.handleSubmit(event)
@@ -358,18 +399,15 @@ class ActionYourRequest extends Component {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    add_Producer: (token, newProducer) => {
-      dispatch(actAddProducerRequest(token, newProducer))
-    },
-    get_Producer: (token, id) => {
-      dispatch(actGetProducerRequest(token, id))
-    },
-    edit_Producer: (token, id, data) => {
-      dispatch(actEditProducerRequest(token, id, data))
-    },
     update_Confirm : (payload, token) => {
       return dispatch(actUpdateConfirm(payload, token))
     },
+    update_confirm_wrong: (payload, token) => {
+      return dispatch(actupdateConfirmWrong(payload, token))
+    },
+    report_missing : (payload , token) => {
+      return dispatch(actCreateNew(payload, token))
+    }
   }
 }
 export default connect(null, mapDispatchToProps)(ActionYourRequest)
