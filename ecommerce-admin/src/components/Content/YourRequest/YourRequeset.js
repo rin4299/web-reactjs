@@ -203,7 +203,7 @@ class YourRequest extends Component {
   render() {
     // let { requests } = this.props;
     const {total, total2} = this.state;
-
+    // console.log("lop",this.state.receive.listofProduct)
     return (
       <div className="content-inner">
         {/* Page Header*/}
@@ -273,7 +273,10 @@ class YourRequest extends Component {
                                 <td>{item.isAccepted ? item.status : "Unconfirm" }</td>
                                 <td>{item.isAccepted ?
                                 <div className="i-checks">
-                                    <Link to={`/yourrequest/confirm/${item.id}`}><button className="btn btn-info" style={{ marginRight: 2 }}>Confirm</button></Link>                                    {/* <button class="btn btn-info" onClick={() => {this.setState({modalShow: true,receive : item, id : item.id, nameProduct: item.products[0].nameProduct, quantityRequest: item.products[0].quantity} )}}>Confirm</button>
+                                    <Link to={`/yourrequest/confirm/${item.id}`}><button className="btn btn-info" style={{ marginRight: 2 }} onClick={() => localStorage.setItem('_RequestTo', item.recUserName)}>Confirm</button></Link> 
+                                    {/* <button type='button' onClick={() => localStorage.setItem('_RequestTo', item.recUserName)}><Link to={`/yourrequest/confirm/${item.id}`} className='btn btn-info'>Confirm</Link></button> */}
+                                   
+                                    {/* <button class="btn btn-info" onClick={() => {this.setState({modalShow: true,receive : item, id : item.id, nameProduct: item.products[0].nameProduct, quantityRequest: item.products[0].quantity} )}}>Confirm</button>
                                     <this.MyVerticallyCenteredModal
                                       show={this.state.modalShow}
                                       onHide={() => this.setState({modalShow: false})}

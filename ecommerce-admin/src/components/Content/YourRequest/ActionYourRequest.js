@@ -32,6 +32,10 @@ class ActionYourRequest extends Component {
       listproduct:[],
       modalShow: false,
       user:[],
+      lopSuccess:"",
+      ReqTo:"",
+      listSuccess:[],
+      listMissing:[],
     };
     id = this.props.id
   }
@@ -44,7 +48,7 @@ class ActionYourRequest extends Component {
           this.setState({
             user: res.data.results
           })
-          console.log("user",this.state.user[0].name)
+          // console.log("user",this.state.user[0].name)
         }
       } else {
         this.setState({
@@ -58,17 +62,24 @@ class ActionYourRequest extends Component {
         // console.log('temp',temp)
         temp ? temp.map((item) => {
             let object = res.data[item]
-            console.log('product',object)
+            // console.log('object',object)
+            this.setState({
+              lopSuccess : this.state.lopSuccess ? this.state.lopSuccess + "," + object.product.id + "-" + object.quantity : object.product.id + "-" + object.quantity
+            })
             let listid = object.ids.split(",")
-            console.log(listid)
+            // console.log(listid)
             listid ? listid.map((item) => {
                 this.setState({
                     listproduct : [... this.state.listproduct,{ids: item , product: object.product, isChecked : false}]
                 })
             }):null
         }) : null
-
+      console.log("lopSuccess",this.state.lopSuccess)
     }
+    let ReqTo = localStorage.getItem('_RequestTo')
+    this.setState({
+      ReqTo : ReqTo
+    })
   }
 
 
@@ -87,6 +98,25 @@ class ActionYourRequest extends Component {
         redirectToYourRequest: true
     })
   }
+
+  updateConfirm = (id, lop, storeName ) => {
+    const payload = {
+      'id': id,
+      'lop': lop,
+      'storeName': storeName
+    }
+    token = localStorage.getItem('_auth');
+    this.props.update_Confirm(payload,token).then(res => {
+      console.log(res)
+      toast.success('Your Request is done');
+    })
+    this.setState({
+      modalShow: false,
+      redirectToYourRequest:true,
+    })
+    // window.location.reload()
+  }
+
   MyVerticallyCenteredModal = (props) => {
     let payload;
     //eslint-disable
@@ -122,25 +152,23 @@ class ActionYourRequest extends Component {
                             if(item.ids === payload.ids){
                                 toast.success('Product: {'+ item.ids +'} is checked.');
                                 return {
-                                    ...object,
+                                    ...item,
                                     isChecked: true
                                 }
-                            }else return object;
+                            }else return item;
                         })
                     })
-                    let isDone = this.state.listproduct.filter((item) => {
-                        item.isChecked == false
+                    let isDone = this.state.listproduct.every((item) => {
+                        item.isChecked === true
                     })
-                    if(!isDone){
-                        this.setState({
-                            modalShow:false
-                        })
+                    if(isDone){
+                      this.updateConfirm(id, this.state.lopSuccess, this.state.user[0].name)
                     }
                 }else{
                   this.setState({
                     scanResultWebCam : "Not found"
                   })
-                  toast.success('Product: {'+ item.ids +'} is not in this order.');
+                  toast.warn('Product: {'+ item.ids +'} is not in this order.');
                 }
               }}
             />
@@ -150,7 +178,16 @@ class ActionYourRequest extends Component {
           {/* <button type='button'>
             <Route className='btn btn-danger' path='productreport/add' render={(match) => <ActionReportProduct data ={{name : this.state.productName}}/>}>Report</Route>
           </button> */}
-
+          <button className='btn btn-primary' onClick={()=>{
+            this.setState({
+              listSuccess : listproduct.filter((item)=>{
+                return item.isChecked === true
+              }),
+              listMissing : listproduct.filter((item) =>{
+                return item.isChecked === false
+              }) 
+            })
+          }}>Finish</button>
           <button type="submit" className="btn btn-info" onClick={(event) => {
                                                                   // this.handleSubmit(event)
                                                                   // this.setState({
@@ -166,11 +203,11 @@ class ActionYourRequest extends Component {
 
 
   render() {
-    const { name, desc,redirectToYourRequest, listproduct, user} = this.state;
+    const { name, desc,redirectToYourRequest, listproduct, user, ReqTo} = this.state;
     if (redirectToYourRequest) {
       return <Redirect to='/yourrequests'></Redirect>
     }
-    console.log("listproduct",user)
+    console.log("listproduct",listproduct)
     return (
       <div className="content-inner">
         {/* Page Header*/}
@@ -201,14 +238,14 @@ class ActionYourRequest extends Component {
                         <div className="form-group row">
                             <label className="col-sm-3 form-control-label">From</label>
                             <div className="col-sm-9">
-                            <input name="name" onChange={this.handleChange} value={name} type="text" className="form-control" />
+                            <input name="from" disabled value={ user && user.length ? user[0].name : "empty"} type="text" placeholder="Note" className="form-control" />
                             </div>
                         </div>
                         <div className="line" />
                         <div className="form-group row">
                             <label className="col-sm-3 form-control-label">To</label>
                             <div className="col-sm-9">
-                            <input name="to" disabled value={ user && user.length ? user[0].name : "empty"} type="text" placeholder="Note" className="form-control" />
+                            <input name="to" disabled value={ ReqTo } type="text" placeholder="Note" className="form-control" />
                             </div>
                         </div>
                         {id ? <div>
@@ -250,7 +287,7 @@ class ActionYourRequest extends Component {
                                                             {/* <td>{item.isChecked}</td> */}
                                                             <td>
                                                                 <div className="i-checks">
-                                                                    <input type="checkbox" defaulchecked={true} className="checkbox-template" />
+                                                                    <input type="checkbox" value={item.isChecked} className="checkbox-template" />
                                                                 </div>
                                                             </td>
                                                             </tr>
@@ -286,7 +323,7 @@ class ActionYourRequest extends Component {
                         <div className="line" />
                         <div className="form-group row">
                             <div className="col-sm-4 offset-sm-3">
-                                <Link to="/producers"><button type="reset" className="btn btn-secondary" style={{ marginRight: 2 }}>Cancel</button></Link>   
+                                <button className="btn btn-secondary" style={{ marginRight: 2 }}><Link to="/yourrequests">Cancel</Link> </button>  
                                 <button style={{ marginRight: 6 }} className="btn btn-info" onClick={() => this.setState({modalShow: true})}>Scan</button>
                                 <button type="submit" className="btn btn-primary">Confirm</button>
                             </div>
@@ -316,7 +353,10 @@ const mapDispatchToProps = (dispatch) => {
     },
     edit_Producer: (token, id, data) => {
       dispatch(actEditProducerRequest(token, id, data))
-    }
+    },
+    update_Confirm : (payload, token) => {
+      return dispatch(actUpdateConfirm(payload, token))
+    },
   }
 }
 export default connect(null, mapDispatchToProps)(ActionYourRequest)

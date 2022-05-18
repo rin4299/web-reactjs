@@ -34,6 +34,7 @@ class HistoryRequest extends Component {
       // endDate : '',
       dateRange: [null,null],
       Newest : 'Newest',
+      dateFilter:""
     }
   }
 
@@ -342,14 +343,14 @@ class HistoryRequest extends Component {
                       onChange={(date)=> {
                         // const [start, end] = dates;
                         console.log(date)
-                        // this.setState({
-                        //   dateRange: date,
-                        // })
+                        this.setState({
+                          dateFilter: date,
+                        })
                       }}
-
+                      value= {this.state.dateFilter}
                       dateFormat='dd/MM/yyyy'
                       isClearable={true}
-                      placeholderText='Date ...'
+                      // placeholderText='Date ...'
                     />
                     <select name="sorting" onChange={(event) => {
                                                                     this.sortNewest(event)                                                                                                      

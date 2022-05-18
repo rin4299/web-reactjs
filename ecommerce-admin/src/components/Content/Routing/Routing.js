@@ -159,7 +159,7 @@ handleSubmit = async (event) => {
           // eslint-disable-next-line no-unused-expressions
           this.state.listCancel && this.state.listCancel.length ? this.state.listCancel.map((item) => {
             let keyword = item.specialId.split("-");
-            console.log(keyword)
+            // console.log(keyword)
             if(keyword[0] == "O"){
               let payload = {
                 orderId : item.id,
@@ -226,7 +226,7 @@ handleSubmit = async (event) => {
             //   toast.success('Order: {'+ item.specialId +'} is shipping.');
             // }
             let keyword = item.specialId.split("-");
-            console.log(keyword)
+            // console.log(keyword)
             if(keyword[0] == "O"){
               let payload = {
                 orderId : item.id,
@@ -265,26 +265,26 @@ handleSubmit = async (event) => {
   async fetch_product_details(item){
     // console.log('fetch thanh cong', id)
     token = localStorage.getItem('_auth');
-    console.log("item",item)
+    // console.log("item",item)
     let keyword = item.specialId.split("-");
-    console.log('key',keyword)
+    // console.log('key',keyword)
     if(keyword[0] == "O"){
       await this.props.find_order_product_detail(token, keyword[1]).then(res => {
-        console.log('details',res)
-        // this.setState({
-        //   productDetails : res,
-        //   modalShow : true,
-        // })
+        // console.log('details',res)
+        this.setState({
+          productDetails : res,
+          modalShow : true,
+        })
       })
     }
     if(keyword[0] == "E"){
       //eslint-disable-next-line no-undef
-      this.props.fetchProductDetail_Exchange(str, item.listofProductDetail).then(res => {
-        console.log('details',res)
-        // this.setState({
-        //   productDetails : res,
-        //   modalShow : true
-        // })
+      await this.props.fetchProductDetail_Exchange(item.listofProductDetail, token).then(res => {
+        // console.log('details',res)
+        this.setState({
+          productDetails : res,
+          modalShow : true
+        })
       })
     }
     // if (item.status === 'Complete' || item.status == 'Shipping'){
@@ -296,7 +296,7 @@ handleSubmit = async (event) => {
 
   MyVerticallyCenteredModal = (props) => {
     // let temp = Object.keys(this.state.productDetails)
-    console.log(this.state.productDetails);
+    // console.log(this.state.productDetails);
     let temp = Object.keys(this.state.productDetails);
     let detail;
     // console.log('key',temp)
@@ -428,7 +428,7 @@ handleSubmit = async (event) => {
                             onHide={() => this.setState({modalShow: false})}
                           />
                           {routing[0] && routing[0].length ? routing[0].map((item, index) => {
-                            console.log(item)
+                            {/* console.log(item) */}
                             if(index == 0) return null 
                             else {
                               {/* console.log(item) */}
@@ -514,7 +514,7 @@ handleSubmit = async (event) => {
                         </tr>
                       </thead>
                       <tbody>
-                        {console.log('prove',this.state.prove)}
+                        {/* {console.log('prove',this.state.prove)} */}
                         {routing[1].map((item,index) => {
                           if(index > 5){return null}
                           else{
