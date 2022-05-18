@@ -15,6 +15,17 @@ exports.createOne = {
     validate: {}
 }
 
+exports.createNewOne = {
+  description: 'Create an import Order',
+  notes: 'Return information of the created import Order',
+  tags: ['api', 'v1'],
+  handler: controller.createNewOne.bind(controller),
+  auth: {
+    strategy: 'jwt',
+  },
+  validate: {}
+}
+
 exports.getAllProductReport = {
   description: 'Get all import Orders of a store',
   notes: 'Return list of import Orders of a store',

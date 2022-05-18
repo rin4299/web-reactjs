@@ -57,6 +57,20 @@ const controller = new ExchangeController();
     }
   };
 
+  exports.updateConfirmWrong = {
+    description: 'Update Order',
+    notes: 'Return updated Order by id',
+    tags: ['api', 'v1'],
+    handler: controller.updateConfirmWrong.bind(controller),
+    auth: {
+      strategy: 'jwt',
+    },
+    validate: {
+
+    }
+  };
+
+
   exports.changeStatus = {
     description: 'Update Order',
     notes: 'Return updated Order by id',

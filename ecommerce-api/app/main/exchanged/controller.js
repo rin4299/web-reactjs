@@ -51,6 +51,17 @@ class ExchangeController extends BaseControllerCRUD {
     }
   };
 
+  async updateConfirmWrong(request) {
+    try {
+      const {
+        payload
+      } = request;
+      return await this.service.updateConfirmWrong(payload);
+    } catch (err) {
+      throw err;
+    }
+  };
+
   async changeStatus(request) {
     try {
       const {
