@@ -281,6 +281,7 @@ class ActionReportProduct extends Component {
                   // localStorage.setItem('_ReportItem', "empty")
                   localStorage.setItem('_ReportItem', JSON.stringify([]));
                 }
+                props.onHide();
                 }else{
                   this.setState({
                     scanResultWebCam : "Not found"
@@ -301,7 +302,7 @@ class ActionReportProduct extends Component {
                                                                   //   modalShow: false,  
                                                                   // })
                                                                   //eslint-disable-next-line no-unused-expressions  
-                                                                  props.onHide
+                                                                  props.onHide()
                                                                   }}>Close</button>
         </Modal.Footer>
       </Modal>

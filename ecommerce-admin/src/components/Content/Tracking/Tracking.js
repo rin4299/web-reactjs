@@ -46,6 +46,7 @@ class Tracking extends Component {
       scanResultWebCam:'',
       // qrRef:null
       listMarker: [],
+      payload:null
 
     }
     this.qrRef = React.createRef()
@@ -260,7 +261,7 @@ class Tracking extends Component {
   // }
 
   MyVerticallyCenteredModal = (props) => {
-    let payload;
+    // let payload;
     return (
       <Modal
         {...props}
@@ -283,21 +284,29 @@ class Tracking extends Component {
               onUpdate={(err,result) => {
                 console.log('result',result)
                 if(result){
-                  payload = JSON.parse(result.text)
+                  let payload = JSON.parse(result.text)
+                  console.log("AFTER PARSE", payload)
                   this.setState({
                     scanResultWebCam : result.text,
                     searchText : payload.ids,
+                    payload: payload
                   })
                   // localStorage.setItem('_ReportItem', result.text)
                   // return <Redirect to='/productreport/add'></Redirect>
-                }else{
+                } else if(this.state.scanResultWebCam){
+                  this.setState({
+                    scanResultWebCam : this.state.scanResultWebCam
+                  })
+                }
+                else{
                   this.setState({
                     scanResultWebCam : "Not found"
                   })
                 }
               }}
             />
-            {this.state.scanResultWebCam != "Not found" && payload ? 
+            {console.log("ABCDDDDEEEDDGFFFFF",this.state.payload)}
+            {this.state.scanResultWebCam != "Not found" && this.state.payload ? 
               <table className="table table-hover">
                 <thead>
                   <tr>
@@ -307,10 +316,10 @@ class Tracking extends Component {
                   </tr>
                 </thead>
                 <tbody>
-                    <td>{payload.Name}</td>
-                    <td>{payload.ids}</td>
-                    <td>{payload.ownerName}</td>
-                    <td>{payload.status}</td>
+                    <td>{this.state.payload.Name}</td>
+                    <td>{this.state.payload.ids}</td>
+                    <td>{this.state.payload.ownerName}</td>
+                    <td>{this.state.payload.status}</td>
                 </tbody>
               </table>
             :
