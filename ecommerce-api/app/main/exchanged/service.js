@@ -339,6 +339,72 @@ class ExchangeService extends BaseServiceCRUD {
     }
   }
 
+  async updateConfirmWrong(payload){
+    let {id, storeName, listofTrue, listofFalse} = payload
+    let manageObj = {}
+    for(var num_of_true = 0; num_of_true < listofTrue.length; num_of_true++){
+      if(manageObj[listofTrue[num_of_true]["id"]] === undefined){
+        manageObj[listofTrue[num_of_true]] = {
+          pid: listofTrue[num_of_true]["id"],
+          quantity: 1,
+          str_of_ids: listofTrue[num_of_true]["id"].toString() + "-" +listofTrue[num_of_true]["ids"].toString()
+        }
+      } else {
+        manageObj[listofTrue[num_of_true]]["quantity"] = manageObj[listofTrue[num_of_true]]["quantity"] + 1;
+        manageObj[listofTrue[num_of_true]]["str_of_ids"] = manageObj[listofTrue[num_of_true]]["str_of_ids"] + "," + listofTrue[num_of_true]["id"].toString() + "-" +listofTrue[num_of_true]["ids"].toString();
+      }
+    }
+
+    let objFalse = {}
+    for (var num_of_false = 0; num_of_false < listofFalse.length; num_of_false++){
+      if(objFalse[listofFalse[num_of_false]["id"]]){
+        objFalse[listofFalse[num_of_false]["id"]]["quantity"] = objFalse[listofFalse[num_of_false]["id"]]["quantity"] + 1;
+        objFalse[listofFalse[num_of_false]["id"]]["str_of_ids"] =  objFalse[listofFalse[num_of_false]["id"]]["str_of_ids"] + "," + listofFalse[num_of_false]["id"].toString() + "-" + listofFalse[num_of_false]["ids"].toString();
+      } else {
+        objFalse[listofFalse[num_of_false]["id"]] = {
+          pid: listofFalse[num_of_false]["id"],
+          quantity: 1,
+          str_of_ids: listofFalse[num_of_false]["id"].toString() + "-" + listofFalse[num_of_false]["ids"].toString()
+        }
+      }
+    }
+
+    //Update Ownership and Create STR for update BC
+    var strTrue = ""
+    var strFalse = ""
+    if(Object.keys(manageObj).length > 0){
+      for(var eachT in manageObj){
+        var productQ = await Models.Ownership.query().where('storeName', storeName).findOne({pId: manageObj[eachT]["pid"]});
+        // await Models.Ownership.query().update({quantity: productQ.quantity + manageObj[eachT]["quantity"]} ).where('storeName', storeName).where('pId', manageObj[eachT]["pid"]);
+        strTrue = strTrue + manageObj[eachT]["str_of_ids"] + ","
+      } 
+    }
+    if(Object.keys(objFalse).length > 0){
+      for(var eachF in objFalse){
+        strFalse = strFalse +  objFalse[eachF]["str_of_ids"] + ","
+      }
+    }
+    strTrue = strTrue.slice(0,-1);
+    strFalse = strFalse.slice(0,-1)
+    console.log("FALSE TRUE", strFalse, strTrue)
+    let object = {
+      fcn: "changeProductDetail",
+      peers:["peer0.org1.example.com","peer0.org2.example.com"],
+      chaincodeName:"productdetail",
+      channelName:"mychannel",
+      args:[id.toString(), "isConfirm", strTrue, strFalse]
+    }
+    var res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+    if(res){
+      let data = res.data.result.data;
+      var listofP = Buffer.from(JSON.parse(JSON.stringify(data))).toString();
+      var exchangeInfor = JSON.parse(listofP)
+      console.log("Exchange FROM BC: ", exchangeInfor)
+      return exchangeInfor
+    } else {
+      throw Boom.badData(`Can not update new Exchange with id ${id.toString()}`)
+    }
+  }
 
   async updateConfirm(payload) {
     console.log(payload)

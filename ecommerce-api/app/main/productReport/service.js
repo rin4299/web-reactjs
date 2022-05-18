@@ -57,6 +57,65 @@ class productReportService extends BaseServiceCRUD {
        return pR;
     }
 
+    async createNewOne(payload){
+        const {storeName, userName, listofFalse} = payload;
+        let pl = {
+            'createdBy': userName,
+            'storeName': storeName
+        }
+        const pR = await Models.ProductReport.query().insert(pl).returning('*');
+        let objFalse = {}
+        for (var num_of_false = 0; num_of_false < listofFalse.length; num_of_false++){
+            if(objFalse[listofFalse[num_of_false]["id"]]){
+                objFalse[listofFalse[num_of_false]["id"]]["quantity"] = objFalse[listofFalse[num_of_false]["id"]]["quantity"] + 1;
+                objFalse[listofFalse[num_of_false]["id"]]["str_of_ids"] =  objFalse[listofFalse[num_of_false]["id"]]["str_of_ids"] + "-" + listofFalse[num_of_false]["ids"].toString();
+            } else {
+                objFalse[listofFalse[num_of_false]["id"]] = {
+                pid: listofFalse[num_of_false]["id"],
+                quantity: 1,
+                str_of_ids: listofFalse[num_of_false]["ids"].toString()
+                }
+            }
+        }
+        for(var i in objFalse){
+            // Create Product Report Detail
+             let PRDpayload = {
+                 'prId': pR.id,
+                 'pId': parseInt(i),
+                 'pdId': objFalse[i]["str_of_ids"],
+                 'type': "Missing",
+                 'quantity': objFalse[i]["quantity"],
+                 'note': ""
+             }
+             await Models.ProductReportDetail.query().insert(PRDpayload);
+             //Update Quantity in NumberAvailable
+            //  const ownership = await Models.Ownership.query().where('storeName', storeName).findOne({pId: listOfReports[i].pId});
+             const product = await Models.Product.query().findOne('id', parseInt(i));
+             //Update quantity in Ownership
+            //  await Models.Ownership.query().update({quantity: ownership.quantity - listOfReports[i].quantity} ).where('pId', listOfReports[i].pId).where('storeName',storeName);
+             //Update number Available
+             await Models.Product.query().update({numberAvailable: product.numberAvailable - objFalse[i]["quantity"]} ).where('id', parseInt(i));
+ 
+             // Update on BC 
+             var listOfPD = objFalse[i]["str_of_ids"].split("-");
+             for(let j = 0; j < listOfPD.length; j++){
+                 let object = {
+                     fcn: "changeProductDetail",
+                     peers:["peer0.org1.example.com","peer0.org2.example.com"],
+                     chaincodeName:"productdetail",
+                     channelName:"mychannel",
+                     args:[listOfPD[j], "unActive", "Missing"]
+                 }
+                 let res = await Axios.post("http://localhost:4000/channels/mychannel/chaincodes/productdetail", object);
+                 if(!res) {
+                     throw Boom('Failed to connect to blockchain!')
+                 } 
+             }
+        }
+ 
+        return pR;
+    }
+
 
     async getAllProductReport(query){
         const {storeName, startTime, endTime} = query

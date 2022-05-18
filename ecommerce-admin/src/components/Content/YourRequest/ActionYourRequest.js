@@ -7,6 +7,7 @@ import callApi from '../../../utils/apiCaller';
 import { css } from '@emotion/core';
 import { Link } from 'react-router-dom'
 import Modal from 'react-bootstrap/Modal'
+import {Container, Card, CardContent, makeStyles, Grid, TextField, Button} from '@material-ui/core';
 import BarcodeScannerComponent from "react-qr-barcode-scanner"
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -60,6 +61,7 @@ class ActionYourRequest extends Component {
         console.log(res.data)
         let temp = Object.keys(res.data)
         // console.log('temp',temp)
+        // eslint-disable-next-line no-unused-expressions
         temp ? temp.map((item) => {
             let object = res.data[item]
             // console.log('object',object)
@@ -150,25 +152,35 @@ class ActionYourRequest extends Component {
                     this.setState({
                         listproduct : this.state.listproduct.map((item)=>{
                             if(item.ids === payload.ids){
-                                toast.success('Product: {'+ item.ids +'} is checked.');
+                                // toast.success('Product: {'+ item.ids +'} is checked.');
+                                console.log("ABCCCCC",item)
+                                item.isChecked = true;
+                                return item
                                 return {
                                     ...item,
                                     isChecked: true
                                 }
-                            }else return item;
+                            }else {
+                              toast.warn('Product: {'+ payload.ids +'} is not in this order.');
+                              return item}
                         })
                     })
-                    let isDone = this.state.listproduct.every((item) => {
+                    console.log("XYZZZZZZZ",this.state.listproduct)
+                    let isDone = this.state.listproduct.every(item => 
                         item.isChecked === true
-                    })
+                    )
+                    console.log("KKKK",isDone)
                     if(isDone){
-                      this.updateConfirm(id, this.state.lopSuccess, this.state.user[0].name)
-                    }
+                        // this.setState({
+                        //     modalShow:false
+                        // })
+                        this.updateConfirm(id, this.state.lopSuccess, this.state.user[0].name)
+                    } 
                 }else{
                   this.setState({
                     scanResultWebCam : "Not found"
                   })
-                  toast.warn('Product: {'+ item.ids +'} is not in this order.');
+                 console.log("NOT RUN")
                 }
               }}
             />
@@ -286,8 +298,9 @@ class ActionYourRequest extends Component {
                                                             <td>{item.ids}</td>
                                                             {/* <td>{item.isChecked}</td> */}
                                                             <td>
+                                                              {console.log("CHECKKKKKKKK", item.isChecked)}
                                                                 <div className="i-checks">
-                                                                    <input type="checkbox" value={item.isChecked} className="checkbox-template" />
+                                                                    <input type="checkbox" checked={item.isChecked} className="checkbox-template" />
                                                                 </div>
                                                             </td>
                                                             </tr>
@@ -323,8 +336,8 @@ class ActionYourRequest extends Component {
                         <div className="line" />
                         <div className="form-group row">
                             <div className="col-sm-4 offset-sm-3">
-                                <button className="btn btn-secondary" style={{ marginRight: 2 }}><Link to="/yourrequests">Cancel</Link> </button>  
-                                <button style={{ marginRight: 6 }} className="btn btn-info" onClick={() => this.setState({modalShow: true})}>Scan</button>
+                                <Link to="/producers"><button type="reset" className="btn btn-secondary" style={{ marginRight: 2 }}>Cancel</button></Link>   
+                                <Button style={{ marginRight: 6 }} className="btn btn-info" onClick={() => this.setState({modalShow: true})}>Scan</Button>
                                 <button type="submit" className="btn btn-primary">Confirm</button>
                             </div>
                         </div>

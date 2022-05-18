@@ -16,6 +16,14 @@ class productReportController extends BaseControllerCRUD {
         }
     }
 
+    async createNewOne(request){
+        try{
+            return await this.service.createNewOne(request.payload);
+        } catch (err){
+            throw err;
+        }
+    }
+
 
     async getAllProductReport(request){
         try{

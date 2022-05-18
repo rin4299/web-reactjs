@@ -25,6 +25,11 @@ const Routes = [
   },
   {
     method: 'POST',
+    path: '/api/v1/exchange/confirmwrong',
+    config: handler.updateConfirmWrong
+  },
+  {
+    method: 'POST',
     path: '/api/v1/exchange/changeStatus',
     config: handler.changeStatus
   },

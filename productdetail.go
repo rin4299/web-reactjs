@@ -61,6 +61,7 @@ type Exchange struct {
 	RecUserName string `json:"recUserName"`
 	ListofProduct string `json:"listofProduct"`
 	ListofProductDetail string `json:"listofProductDetail"`
+	ListofMissing string `json:"lisofMissing"`
 	IsAccepted bool `json:"isAccepted"`
 	IsConfirm bool `json:"isConfirm"`
 	IsActive bool `json:"isActive"`
@@ -156,7 +157,7 @@ func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Respo
 	}
 	
 	exchanges := []Exchange{
-		Exchange{Id: "0", ReqUserName: "", RecUserName: "", ListofProduct:"", ListofProductDetail: "", IsAccepted: false,IsConfirm: false , IsActive: true,CreatedAt: t.String(), LatestUpdate: t.String(), Status: "", Lng: 0, Lat: 0, TotalQuantity: 0},
+		Exchange{Id: "0", ReqUserName: "", RecUserName: "", ListofProduct:"", ListofProductDetail: "", ListofMissing:"", IsAccepted: false,IsConfirm: false , IsActive: true,CreatedAt: t.String(), LatestUpdate: t.String(), Status: "", Lng: 0, Lat: 0, TotalQuantity: 0},
 	}
 
 	j := 0
@@ -395,6 +396,42 @@ func (s *SmartContract) changeProductDetail(APIstub shim.ChaincodeStubInterface,
 		var buffer bytes.Buffer
 		buffer.WriteString("successful")
 		return shim.Success(buffer.Bytes())
+	} else if len(args) == 4 {
+		exchange := Exchange{}
+		exchangeAsBytes, _ := APIstub.GetState("Exchange-" + args[0])
+		json.Unmarshal(exchangeAsBytes, &exchange)
+		t, _ := APIstub.GetTxTimestamp()
+		if args[2] != "" {
+			var loIDs []string
+			listofIDs := strings.Split(args[2], ",")
+			for _, j := range listofIDs{
+				loIDs = append(loIDs, strings.Split(j, "-")[1])
+			}
+			for _, i := range(loIDs){
+				productDetailAsBytes, _ := APIstub.GetState("PDetail-" + i)
+				productDetail := ProductDetail{}
+			
+				json.Unmarshal(productDetailAsBytes, &productDetail)
+				productDetail.OwnerName = exchange.ReqUserName
+				productDetail.LatestUpdate = t.String()
+			
+				productDetailAsBytes, _ = json.Marshal(productDetail)
+				APIstub.PutState("PDetail-" + productDetail.Id, productDetailAsBytes)
+			}
+			exchange.ListofProductDetail = args[2]
+		} else {
+			exchange.ListofProductDetail = ""
+		}
+		
+		exchange.ListofMissing = args[3]
+		exchange.IsConfirm = true
+		exchange.LatestUpdate = t.String()
+		exchangeAsBytes, _ = json.Marshal(exchange)
+		APIstub.PutState("Exchange-" + exchange.Id, exchangeAsBytes)
+
+		// var buffer bytes.Buffer
+		// buffer.WriteString(args[2])
+		return shim.Success(exchangeAsBytes)
 	} else if len(args) == 1 { // Update Name of Owner of Product Details
 		exchange := Exchange{}
 		exchangeAsBytes, _ := APIstub.GetState("Exchange-" + args[0])
@@ -696,7 +733,7 @@ func (s *SmartContract) createExchange(APIstub shim.ChaincodeStubInterface, args
 	subLng, _ := strconv.ParseFloat(args[3], 64)
 	subLat, _ := strconv.ParseFloat(args[4], 64)
 	numbers, _ := strconv.Atoi(args[5])
-	var exchange = Exchange{Id: id, ReqUserName: args[0], RecUserName: args[1], ListofProduct: args[2], ListofProductDetail: "", IsAccepted: false, IsConfirm: false, IsActive: true, CreatedAt: t.String() ,LatestUpdate: t.String(), Status: "Processing", Lng: subLng, Lat: subLat, TotalQuantity: numbers}
+	var exchange = Exchange{Id: id, ReqUserName: args[0], RecUserName: args[1], ListofProduct: args[2], ListofProductDetail: "", ListofMissing: "", IsAccepted: false, IsConfirm: false, IsActive: true, CreatedAt: t.String() ,LatestUpdate: t.String(), Status: "Processing", Lng: subLng, Lat: subLat, TotalQuantity: numbers}
 
 	exchangeAsBytes, _ := json.Marshal(exchange)
 	APIstub.PutState("Exchange-" + exchange.Id, exchangeAsBytes)
