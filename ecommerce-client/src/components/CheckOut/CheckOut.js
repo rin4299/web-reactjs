@@ -12,6 +12,8 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import "./style.css";
 import Modal from 'react-bootstrap/Modal'
+import Axios from 'axios';
+
 // import { GoogleMap , LoadScript, Polyline, Marker, DirectionsService } from "@react-google-maps/api";
 
 const MySwal = withReactContent(Swal);
@@ -111,8 +113,19 @@ class CheckOut extends Component {
         const atStore = localStorage.getItem('_atStore');
         // console.log('res', res)
         if (!res.lat){
-          res.lat = 10.772803247674087
-          res.lng = 106.65764435365183
+          // var address = "2 Đ. Lê Hồng Phong, Phường 7, Gò Vấp"
+          var temp = encodeURI(addressResult2); 
+          let returnValue = await Axios.get("https://nominatim.openstreetmap.org/search?format=json&limit=3&q=" + temp);
+        
+          console.log(returnValue.data)
+          if(returnValue.data.length){
+            res.lat = returnValue.data[0]
+            res.lng = returnValue.data[1]
+          }
+          else{
+            res.lat = 10.772803247674087
+            res.lng = 106.65764435365183
+          }
         }
         const resultOrder = {
           fullName: res.name,
@@ -270,8 +283,19 @@ class CheckOut extends Component {
     const lopOrder = this.get_lop();
     const atStore = localStorage.getItem('_atStore');
     if (!res.lat){
-      res.lat = 10.772803247674087
-      res.lng = 106.65764435365183
+      // var address = "2 Đ. Lê Hồng Phong, Phường 7, Gò Vấp"
+      var temp = encodeURI(addressResult2); 
+      let returnValue = await Axios.get("https://nominatim.openstreetmap.org/search?format=json&limit=3&q=" + temp);
+    
+      console.log(returnValue.data)
+      if(returnValue.data.length){
+        res.lat = returnValue.data[0]
+        res.lng = returnValue.data[1]
+      }
+      else{
+        res.lat = 10.772803247674087
+        res.lng = 106.65764435365183
+      }
     }
     // const { lopOrder } = this.state
     resultOrder = {
