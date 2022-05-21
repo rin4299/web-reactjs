@@ -123,8 +123,10 @@ class CheckOut extends Component {
             res.lng = returnValue.data[1]
           }
           else{
-            res.lat = 10.772803247674087
-            res.lng = 106.65764435365183
+            // res.lat = 10.773625291839084
+            // res.lng = 106.66056264050478
+            res.lat = 10.773787951436425
+            res.lng = 106.66593044585322
           }
         }
         const resultOrder = {

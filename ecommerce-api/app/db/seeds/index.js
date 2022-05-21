@@ -755,9 +755,9 @@ const StoreData = [
   },
   {
     storeName: "StoreB",
-    lat: 10.82130132164094, 
-    lng: 106.63078032295931,
-    address: "898B Đ. Trường Chinh, Phường 15, Tân Bình, Thành phố Hồ Chí Minh, Việt Nam",
+    lat: 10.807169792761796, 
+    lng: 106.63443590462188,
+    address: "1 Đ. Trường Chinh, Tây Thạnh, Tân Phú, Thành phố Hồ Chí Minh, Việt Nam",
     phone: "0333555777",
     createdAt: "2019-12-05T15:03:11.311Z",
     updatedAt: "2019-12-05T15:08:15.904Z",

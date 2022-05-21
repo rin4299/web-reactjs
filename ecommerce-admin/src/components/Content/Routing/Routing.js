@@ -211,12 +211,15 @@ handleSubmit = async (event) => {
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes'
     }).then(async (result) => {
-      if (result.value) {
+      console.log("RRRRRRRR", result)
+      if(result.value) {
           // this.state.listRouting && this.state.listRouting.length ? this.state.listRouting.filter((item) => {
           //   return item.specialId != null
           // })
+          
+          console.log("routing", routing)
           // eslint-disable-next-line no-unused-expressions
-          routing && routing ? routing.filter((item) => {
+          routing && routing[0].length ? routing[0].filter((item) => {
             return item.specialId != null
           })
           .map((item) => {
@@ -226,7 +229,7 @@ handleSubmit = async (event) => {
             //   toast.success('Order: {'+ item.specialId +'} is shipping.');
             // }
             let keyword = item.specialId.split("-");
-            // console.log(keyword)
+            console.log(keyword)
             if(keyword[0] == "O"){
               let payload = {
                 orderId : item.id,
@@ -240,7 +243,7 @@ handleSubmit = async (event) => {
                 }
               })
             }
-            if(keyword[0] == "E"){
+            else if(keyword[0] == "E"){
               let payload = {
                 id : item.id,
                 status:"Shipping",
@@ -502,7 +505,7 @@ handleSubmit = async (event) => {
                   </ul>
                 </nav>
                 <div>
-                  {/* <Map listRouting = {this.state.listRouting}/> */}
+                  <Map listRouting = {this.state.listRouting}/>
                 </div>
                 <div className='container'>
                   {this.state.prove && this.state.prove.length ? 
@@ -511,11 +514,12 @@ handleSubmit = async (event) => {
                         <tr>
                           <th>Route</th>
                           <th>Distance</th>
+                          <th>Time</th>
                         </tr>
                       </thead>
                       <tbody>
                         {/* {console.log('prove',this.state.prove)} */}
-                        {routing[1].map((item,index) => {
+                        {routing[1] && routing[1].length ? routing[1].map((item,index) => {
                           if(index > 5){return null}
                           else{
                             return (
@@ -526,11 +530,14 @@ handleSubmit = async (event) => {
                                 <td>
                                   {item.totalDistance}
                                 </td>
+                                <td>
+                                  {item.totalDuration}
+                                </td>
                               </tr>
                             )
                             
                           }
-                        })}
+                        }) : null}
                       </tbody>
                     </table>
                   : null} 
@@ -541,10 +548,10 @@ handleSubmit = async (event) => {
                   googleMapURL = "https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyCXxL0MBTRrFF9MBlEMZNwkmenz9zMRtZk"
                   loadingElement = {<div style={{height : '100%'}}/>}
                 /> */}
-                {/* <button type="button" className='btn btn-secondary' onClick={() => {this.handleStartRouting()}}>Start</button>
+                <button type="button" className='btn btn-secondary' onClick={() => {this.handleStartRouting()}}>Start</button>
                 <button type="button" className='btn btn-success' style={{"marginLeft": "10px" }} onClick={() => {
                   this.handleFinishRouting()
-                }}>Finish</button> */}
+                }}>Finish</button>
                 {/* <button type='button' className='btn btn-warning' onClick={() => {console.log('listComplete',this.state.listComplete) , console.log('listCancel',this.state.listCancel)}} >Click</button> */}
               </div>
             </div>

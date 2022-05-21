@@ -246,6 +246,7 @@ class ActionYourRequest extends Component {
               return item.isChecked === false
             }) 
             // this.updateConfirmWrong(this.state.listSuccess, this.state.listMissing)
+            console.log("AVVVVVBBBGB", listSuccess, listMissing)
             this.updateConfirmWrong(listSuccess, listMissing)
             // this.reportMissing(this.state.listMissing)
           }}>Finish</button>

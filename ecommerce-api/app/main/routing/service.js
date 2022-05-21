@@ -11,7 +11,7 @@ class RoutingService {
     async getMatrix(listOfOrders){
         
         const a = async () => {
-            const response = await Axios.get(`https://api.mapbox.com/directions-matrix/v1/mapbox/cycling/${listOfOrders}?annotations=distance,duration&access_token=pk.eyJ1IjoibWluaDI2NzE5OTkiLCJhIjoiY2wyYWNkZWFsMDQwZDNibnpubGo5dDlsNiJ9.wcpp7JlE8d6Ck3Z5CSWNTw`);
+            const response = await Axios.get(`https://api.mapbox.com/directions-matrix/v1/mapbox/driving/${listOfOrders}?annotations=distance,duration&access_token=pk.eyJ1IjoibWluaDI2NzE5OTkiLCJhIjoiY2wyYWNkZWFsMDQwZDNibnpubGo5dDlsNiJ9.wcpp7JlE8d6Ck3Z5CSWNTw`);
             if(response){
                 return response.data;
             }
@@ -31,7 +31,8 @@ class RoutingService {
                 //     console.log(data.distances[i][i+1])
                 //     totalDistance = totalDistance + data.distances[response[i]][response[i+1]]
                 // }
-                return [response, data.distances]
+                console.log(data)
+                return [response, data.distances, data.durations]
             }
        }
 
@@ -41,7 +42,7 @@ class RoutingService {
     async routing(storeName){
         
         var Store_Information = await Models.Store.query().findOne('storeName', storeName);
-        var capacity = 7;
+        var capacity = 30;
         var List_Of_Orders = []
         var List_Of_Exchanges = []
         var listOfData = []
@@ -52,7 +53,7 @@ class RoutingService {
             throw Boom.badRequest('Cannot load data of Orders from BC!')
         }
         var Received_List_Of_Orders = res.data
-        console.log("RoO", Received_List_Of_Orders)
+        // console.log("RoO", Received_List_Of_Orders)
         for(var or_counter = 0; or_counter < Received_List_Of_Orders.length; or_counter++){
             if( Received_List_Of_Orders[or_counter]['isActive'] === true && Received_List_Of_Orders[or_counter]['atStore'] === storeName && Received_List_Of_Orders[or_counter]['status'] === "Processing"){
                 Received_List_Of_Orders[or_counter]['specialId'] = "O-" +  Received_List_Of_Orders[or_counter]['id'];
@@ -65,9 +66,9 @@ class RoutingService {
             throw Boom.badRequest('Cannot load data of Exchanges from BC!')
         }
         var Received_List_Of_Exchanges = res_Exchange.data
-        console.log("RoE", Received_List_Of_Exchanges)
+        // console.log("RoE", Received_List_Of_Exchanges)
         for(var ex_counter = 0; ex_counter < Received_List_Of_Exchanges.length; ex_counter++){
-            if(Received_List_Of_Exchanges[ex_counter]['isActive'] === true && Received_List_Of_Exchanges[ex_counter]['recUserName'] === storeName && Received_List_Of_Exchanges[ex_counter]['isAccepted'] === true && Received_List_Of_Exchanges[ex_counter]['status'] === "Processing"){
+            if(Received_List_Of_Exchanges[ex_counter]['isActive'] === true && Received_List_Of_Exchanges[ex_counter]['recUserName'] === storeName && Received_List_Of_Exchanges[ex_counter]['isAccepted'] === true && Received_List_Of_Exchanges[ex_counter]['status'] === "Processing" && Received_List_Of_Exchanges[ex_counter]['isConfirm'] === false){
                 Received_List_Of_Exchanges[ex_counter]['specialId'] = "E-" + Received_List_Of_Exchanges[ex_counter]['id'];
                 Received_List_Of_Exchanges[ex_counter]['createdAt'] = new Date(Received_List_Of_Exchanges[ex_counter]['createdAt'].slice(8,18) * 1000);;
                 var store_Information = await Models.Store.query().findOne("storeName", Received_List_Of_Exchanges[ex_counter]['reqUserName']);
@@ -75,17 +76,17 @@ class RoutingService {
                 List_Of_Exchanges.push(Received_List_Of_Exchanges[ex_counter]);
             }
         }
-        console.log("LoO", List_Of_Orders)
-        console.log("LoE", List_Of_Exchanges)
+        // console.log("LoO", List_Of_Orders)
+        // console.log("LoE", List_Of_Exchanges)
         if(List_Of_Exchanges.length === 0 && List_Of_Orders.length === 0){
             return []
         }
         listOfData = List_Of_Orders.concat(List_Of_Exchanges);
-        console.log("LoData", listOfData)
+        // console.log("LoData", listOfData)
         listOfData.sort((a,b) => {
             return a['createdAt'] - b['createdAt'];
         })
-        console.log("LoData After Sorting", listOfData)
+        // console.log("LoData After Sorting", listOfData)
         var Array_Of_Capacity = []
         var geoString = root['lng'].toString() + "," + root['lat'].toString() + ";";
         for (var i = 0; i < listOfData.length; i++){
@@ -96,19 +97,21 @@ class RoutingService {
             }
         }
 
-        console.log("Array_Based_On_Max_Cap: ", Array_Of_Capacity)
+        // console.log("Array_Based_On_Max_Cap: ", Array_Of_Capacity)
         geoString = geoString.slice(0, geoString.length - 1)
-        console.log("GeoString: ", geoString)
+        // console.log("GeoString: ", geoString)
         
         
         const List_Of_Optimized_Shipping = await this.getListOfOptimized(geoString);
-        console.log("List Of Optimized Shipping Routing: ", List_Of_Optimized_Shipping)
+        // console.log("List Of Optimized Shipping Routing: ", List_Of_Optimized_Shipping)
 
         var returnArray = [Store_Information]
         
         // Proving List of Distances
         var distance_Matrix = List_Of_Optimized_Shipping[1]
+        var duration_Matrix = List_Of_Optimized_Shipping[2]
         console.log("?",distance_Matrix)
+        console.log("?",duration_Matrix)
         const permutations = arr => {
             if (arr.length <= 2) return arr.length === 2 ? [arr, [arr[1], arr[0]]] : arr;
             return arr.reduce(
@@ -130,6 +133,7 @@ class RoutingService {
         // console.log("L", Array_Of_Permutations)
         var listOfDistances = []
         var totalDistance = 0.0;
+        var totalDuration = 0.0;
         var Distance_Infor = {}
         var string_of_Routing = storeName + "->";
         for(var z = 0 ; z < Array_Of_Permutations.length; z++){
@@ -145,12 +149,15 @@ class RoutingService {
                 }
                
                 totalDistance = totalDistance + distance_Matrix[Array_Of_Permutations[z][q]][Array_Of_Permutations[z][q+1]]
+                totalDuration = totalDuration + duration_Matrix[Array_Of_Permutations[z][q]][Array_Of_Permutations[z][q+1]]
             }
             Distance_Infor['totalDistance'] = totalDistance;
+            Distance_Infor['totalDuration'] = totalDuration;
             Distance_Infor['routing_Order'] = string_of_Routing + storeName;
             listOfDistances.push(Distance_Infor);
             Distance_Infor = {}
             totalDistance = 0.0
+            totalDuration = 0.0
             string_of_Routing = storeName + "->";
         }
         listOfDistances.sort((a,b)=>{

@@ -311,6 +311,7 @@ class ShoppingCart extends Component {
                                     <table className="table">
                                     <thead>
                                         <tr>
+                                        <th className="li-product-index">Index</th>
                                         <th className="li-product-remove">Action</th>
                                         <th className="li-product-thumbnail">Image</th>
                                         <th className="cart-product-name">Product</th>

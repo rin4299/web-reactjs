@@ -550,7 +550,7 @@ const mapDispatchToProps = (dispatch) => {
     
     create_report: (payload, token) => {
       //eslint-disable-next-line no-undef
-        return dispatch(actCreateReport(payload, token))
+        return dispatch(actCreateReportRequest(payload, token))
     }
   }
 }
