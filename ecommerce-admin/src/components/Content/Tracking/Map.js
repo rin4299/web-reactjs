@@ -2,7 +2,6 @@ import React , { Component } from "react";
 import { GoogleMap , LoadScript, Polyline, Marker, DirectionsService, InfoWindow } from "@react-google-maps/api";
 import { connect } from 'react-redux'
 
-
 const mapContainerStyle = {
     height: "500px",
     width: "800px",
@@ -64,10 +63,22 @@ class Map extends Component {
     }
       
     render(){
-      let {path, total} = this.props
+      var {path, total} = this.props
+      var path2 = []
+      // console.log(path)
       path = [...path, {lat: center.lat, lng : center.lng}]
-      path = path.reverse()
-      // console.log('1',path)
+
+      total.map((item,index) => {
+        {/* console.log('position',item) */}
+        let lat = item.Value.information.lat
+        let lng = item.Value.information.lng
+        // let position = {lat: lat, lng : lng}
+        path2 = [...path2, {lat: lat, lng : lng}]
+        // console.log('positionT',position)
+      })
+      path2 = path2.reverse()
+      // total = total.reverse()
+      // console.log('1',path2)
       // console.log('total',total)
 
       const options = {
@@ -117,10 +128,10 @@ class Map extends Component {
                         )
                     })} */}
                     {total.map((item,index) => {
-                      console.log('position',item)
                       let lat = item.Value.information.lat
                       let lng = item.Value.information.lng
                       let position = {lat: lat, lng : lng}
+                      {/* console.log('positionM',position) */}
                       return (
                         <Marker
                             onLoad={onLoad}
@@ -133,12 +144,14 @@ class Map extends Component {
                         
                     })}
                     {total.map((item,index) => {
-                      console.log('position',item)
+                      {/* console.log('position',item) */}
                       let lat = item.Value.information.lat
                       let lng = item.Value.information.lng
                       let position = {lat: lat, lng : lng}
+                      {/* console.log('positionI',position) */}
+
                       return (
-                        index+1 === total.length ? 
+                        index+1 === 1 ? 
                           <InfoWindow
                             onLoad={onLoad}
                             position={position}
@@ -166,7 +179,7 @@ class Map extends Component {
                     })}
                     <Polyline
                         onLoad={onLoad}
-                        path={path}
+                        path={path2}
                         options={options}
                         // onDblClick={(event) => console.log(event)}
                     />

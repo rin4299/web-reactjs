@@ -434,7 +434,7 @@ class Tracking extends Component {
                                   <td><p1>{item.Timestamp}</p1></td>
                                 </tr>
                               )
-                            }else if(index+1 == tracking.length){
+                            }else if(index+1 == 1){
                               return(
                                 <tr key={index} style={{background: '#d5f4e6'}}>
                                   <th scope="row">{index + 1}</th>
@@ -474,7 +474,7 @@ class Tracking extends Component {
                   </ul>
                 </nav>
                 <div style={{ textAlign: "center" }}>
-                  {/* <Map id="map" style={{ textAlign: "center" }} path = {this.state.listMarker} total = {total}/> */}
+                  <Map id="map" style={{ textAlign: "center" }} path = {this.state.listMarker} total = {total.reverse()}/>
                 </div>
                 
                 {/* <ArrowUpOutlined style={{fontsize :'400%'}}/> */}
