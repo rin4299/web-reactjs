@@ -12,6 +12,8 @@ import callApi from '../../../utils/apiCaller';
 import  DatePicker  from 'react-datepicker';
 import Modal from 'react-bootstrap/Modal'
 const MySwal = withReactContent(Swal)
+import axios from 'axios';
+import Axios from 'axios';
 
 let token;
 
@@ -41,7 +43,12 @@ class HistoryRequest extends Component {
 
 
   async componentDidMount() {
-   
+    var address = "2 Đ. Lê Hồng Phong, Phường 7, Gò Vấp"
+    var temp = encodeURI(address); 
+    let returnValue = await Axios.get("https://nominatim.openstreetmap.org/search?format=json&limit=3&q=" + temp);
+  
+    console.log(returnValue.data)
+    console.log('test')
     token = localStorage.getItem('_auth');
     if (token) {
       const res = await callApi('users/me', 'GET', null, token);
