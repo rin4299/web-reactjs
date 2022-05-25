@@ -40,6 +40,10 @@ class DashBoard extends Component {
       December1: 0,
       labelsPie: [],
       dataShowPie: [],
+      labelsProduct:[],
+      dataShowProduct:[],
+      labelsProducer: [],
+      dataShowProducer : [],
       user: []
     }
   }
@@ -56,7 +60,9 @@ class DashBoard extends Component {
       const category =  callApi('reports/products', 'GET', null, token);
       const income =  callApi('reports/income', 'GET', null, token);
       const contact =  callApi('reports/contacts', 'GET', null, token);
-      const [resCategory, resIncome, resContact ] = await Promise.all([category, income, contact]);
+      const product = callApi(`reports/numofproducts/${Uname}`,'GET', null, token);
+      const producer = callApi('reports/producer', 'GET', null, token);
+      const [resCategory, resIncome, resContact, resProduct, resProducer ] = await Promise.all([category, income, contact, product , producer]);
       if (resIncome) {
         resIncome.data.forEach((item) => {
           if (item.month === "01") {
@@ -191,6 +197,19 @@ class DashBoard extends Component {
           dataShowPie: resCategory.data.map(e => e.count)
         })
       }
+      if(resProduct){
+        this.setState({
+          labelsProduct : resProduct.data.map(e => e.nameProduct),
+          dataShowProduct: resProduct.data.map(e => e.count)
+        })
+      }
+      if(resProducer){
+        console.log('producer', resProducer)
+        this.setState({
+          labelsProducer : resProducer.data.map(e => e.nameProducer),
+          dataShowProducer: resProducer.data.map(e => e.count)
+        })
+      }
     } else {
       this.props.add_token_redux(null);
     }
@@ -198,7 +217,8 @@ class DashBoard extends Component {
 
   render() {
     const { January, February, March, April, May, June, July, August, September, October, November, December,
-      January1, February1, March1, April1, May1, June1, July1, August1, September1, October1, November1, December1, labelsPie, dataShowPie
+      January1, February1, March1, April1, May1, June1, July1, August1, September1, October1, November1, December1, labelsPie, dataShowPie, labelsProduct, dataShowProduct,
+      labelsProducer, dataShowProducer,
     } = this.state
     const dataLine = {  
       labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -250,6 +270,8 @@ class DashBoard extends Component {
           '#FFCE56',
           '#b42b2b',
           '#6aea5a',
+          "#005dfe",
+          "#fe9d00",
         ],
         hoverBackgroundColor: [
           '#FF6384',
@@ -257,9 +279,62 @@ class DashBoard extends Component {
           '#FFCE56',
           '#b42b2b',
           '#6aea5a',
+          "#005dfe",
+          "#fe9d00",
         ]
       }]
     };
+
+    const dataProduct = {
+      labels: labelsProduct,
+      datasets: [{
+        data: dataShowProduct,
+        backgroundColor: [
+          '#FF6384',
+          '#36A2EB',
+          '#FFCE56',
+          '#b42b2b',
+          '#6aea5a',
+          "#005dfe",
+          "#fe9d00",
+        ],
+        hoverBackgroundColor: [
+          '#FF6384',
+          '#36A2EB',
+          '#FFCE56',
+          '#b42b2b',
+          '#6aea5a',
+          "#005dfe",
+          "#fe9d00",
+        ]
+      }]
+    };
+
+    const dataProducer = {
+      labels: labelsProducer,
+      datasets: [{
+        data: dataShowProducer,
+        backgroundColor: [
+          '#FF6384',
+          '#36A2EB',
+          '#FFCE56',
+          '#b42b2b',
+          '#6aea5a',
+          "#005dfe",
+          "#fe9d00",
+        ],
+        hoverBackgroundColor: [
+          '#FF6384',
+          '#36A2EB',
+          '#FFCE56',
+          '#b42b2b',
+          '#6aea5a',
+          "#005dfe",
+          "#fe9d00",
+        ]
+      }]
+    };
+
     const { dashboard } = this.props
     return (
       <div className="content-inner">
@@ -337,9 +412,8 @@ class DashBoard extends Component {
             </Row> */}
             <br/>
             <br/>
-            <Row>
-              <Col>
-                <h3 style={{paddingTop: 20}}>Report Orders Monthly</h3>
+
+            <h3 style={{paddingTop: 20}}>Report Orders Monthly</h3>
                 {/* <Pie 
                 width={100}
                 height={25} data={dataPie} /> */}
@@ -349,6 +423,24 @@ class DashBoard extends Component {
                 <Line  width={100}
                 height={15}
                 data={dataLine} />
+            <br/>
+            <br/>
+
+            <Row>
+              <Col>
+                <h3 style={{paddingTop: 20}}>Report Product of Producer</h3>
+                <Bar
+                  width={100} 
+                  height={30}
+                  data = {dataProducer}
+                  options = {{
+                    legend : {display : false},
+                    title : {
+                      display : true,
+                      text : "Producer Report"
+                    }
+                  }}
+                />   
               </Col>
               <Col>
                 <h3 style={{paddingTop: 20}}>Report Product of Catefory</h3>
@@ -366,12 +458,24 @@ class DashBoard extends Component {
                 />    
               </Col>
             </Row>
+            
+                <h3 style={{paddingTop: 20}}>Report Product of Store</h3>
+                <Pie
+                  width={100} 
+                  height={25}
+                  data = {dataProduct}
+                  options = {{
+                    // legend : {display : false},
+                    title : {
+                      display : true,
+                      text : "Product Report"
+                    }
+                  }}
+                />    
+            
+            <br />
+            <br />
 
-            
-            
-            <br />
-            <br />
-            
              <br />
              <br />
              {/* <h3>Report Contact</h3> */}
