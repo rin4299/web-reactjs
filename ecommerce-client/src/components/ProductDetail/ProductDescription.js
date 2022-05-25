@@ -345,7 +345,7 @@ class ProductDescription extends Component {
                                       onClick={this.closeModal}
                                       className="btn mr-1"
                                       style={{
-                                        background: "#fed700",
+                                        background: "#00aefe",
                                         color: "white"
                                       }}
                                     >

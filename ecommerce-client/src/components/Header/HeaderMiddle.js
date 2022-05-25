@@ -100,7 +100,7 @@ class HeaderMiddle extends Component {
                 <input name="textSearch" value={textSearch} type="text" onChange={this.handleChange} placeholder="Enter your search key ..." />
                 {/* <button className="li-btn" type="submit"></button> */}
                 <Link onClick={this.handleClick} to='/products/search'>
-                  <button className="li-btn" type="submit"><i className="fa fa-search" /></button>
+                  <button style={{}} className="li-btn" type="submit"><i className="fa fa-search" /></button>
                 </Link>
               </form>
               {/* Header Middle Searchbox Area End Here */}

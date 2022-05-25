@@ -502,7 +502,7 @@ handleSubmit = async (event) => {
                   </ul>
                 </nav>
                 <div>
-                  {/* <Map listRouting = {this.state.listRouting}/> */}
+                  <Map listRouting = {this.state.listRouting}/>
                 </div>
                 <div className='container'>
                   {this.state.prove && this.state.prove.length ? 

@@ -33,7 +33,7 @@ class ProductFavoriteItem extends Component {
         <td className="li-product-name"><a className="text-dark" href="/">{product.products.nameProduct}</a></td>
         <td className="product-subtotal"><span className="amount">{formatNumber.format(product.products.price)}</span></td>
         <td className="quantity">
-          <button onClick={(event, id) => this.handleAddCart(event, product)} className="btn" style={{ background: '#fed700', color: 'white' }} > BUY NOW</button>
+          <button onClick={(event, id) => this.handleAddCart(event, product)} className="btn" style={{ background: '#00aefe', color: 'white' }} > BUY NOW</button>
         </td>
       </tr>
     )

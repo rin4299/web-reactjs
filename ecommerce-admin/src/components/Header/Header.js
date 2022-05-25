@@ -50,8 +50,8 @@ class Header extends Component {
     }
     
     return (
-      <header className="header">
-        <nav className="navbar">
+      <header className="header" >
+        <nav className="navbar" style={{"background-color":"#005dfe"}}>
           {/* Search Box*/}
           <div className="search-box">
             <button className="dismiss"><i className="icon-close" /></button>

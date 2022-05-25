@@ -29,7 +29,7 @@ class HeaderBottom extends Component {
   render() {
     const { categories } = this.props;
     return (
-      <div className="header-bottom header-sticky d-lg-block d-xl-block" >
+      <div className="header-bottom header-sticky d-lg-block d-xl-block" style={{"background-color":"#00aefe"}}>
         <div className="container">
           <div className="row">
             <div className="col-lg-12">

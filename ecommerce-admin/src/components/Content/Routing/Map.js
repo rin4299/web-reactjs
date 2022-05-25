@@ -37,7 +37,7 @@ var lineSymbol = {
     strokeWeight: 2,
     strokeOpacity: 1
 };
-let path = []
+// let path = []
 // let directionService
 class Map extends Component {
     constructor (props) {
@@ -45,6 +45,7 @@ class Map extends Component {
         this.state = {
             response: null,
             travelMode: 'DRIVING',
+            path : []
           }
     }
 
@@ -54,6 +55,32 @@ class Map extends Component {
     }
 
     generateDirection = async () => {
+        const { listRouting } = this.props
+        let path = []
+        if(listRouting && listRouting.length) {
+            listRouting.map((item,index) => {
+                // path.push({
+                //     location : {lat : item.lat,lng :item.lng},
+                //     stopover: true,
+
+                // })
+                console.log('item',item)
+                if(index == 0){
+                    center = {lat : item.lat,lng :item.lng}
+                }else{
+                    path = [...path, {
+                        location : {lat : item.lat,lng :item.lng},
+                        stopover: true,
+                    }]
+                    this.setState({
+                        path : path
+                    })
+                }
+            })
+        }
+
+
+        console.log('state',path)
         // eslint-disable-next-line no-undef
         const directionService = new google.maps.DirectionsService()
         const results = await directionService.route({
@@ -90,26 +117,7 @@ class Map extends Component {
     render(){
         // const { destination } = this.state;
         let {listRouting} = this.props
-        if(listRouting && listRouting.length) {
-            listRouting.map((item,index) => {
-                // path.push({
-                //     location : {lat : item.lat,lng :item.lng},
-                //     stopover: true,
-
-                // })
-                console.log('index',index)
-                if(index == 0){
-                    center = {lat : item.lat,lng :item.lng}
-                }else{
-                    path = [...path, {
-                        location : {lat : item.lat,lng :item.lng},
-                        stopover: true,
-                    }]
-                }
-            })
-            // console.log('center', center)
-            // console.log('path',path)
-        }
+        
     //   path = [...path, {lat: center.lat, lng : center.lng}]
         console.log('routing',listRouting)
         
@@ -125,7 +133,7 @@ class Map extends Component {
             editable: false,
             visible: true,
             radius: 30000,
-            paths: path,
+            paths: this.state.path,
             zIndex: 1,
             icons:[{
                 icon: lineSymbol,
@@ -227,8 +235,8 @@ class Map extends Component {
                                         />
                                 }
                                 
-                                
-                            </GoogleMap>
+                            </GoogleMap>    
+                            {console.log('path', this.state.path)}
                             <button type="button" className="btn btn-warning" onClick={this.generateDirection}>generate</button>
                         </div>
                         <div className="col">

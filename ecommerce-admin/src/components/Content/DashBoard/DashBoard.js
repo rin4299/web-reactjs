@@ -2,10 +2,12 @@ import React, { Component } from 'react'
 import MyFooter from '../../MyFooter/MyFooter'
 import { actFetchDashboardRequest } from '../../../redux/actions/dashboard'
 import { connect } from 'react-redux'
-import { Line, HorizontalBar, Pie } from 'react-chartjs-2';
+import { Line, HorizontalBar, Pie, Bar } from 'react-chartjs-2';
 import './style.css'
 import callApi from '../../../utils/apiCaller';
 import { actTokenRequest } from "../../../redux/actions/auth";
+// import { Col } from 'antd';
+import {Row, Col ,} from 'reactstrap'
 let token;
 class DashBoard extends Component {
 
@@ -202,7 +204,7 @@ class DashBoard extends Component {
       labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
       datasets: [
         {
-          label: 'Count contact',
+          label: 'Count Orders',
           fill: false,
           lineTension: 0.1,
           backgroundColor: 'rgba(75,192,192,0.4)',
@@ -320,22 +322,62 @@ class DashBoard extends Component {
                 </div>
               </div>
             </div>
-            <h3 style={{paddingTop: 20}}>Report Product of Catefory</h3>
-            <Pie 
-              width={100}
-              height={25} data={dataPie} />
-            <br />
-            <br />
+            <br/>
+            <br/>
             <h3>Report Total Income</h3>
-            <HorizontalBar 
-            width={100}
-            height={30} data={dataHozi} />
+              <HorizontalBar 
+              width={100}
+              height={30} data={dataHozi} />
+              
+
+            {/* <Row>
+              <Col><h3 style={{paddingTop: 20}}>Report Product of Catefory</h3></Col>
+              <Col><h3 style={{paddingTop: 20}}>Report Product of Catefory</h3></Col>
+
+            </Row> */}
+            <br/>
+            <br/>
+            <Row>
+              <Col>
+                <h3 style={{paddingTop: 20}}>Report Orders Monthly</h3>
+                {/* <Pie 
+                width={100}
+                height={25} data={dataPie} /> */}
+                {/* <HorizontalBar 
+                width={100}
+                height={30} data={dataHozi}/> */}
+                <Line  width={100}
+                height={15}
+                data={dataLine} />
+              </Col>
+              <Col>
+                <h3 style={{paddingTop: 20}}>Report Product of Catefory</h3>
+                <Bar
+                  width={100} 
+                  height={30}
+                  data = {dataPie}
+                  options = {{
+                    legend : {display : false},
+                    title : {
+                      display : true,
+                      text : "Category Report"
+                    }
+                  }}
+                />    
+              </Col>
+            </Row>
+
+            
+            
+            <br />
+            <br />
+            
              <br />
              <br />
-             <h3>Report Contact</h3>
-             <Line  width={100}
+             {/* <h3>Report Contact</h3> */}
+             {/* <Line  width={100}
             height={15}
-              data={dataLine} />
+              data={dataLine} /> */}
           </div>
         </section>
         <MyFooter></MyFooter>

@@ -60,7 +60,7 @@ class Profile extends Component {
       avatar: res.data.results[0].avatar,
       historyBooking: res2.data.results
     })
-    console.log(res2)
+    // console.log(res2)
   }
 
   handleChangeImage = (event) => {

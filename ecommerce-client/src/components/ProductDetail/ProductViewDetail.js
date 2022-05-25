@@ -208,7 +208,7 @@ class ProductViewDetail extends Component {
                                     <button
                                       onClick={this.closeModal}
                                       className="btn mr-1"
-                                      style={{ background: "#fed700", color: "white" }}
+                                      style={{ background: "#00aefe", color: "white" }}
                                     >
                                       Close
                                     </button>
