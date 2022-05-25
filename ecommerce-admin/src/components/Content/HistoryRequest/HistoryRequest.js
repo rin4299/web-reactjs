@@ -12,8 +12,8 @@ import callApi from '../../../utils/apiCaller';
 import  DatePicker  from 'react-datepicker';
 import Modal from 'react-bootstrap/Modal'
 const MySwal = withReactContent(Swal)
-import axios from 'axios';
-import Axios from 'axios';
+// import axios from 'axios';
+// import Axios from 'axios';
 
 let token;
 

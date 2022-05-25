@@ -47,12 +47,13 @@ export default class BillDetail extends Component {
     // console.log(addressObject)
     this.autocomplete.addListener("place_changed", () => {
       let addressObject = this.autocomplete.getPlace()
-      console.log(addressObject.geometry.location.lat())
-      console.log(addressObject.geometry.location.lng())
-      this.setState({
-        lat : addressObject.geometry.location.lat(),
-        lng : addressObject.geometry.location.lng()
-      })
+      if(addressObject.geometry.location)
+      {
+          this.setState({
+          lat : addressObject.geometry.location.lat(),
+          lng : addressObject.geometry.location.lng()
+        })
+      }
     })
   }
 

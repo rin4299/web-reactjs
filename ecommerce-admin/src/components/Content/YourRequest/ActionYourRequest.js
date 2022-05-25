@@ -72,6 +72,7 @@ class ActionYourRequest extends Component {
             })
             let listid = object.ids.split(",")
             // console.log(listid)
+            //eslint-disable-next-line no-unused-expressions  
             listid ? listid.map((item) => {
                 this.setState({
                     listproduct : [... this.state.listproduct,{ids: item , product: object.product, isChecked : false}]
@@ -144,8 +145,8 @@ class ActionYourRequest extends Component {
     const payload = {
       "id": id,
       "storeName" : this.state.user[0].name,
-      "listTrue" : listSuccess,
-      "listFalse" : listMissing
+      "listofTrue" : listSuccess,
+      "listofFalse" : listMissing
     }
     this.props.update_confirm_wrong(payload , token).then(res => {
       console.log(res)
@@ -230,15 +231,23 @@ class ActionYourRequest extends Component {
             <Route className='btn btn-danger' path='productreport/add' render={(match) => <ActionReportProduct data ={{name : this.state.productName}}/>}>Report</Route>
           </button> */}
           <button className='btn btn-primary' onClick={()=>{
-            this.setState({
-              listSuccess : listproduct.filter((item)=>{
-                return item.isChecked === true
-              }),
-              listMissing : listproduct.filter((item) =>{
-                return item.isChecked === false
-              }) 
+            // this.setState({
+            //   listSuccess : this.state.listproduct.filter((item)=>{
+            //     return item.isChecked === true
+            //   }),
+            //   listMissing : this.state.listproduct.filter((item) =>{
+            //     return item.isChecked === false
+            //   }) 
+            // })
+            var listSuccess = this.state.listproduct.filter((item)=>{
+              return item.isChecked === true
             })
-            this.updateConfirmWrong(this.state.listSuccess, this.state.listMissing)
+            var listMissing = this.state.listproduct.filter((item) =>{
+              return item.isChecked === false
+            }) 
+            // this.updateConfirmWrong(this.state.listSuccess, this.state.listMissing)
+            console.log("AVVVVVBBBGB", listSuccess, listMissing)
+            this.updateConfirmWrong(listSuccess, listMissing)
             // this.reportMissing(this.state.listMissing)
           }}>Finish</button>
           <button type="submit" className="btn btn-info" onClick={(event) => {

@@ -45,7 +45,7 @@ class Map extends Component {
         this.state = {
             response: null,
             travelMode: 'DRIVING',
-            path : []
+            path: []
           }
     }
 
@@ -55,7 +55,7 @@ class Map extends Component {
     }
 
     generateDirection = async () => {
-        const { listRouting } = this.props
+        let {listRouting} = this.props
         let path = []
         if(listRouting && listRouting.length) {
             listRouting.map((item,index) => {
@@ -64,7 +64,7 @@ class Map extends Component {
                 //     stopover: true,
 
                 // })
-                console.log('item',item)
+                console.log('index',index)
                 if(index == 0){
                     center = {lat : item.lat,lng :item.lng}
                 }else{
@@ -73,14 +73,13 @@ class Map extends Component {
                         stopover: true,
                     }]
                     this.setState({
-                        path : path
+                        path: path
                     })
                 }
             })
+            // console.log('center', center)
+            // console.log('path',path)
         }
-
-
-        console.log('state',path)
         // eslint-disable-next-line no-undef
         const directionService = new google.maps.DirectionsService()
         const results = await directionService.route({
@@ -117,7 +116,26 @@ class Map extends Component {
     render(){
         // const { destination } = this.state;
         let {listRouting} = this.props
-        
+        // if(listRouting && listRouting.length) {
+        //     listRouting.map((item,index) => {
+        //         // path.push({
+        //         //     location : {lat : item.lat,lng :item.lng},
+        //         //     stopover: true,
+
+        //         // })
+        //         console.log('index',index)
+        //         if(index == 0){
+        //             center = {lat : item.lat,lng :item.lng}
+        //         }else{
+        //             path = [...path, {
+        //                 location : {lat : item.lat,lng :item.lng},
+        //                 stopover: true,
+        //             }]
+        //         }
+        //     })
+        //     // console.log('center', center)
+        //     // console.log('path',path)
+        // }
     //   path = [...path, {lat: center.lat, lng : center.lng}]
         console.log('routing',listRouting)
         

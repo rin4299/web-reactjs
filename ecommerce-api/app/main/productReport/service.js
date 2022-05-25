@@ -55,10 +55,14 @@ class productReportService extends BaseServiceCRUD {
        }
 
        return pR;
+    
     }
 
     async createNewOne(payload){
-        const {storeName, userName, listofFalse} = payload;
+        var {storeName, userName, listofFalse} = payload;
+        listofFalse = listofFalse.filter(every => {
+            return every["id"] = every["product"]["id"]
+          })
         let pl = {
             'createdBy': userName,
             'storeName': storeName
@@ -87,6 +91,7 @@ class productReportService extends BaseServiceCRUD {
                  'quantity': objFalse[i]["quantity"],
                  'note': ""
              }
+             console.log("check each",PRDpayload)
              await Models.ProductReportDetail.query().insert(PRDpayload);
              //Update Quantity in NumberAvailable
             //  const ownership = await Models.Ownership.query().where('storeName', storeName).findOne({pId: listOfReports[i].pId});
@@ -112,7 +117,7 @@ class productReportService extends BaseServiceCRUD {
                  } 
              }
         }
- 
+        // return "ok"
         return pR;
     }
 

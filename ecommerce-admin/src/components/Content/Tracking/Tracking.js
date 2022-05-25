@@ -148,7 +148,7 @@ class Tracking extends Component {
         //////////////////////////
         let results
         let payload = {}
-        res && res.length ? results = res[res.length-1].Value : results = null
+        res && res.length ? results = res[0].Value : results = null
         if(results){
           // console.log('results',results)
           this.setState({
@@ -313,13 +313,14 @@ class Tracking extends Component {
                     <th>Product Name</th>
                     <th>Id Product</th>
                     <th>Owner Name</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
                     <td>{this.state.payload.Name}</td>
                     <td>{this.state.payload.ids}</td>
                     <td>{this.state.payload.ownerName}</td>
-                    <td>{this.state.payload.status}</td>
+                    <td>{this.state.payload.status === "" ? "Available" : this.state.payload.status}</td>
                 </tbody>
               </table>
             :
@@ -411,6 +412,7 @@ class Tracking extends Component {
                             <th>Product Name</th>
                             <th>Id Product</th>
                             <th>Owner Name</th>
+                            <th>Status</th>
                             <th style={{ textAlign: "center" }}>Time</th>
                           </tr>
                           
@@ -422,7 +424,7 @@ class Tracking extends Component {
                           />
                           {tracking && tracking.length ? tracking.map((item, index) => {
                             {/* console.log('item',item) */}
-                            if(!item.Value.active && index+1 == tracking.length ){
+                            if(!item.Value.active && index+1 === 1 ){
                               {/* console.log('active',item.Value.active) */}
                               return (
                                 <tr key={index} style={{background: '#FFD2D2'}}>
@@ -431,6 +433,7 @@ class Tracking extends Component {
                                   <td><span >{item.Value.productName}</span></td>
                                   <td>{item.Value.id}</td>
                                   <td>{item.Value.ownerName}</td>
+                                  <td>{item.Value.status === "" ? "Available" : item.Value.status}</td>
                                   <td><p1>{item.Timestamp}</p1></td>
                                 </tr>
                               )
@@ -442,6 +445,7 @@ class Tracking extends Component {
                                   <td><span >{item.Value.productName}</span></td>
                                   <td>{item.Value.id}</td>
                                   <td>{item.Value.ownerName}</td>
+                                  <td>{item.Value.status === "" ? "Available" : item.Value.status}</td>
                                   <td><p1>{item.Timestamp}</p1></td>
                                 </tr>
                               )
@@ -453,6 +457,7 @@ class Tracking extends Component {
                                   <td><span >{item.Value.productName}</span></td>
                                   <td>{item.Value.id}</td>
                                   <td>{item.Value.ownerName}</td>
+                                  <td>{item.Value.status === "" ? "Available" : item.Value.status}</td>
                                   <td><p1>{item.Timestamp}</p1></td>
                                 </tr>
                               )
