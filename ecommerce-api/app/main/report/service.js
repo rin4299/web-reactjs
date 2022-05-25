@@ -52,6 +52,52 @@ class CategoryService extends BaseServiceCRUD {
     return arrFakeCategories;
   }
 
+  async getReportNumberOfProduct(payload) {
+    const storeName = payload
+    const list_of_product = await Models.Product.query();
+    const list_of_ownership = await Models.Ownership.query().where("storeName", storeName);
+    var arrProducts = []
+    for(var i = 0; i < list_of_product.length; i++){
+      for(var j = 0; j < list_of_ownership.length; j++){
+        if(list_of_product[i].id === list_of_ownership[j].pId){
+          arrProducts.push({
+            nameProduct: list_of_product[i].nameProduct,
+            count: list_of_ownership[j].quantity
+          })
+        }
+      }
+    }
+    return arrProducts;
+  }
+
+  async getReportProducer(query) {
+    const resultFake = await Models.Producer.query();
+    if(!resultFake) {
+      throw Boom.notFound('Category not found')
+    }
+    const arrRealCategories = await Models.Product.query().select('producer.name')
+    .innerJoin('producer', 'product.producerId', '=', 'producer.id')
+    .count()
+    .groupBy('producer.id')
+
+    let arrFakeCategories = [];
+    resultFake.map(item => {
+      arrFakeCategories.push({
+        nameProducer: item.name,
+        count: 0
+      })
+    })
+    arrFakeCategories.map((itemFake) => {
+      arrRealCategories.map((itemReal) => {
+        if (itemFake.nameProducer === itemReal.name) {
+          itemFake.count = itemReal.count;
+        }
+      });
+    });
+    var result = arrFakeCategories.filter(each => each.count > 0)
+    return result;
+  }
+
   getSearchQuery(builder, q) {
     builder.andWhere(function () {
       this.whereRaw('LOWER("nameCategory") LIKE \'%\' || LOWER(?) || \'%\' ', q);

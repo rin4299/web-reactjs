@@ -15,6 +15,16 @@ const Routes = [
   },
   {
     method: 'GET',
+    path: '/api/v1/reports/producer',
+    config: handler.getReportProducer
+  },
+  {
+    method: 'GET',
+    path: '/api/v1/reports/numofproducts/{storeName}',
+    config: handler.getReportNumberOfProduct
+  },
+  {
+    method: 'GET',
     path: '/api/v1/reports/contacts',
     config: handler.getReportContact
   },

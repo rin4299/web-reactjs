@@ -22,6 +22,24 @@ class CategoryController extends BaseControllerCRUD {
       throw err;
     }
   };
+  async getReportProducer(request) {
+    try {
+      return await this.service.getReportProducer(request.query);
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  async getReportNumberOfProduct(request) {
+    try {
+      const {
+        storeName
+      } = request.params;
+      return await this.service.getReportNumberOfProduct(storeName);
+    } catch (err) {
+      throw err;
+    }
+  };
   async getReportContact(request) {
     try {
       return await this.service.getReportContact(request.query);

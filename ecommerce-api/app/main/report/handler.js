@@ -25,6 +25,27 @@ exports.getReportProducts = {
     query: validator.getReportIncome
   }
 };
+
+exports.getReportProducer = {
+  description: 'Get getReportProducts list',
+  notes: 'Return getReportProducts items',
+  tags: ['api', 'v1'],
+  handler: controller.getReportProducer.bind(controller),
+  auth: 'jwt',
+  validate: {
+    
+  }
+};
+exports.getReportNumberOfProduct = {
+  description: 'Get getReportProducts list',
+  notes: 'Return getReportProducts items',
+  tags: ['api', 'v1'],
+  handler: controller.getReportNumberOfProduct.bind(controller),
+  auth: 'jwt',
+  validate: {
+    
+  }
+};
 exports.getReportContact = {
   description: 'Get getReportProducts list',
   notes: 'Return getReportProducts items',
