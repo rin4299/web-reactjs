@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Slider from '../components/HomePage/Slider/Slider'
 import Product from '../components/HomePage/Content/ProductNew/Product'
 import BannerMiddle from '../components/HomePage/Content/BannerMiddle/BannerMiddle'
-import LaptopArea from '../components/HomePage/Content/LaptopArea/LaptopArea'
+import HeatingArea from '../components/HomePage/Content/HeatingArea/HeatingArea'
 import StaticHomeQC from '../components/HomePage/Content/StaticHomeQC/StaticHomeQC'
 import TrenddingProduct from '../components/HomePage/Content/TrenddingProduct/TrenddingProduct'
 
@@ -13,7 +13,7 @@ export default class HomePage extends Component {
                 <Slider></Slider>
                 <Product></Product>
                 <BannerMiddle></BannerMiddle>
-                <LaptopArea></LaptopArea>
+                <HeatingArea></HeatingArea>
                 <StaticHomeQC></StaticHomeQC>
                 <TrenddingProduct></TrenddingProduct>
             </div>

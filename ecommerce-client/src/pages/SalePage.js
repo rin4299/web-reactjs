@@ -55,7 +55,7 @@ export default class SalePage extends Component {
                       <div className="row">
                         <div className="col-lg-3 col-md-4 col-sm-6 mt-40">
                           {/* single-product-wrap start */}
-                          <div className="single-product-wrap">
+                          <div className="single-product-wrap" style={{ margin:"auto"}}>
                             <div className="product-image">
                               <a href="single-product.html">
                                 <img src="images/product/large-size/1.jpg" alt="Li's Product " />

@@ -103,7 +103,7 @@ class TrenddingProductItems extends Component {
     return (
       <div>
         {/* single-product-wrap start */}
-        <div className="single-product-wrap">
+        <div className="single-product-wrap" style={{ margin:"auto"}}>
           <div className="fix-img-div-trend product-image">
             <Link to={`/products/${product.id}`}>
               <img className="fix-img-trend" src={product.image ? product.image : null} alt="Li's Product" />

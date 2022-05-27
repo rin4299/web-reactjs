@@ -113,7 +113,7 @@ class LaptopItems extends Component {
     }
     return (
       <div className="col-sm-3 mt-4">
-        <div className="single-product-wrap">
+        <div className="single-product-wrap" style={{ margin:"auto"}}>
           <div className="fix-img-div-laptop-area product-image">
             <Link to={`/products/${product.id}`}>
               <img className="fix-img-laptop-area" src={product.image ? product.image : null} alt="Li's Product" />

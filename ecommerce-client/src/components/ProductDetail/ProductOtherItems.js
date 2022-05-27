@@ -51,7 +51,7 @@ class ProductOtherItems extends Component {
     }
     return (
       <div className="pt-30">
-        <div className="single-product-wrap">
+        <div className="single-product-wrap" style={{ margin:"auto"}}>
           <div className="fix-img-div-other product-image">
             <Link onClick={(id) => this.updateProductDetail(product.id)} to={`/products/${product.id}`}>
               <img className="fix-img-other" src={product.image} alt="Li's Product" />

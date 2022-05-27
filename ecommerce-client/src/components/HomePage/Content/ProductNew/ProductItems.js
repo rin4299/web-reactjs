@@ -104,7 +104,7 @@ class ProductItems extends Component {
     }
     return (
       <div>
-        <div className="single-product-wrap">
+        <div className="single-product-wrap" style={{ margin:"auto"}}>
           <div className="fix-img-div-new product-image">
             <Link to={`/products/${product.id}`} >
               <img className="fix-img-new" src={product.image ? product.image : null} alt="Li's Product" />

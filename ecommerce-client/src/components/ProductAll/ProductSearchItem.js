@@ -110,7 +110,7 @@ class ProductSearchItem extends Component {
     return (
       <div className="col-lg-3 col-md-4 col-sm-6 mt-40">
         {/* single-product-wrap start */}
-        <div className="single-product-wrap">
+        <div className="single-product-wrap" style={{ margin:"auto"}}>
           <div className="fix-img-div product-image">
             <Link
               to={`/products/${product.id}`}

@@ -3,7 +3,7 @@ import LaptopItems from './LaptopItems'
 import {connect} from 'react-redux'
 import { actFetchProductsLaptopRequest } from '../../../../redux/actions/products';
 
-class LaptopArea extends Component {
+class HeatingArea extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -66,4 +66,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(LaptopArea)
+export default connect(mapStateToProps, mapDispatchToProps)(HeatingArea)
