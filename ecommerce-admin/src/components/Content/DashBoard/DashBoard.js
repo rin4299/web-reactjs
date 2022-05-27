@@ -240,7 +240,7 @@ class DashBoard extends Component {
         {
           label: 'Count Orders',
           fill: false,
-          lineTension: 0.1,
+          lineTension: 0.4,
           backgroundColor: 'rgba(75,192,192,0.4)',
           borderColor: 'rgba(75,192,192,1)',
           borderCapStyle: 'butt',
@@ -256,6 +256,8 @@ class DashBoard extends Component {
           pointHoverBorderWidth: 2,
           pointRadius: 1,
           pointHitRadius: 10,
+          borderWidth: 1,
+          xpadding: 4,
           data: [January1, February1, March1, April1, May1, June1, July1, August1, September1, October1, November1, December1]
         }
       ]
@@ -439,7 +441,16 @@ class DashBoard extends Component {
                 data={dataLine} /> */}
                 <HorizontalBar  width={100}
                 height={15}
-                data={dataLine} />
+                data={dataLine}
+                options ={{
+                  scales:{
+                    xAxes:[{
+                      ticks:{
+                        stepSize: 1
+                      }
+                    }]
+                  }
+                }} />
             <br/>
             <br/>
 
