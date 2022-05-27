@@ -6,6 +6,8 @@ import { Line, HorizontalBar, Pie, Bar } from 'react-chartjs-2';
 import './style.css'
 import callApi from '../../../utils/apiCaller';
 import { actTokenRequest } from "../../../redux/actions/auth";
+import { actFetchOrdersRequest } from '../../../redux/actions/order';
+
 // import { Col } from 'antd';
 import {Row, Col ,} from 'reactstrap'
 let token;
@@ -56,13 +58,21 @@ class DashBoard extends Component {
         console.log("CANNOT FIND ANY USER!")
       }
       const Uname = res.data.results[0].name
+      
       this.props.fetch_dashboard(token,Uname);
       const category =  callApi('reports/products', 'GET', null, token);
       const income =  callApi('reports/income', 'GET', null, token);
       const contact =  callApi('reports/contacts', 'GET', null, token);
       const product = callApi(`reports/numofproducts/${Uname}`,'GET', null, token);
       const producer = callApi('reports/producer', 'GET', null, token);
-      const [resCategory, resIncome, resContact, resProduct, resProducer ] = await Promise.all([category, income, contact, product , producer]);
+      const orders = this.props.fetch_orders(token, null, Uname).then(res => {
+        // console.log(res)
+        return res.results
+      }).catch(err => {
+        console.log(err);  
+      })
+      const [resCategory, resIncome, resContact, resProduct, resProducer, resOrders ] = await Promise.all([category, income, contact, product , producer, orders]);
+      // console.log(resOrders)
       if (resIncome) {
         resIncome.data.forEach((item) => {
           if (item.month === "01") {
@@ -127,66 +137,69 @@ class DashBoard extends Component {
           }
         })
       }
-      if (resContact) {
-        resContact.data.forEach((item) => {
-          if (item.month === "01") {
+      if(resOrders.length) {
+        resOrders.forEach((item) => {
+          let temp = new Date(item.createdAt)
+          const month = temp.getMonth() +1
+          // console.log(month)
+          if (month === 1) {
             this.setState({
-              January1: item.count
+              January1: this.state.January1+1
             })
           }
-          if (item.month === "02") {
+          if (month === 2) {
             this.setState({
-              February1: item.count
+              February1: this.state.February1+1
             })
           }
-          if (item.month === "03") {
+          if (month === 3) {
             this.setState({
-              March1: item.count
+              March1: this.state.March1+1
             })
           }
-          if (item.month === "04") {
+          if (month === 4) {
             this.setState({
-              April1: item.count
+              April1: this.state.April1+1
             })
           }
-          if (item.month === "05") {
+          if (month === 5) {
             this.setState({
-              May1: item.count
+              May1: this.state.May1+1
             })
           }
-          if (item.month === "06") {
+          if (month === 6) {
             this.setState({
-              June1: item.count
+              June1: this.state.June1+1
             })
           }
-          if (item.month === "07") {
+          if (month === 7) {
             this.setState({
-              July1: item.count
+              July1: this.state.July1+1
             })
           }
-          if (item.month === "08") {
+          if (month === 8) {
             this.setState({
-              August1: item.count
+              August1: this.state.August1+1
             })
           }
-          if (item.month === "09") {
+          if (month === 9) {
             this.setState({
-              September1: item.count
+              September1: this.state.September1+1
             })
           }
-          if (item.month === "10") {
+          if (month === 10) {
             this.setState({
-              October1: item.count
+              October1: this.state.October1+1
             })
           }
-          if (item.month === "11") {
+          if (month === 11) {
             this.setState({
-              November1: item.count
+              November1: this.state.November1+1
             })
           }
-          if (item.month === "12") {
+          if (month === 12) {
             this.setState({
-              December1: item.count
+              December1: this.state.December1+1
             })
           }
         })
@@ -204,7 +217,7 @@ class DashBoard extends Component {
         })
       }
       if(resProducer){
-        console.log('producer', resProducer)
+        // console.log('producer', resProducer)
         this.setState({
           labelsProducer : resProducer.data.map(e => e.nameProducer),
           dataShowProducer: resProducer.data.map(e => e.count)
@@ -220,6 +233,7 @@ class DashBoard extends Component {
       January1, February1, March1, April1, May1, June1, July1, August1, September1, October1, November1, December1, labelsPie, dataShowPie, labelsProduct, dataShowProduct,
       labelsProducer, dataShowProducer,
     } = this.state
+    // console.log('numorder 5', May1)
     const dataLine = {  
       labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
       datasets: [
@@ -420,7 +434,10 @@ class DashBoard extends Component {
                 {/* <HorizontalBar 
                 width={100}
                 height={30} data={dataHozi}/> */}
-                <Line  width={100}
+                {/* <Line  width={100}
+                height={15}
+                data={dataLine} /> */}
+                <HorizontalBar  width={100}
                 height={15}
                 data={dataLine} />
             <br/>
@@ -492,8 +509,11 @@ class DashBoard extends Component {
 
 const mapStateToProps = (state) => {
   // console.log(state.dashboard)
+  // console.log("order", state.orders)
+
   return {
-    dashboard: state.dashboard
+    dashboard: state.dashboard,
+    orders: state.orders
   }
 }
 const mapDispatchToProps = (dispatch) => {
@@ -503,6 +523,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     add_token_redux: token => {
       dispatch(actTokenRequest(token));
+    },
+    fetch_orders: (token, offset, storename) => {
+      return dispatch(actFetchOrdersRequest(token, offset, storename))
     },
   }
 }

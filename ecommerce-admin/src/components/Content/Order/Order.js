@@ -29,7 +29,7 @@ class Order extends Component {
       filterStatus: 'All',
       productDetails: 0,
       modalShow: false,
-      Newest : 'Newest',
+      Newest : true,
     }
   }
 
@@ -263,7 +263,7 @@ class Order extends Component {
           
         </Modal.Body>
         <Modal.Footer>
-          <button type="button" class="btn btn-info" onClick={props.onHide}>Close</button>
+          <button type="button" className="btn btn-info" onClick={props.onHide}>Close</button>
         </Modal.Footer>
       </Modal>
     );
@@ -271,8 +271,22 @@ class Order extends Component {
 
   render() {
     // this.fetch_reload_data()
-    const  orders = this.state.total;
-    const { searchText, total } = this.state;
+    let { orders } = this.props;
+    const { searchText, total, Newest } = this.state;
+
+    if(Newest){
+      orders = orders.sort((a,b)=> {
+        return new Date(a.createdAt) < new Date(b.createdAt)
+      })
+    }else{
+      orders = orders.sort((a,b)=> {
+        return new Date(a.createdAt) > new Date(b.createdAt)
+      })
+    }
+    
+    // console.log('orders',orders)
+
+    // const  orders = this.state.total;
     return (
       <div className="content-inner">
         {/* Page Header*/}
@@ -307,7 +321,7 @@ class Order extends Component {
                     isClearable={true}
                     placeholder='Date...'
                   /> */}
-                  <select className="form-control mb-3" name="sotring" onChange={(event) => {this.setState({ total : total.reverse()})}} >
+                  <select className="form-control mb-3" name="sotring" onChange={(event) => {this.setState({ total : total.reverse(), Newest : !this.state.Newest})}} >
                       <option value='Newest'>Newest</option>
                       <option value='Oldest'>Oldest</option>
                     </select>     
@@ -473,7 +487,7 @@ class Order extends Component {
 }
 
 const mapStateToProps = (state) => {
-  // console.log
+  // console.log("order", state.orders)
   return {
     orders: state.orders
   }
