@@ -330,6 +330,7 @@ class ShoppingCart extends Component {
                                             return (
                                                 <tr>
                                                     {item.quantity > item.numberAvailable ? item.quantity = item.numberAvailable : item.quantity}
+                                                    <th scope="row">{index + 1}</th>
                                                     <td className="li-product-remove"><Link to="#"><i style={{fontSize: 20}} 
                                                     onClick={() => this.removeItem(item)} 
                                                     className="fa fa-trash" /></Link></td>
