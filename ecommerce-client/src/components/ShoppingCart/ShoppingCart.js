@@ -327,10 +327,11 @@ class ShoppingCart extends Component {
                                         } */}
                                         {items && items.length && filterStore == 'All' ? items.map((item,index) => {
                                             {/* console.log('local storage',item) */}
+                                            {/* item.quantity > item.numberAvailable ? item.quantity = item.numberAvailable : item.quantity */}
                                             return (
                                                 <tr>
-                                                    {item.quantity > item.numberAvailable ? item.quantity = item.numberAvailable : item.quantity}
                                                     <th scope="row">{index + 1}</th>
+
                                                     <td className="li-product-remove"><Link to="#"><i style={{fontSize: 20}} 
                                                     onClick={() => this.removeItem(item)} 
                                                     className="fa fa-trash" /></Link></td>
@@ -367,6 +368,7 @@ class ShoppingCart extends Component {
                                                     {/* console.log('object', object.product) */}
                                                     return (
                                                         <tr>
+                                                            <th scope="row">{index + 1}</th>
                                                             <td className="li-product-remove"><Link to="#"><i style={{fontSize: 20}} 
                                                             onClick={() => this.removeItem(object.product)} 
                                                             className="fa fa-trash" /></Link></td>
