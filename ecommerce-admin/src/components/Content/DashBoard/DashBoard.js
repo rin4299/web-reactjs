@@ -73,133 +73,156 @@ class DashBoard extends Component {
       })
       const [resCategory, resIncome, resContact, resProduct, resProducer, resOrders ] = await Promise.all([category, income, contact, product , producer, orders]);
       // console.log(resOrders)
-      if (resIncome) {
-        resIncome.data.forEach((item) => {
-          if (item.month === "01") {
-            this.setState({
-              January: item.total
-            })
-          }
-          if (item.month === "02") {
-            this.setState({
-              February: item.total
-            })
-          }
-          if (item.month === "03") {
-            this.setState({
-              March: item.total
-            })
-          }
-          if (item.month === "04") {
-            this.setState({
-              April: item.total
-            })
-          }
-          if (item.month === "05") {
-            this.setState({
-              May: item.total
-            })
-          }
-          if (item.month === "06") {
-            this.setState({
-              June: item.total
-            })
-          }
-          if (item.month === "07") {
-            this.setState({
-              July: item.total
-            })
-          }
-          if (item.month === "08") {
-            this.setState({
-              August: item.total
-            })
-          }
-          if (item.month === "09") {
-            this.setState({
-              September: item.total
-            })
-          }
-          if (item.month === "10") {
-            this.setState({
-              October: item.total
-            })
-          }
-          if (item.month === "11") {
-            this.setState({
-              November: item.total
-            })
-          }
-          if (item.month === "12") {
-            this.setState({
-              December: item.total
-            })
-          }
-        })
-      }
+      // if (resIncome) {
+      //   resIncome.data.forEach((item) => {
+      //     if (item.month === "01") {
+      //       this.setState({
+      //         January: item.total
+      //       })
+      //     }
+      //     if (item.month === "02") {
+      //       this.setState({
+      //         February: item.total
+      //       })
+      //     }
+      //     if (item.month === "03") {
+      //       this.setState({
+      //         March: item.total
+      //       })
+      //     }
+      //     if (item.month === "04") {
+      //       this.setState({
+      //         April: item.total
+      //       })
+      //     }
+      //     if (item.month === "05") {
+      //       this.setState({
+      //         May: item.total
+      //       })
+      //     }
+      //     if (item.month === "06") {
+      //       this.setState({
+      //         June: item.total
+      //       })
+      //     }
+      //     if (item.month === "07") {
+      //       this.setState({
+      //         July: item.total
+      //       })
+      //     }
+      //     if (item.month === "08") {
+      //       this.setState({
+      //         August: item.total
+      //       })
+      //     }
+      //     if (item.month === "09") {
+      //       this.setState({
+      //         September: item.total
+      //       })
+      //     }
+      //     if (item.month === "10") {
+      //       this.setState({
+      //         October: item.total
+      //       })
+      //     }
+      //     if (item.month === "11") {
+      //       this.setState({
+      //         November: item.total
+      //       })
+      //     }
+      //     if (item.month === "12") {
+      //       this.setState({
+      //         December: item.total
+      //       })
+      //     }
+      //   })
+      // }
       if(resOrders.length) {
         resOrders.forEach((item) => {
+          // console.log(item.totalAmount)
           let temp = new Date(item.createdAt)
           const month = temp.getMonth() +1
           // console.log(month)
           if (month === 1) {
             this.setState({
-              January1: this.state.January1+1
+              January1: this.state.January1+1,
+              January : this.state.January + item.totalAmount
             })
           }
           if (month === 2) {
             this.setState({
-              February1: this.state.February1+1
+              February1: this.state.February1+1,
+              February: this.state.February + item.totalAmount
             })
           }
           if (month === 3) {
             this.setState({
-              March1: this.state.March1+1
+              March1: this.state.March1+1,
+              February: this.state.February + item.totalAmount
+
             })
           }
           if (month === 4) {
             this.setState({
-              April1: this.state.April1+1
+              April1: this.state.April1+1,
+              April: this.state.April + item.totalAmount
+
             })
           }
           if (month === 5) {
             this.setState({
-              May1: this.state.May1+1
+              May1: this.state.May1+1,
+              May: this.state.May + item.totalAmount
+
             })
           }
           if (month === 6) {
             this.setState({
-              June1: this.state.June1+1
+              June1: this.state.June1+1,
+              June: this.state.June + item.totalAmount
+
             })
           }
           if (month === 7) {
             this.setState({
-              July1: this.state.July1+1
+              July1: this.state.July1+1,
+              July: this.state.July + item.totalAmount
+
             })
           }
           if (month === 8) {
             this.setState({
-              August1: this.state.August1+1
+              August1: this.state.August1+1,
+              August: this.state.August + item.totalAmount
+
             })
           }
           if (month === 9) {
             this.setState({
-              September1: this.state.September1+1
+              September1: this.state.September1+1,
+              September: this.state.September + item.totalAmount
+
             })
           }
           if (month === 10) {
             this.setState({
-              October1: this.state.October1+1
+              October1: this.state.October1+1,
+              October: this.state.October + item.totalAmount
+
             })
           }
           if (month === 11) {
             this.setState({
-              November1: this.state.November1+1
+              November1: this.state.November1+1,
+              November: this.state.November + item.totalAmount
+
             })
           }
           if (month === 12) {
             this.setState({
-              December1: this.state.December1+1
+              December1: this.state.December1+1,
+              December: this.state.December + item.totalAmount
+
             })
           }
         })
@@ -409,7 +432,7 @@ class DashBoard extends Component {
                       <div role="progressbar" style={{ width: '100%', height: '4px' }} className="progress-bar bg-orange fix-processbar" />
                     </div>
                   </div>
-                  <div className="number"><strong>${dashboard.income}</strong></div>
+                  <div className=""><strong>${dashboard.income ? (dashboard.income).toFixed(2) : 0}</strong></div>
                 </div>
               </div>
             </div>
